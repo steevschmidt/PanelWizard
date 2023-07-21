@@ -16,9 +16,9 @@ All of these
 We are going to build a modern software tool that helps US homeowners understand how to electrify their home using their existing electrical panel.
 
 Inputs:
-1. Electric panel sizes, in Amps.
-2. Used panel capacity over past year (either measured or estimated?)
-3. Complete list of fossil devices to be electrified
+1. Required: Electric panel sizes, in Amps.
+2. Reqired: Used panel capacity over past year, either measured or estimated (?)
+3. List of fossil devices to be electrified
 4. Device specific issues, like Minimum tonnage of HVAC needed, how many EV chargers, etc.
 5. Proximity to unused and used 240V circuits/outlets
 
@@ -26,4 +26,6 @@ Output:
 - Final requirement is Github open source project
 - High level specification
 - Overview of the structure, with stubs for future functions.
-- Tool that runs in the top three browsers. Interacts with a database (e.g. AWS RDS). User answers questions via the browser.
+- Tool that runs in the top three browsers.
+- Tool that interacts with HEA's database (for HomeIntel customers).
+- Tool that allows users answers questions and see results in a browser window.
