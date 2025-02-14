@@ -13,7 +13,7 @@ Examples of home electrification:
 5. Replacing a natural gas cooktop with an induction cooktop.
 All of these 
 
-We are going to build a modern software tool that helps US homeowners understand how to electrify their home using their existing electrical panel.
+We are going to build a modern software tool that helps US homeowners understand how to electrify their home using their existing electrical panel. The tool should run in any modern browser, be responsive and mobile friendly and beautiful. We will use AWS Amplify to serve the tool to the browser at scale. We will use html + css + js formatted in separate code blocks and with introductory text. We will use dark mode as the default and it will be responsive and optimized for mobile but desktop friendly. We will use opengraph meta tags and viewport tags. We will use the helvetica neue font, and use #ff7f00 highlights. All scroll elements will be thin and use dark mode.
 
 Inputs:
 1. Required: Electric panel sizes, in Amps.
