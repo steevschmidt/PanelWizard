@@ -1,0 +1,15 @@
+I'd like to start with a simple Hello World app in javascript. Sound ok?
+
+This is great, thanks!
+
+Yes, please add a smooth theme toggle (dark/light mode).
+
+This does not appear to work. Any suggestions?
+
+That works!  Now, help me set up AWS amplify. I have an existing AWS account and have connected Amplify to another project in my github account. Can I just change the settings in Amplify to point to this project instead?
+
+i'm not sure which method to use. My existing Amplify app is using a production branch URL that I would like to use for this new app. Which do you suggest?
+
+Ok, it works now in Amplify. Thank you. Next, I'd like to start placeholder screens for different steps the user will follow. Let's add a Responsive navigation menu with 5 initial main steps, and give step 3 several sub steps.
+
+Can you log all my prompts (just the prompts, nor your responses) to a new file prompts.txt ? 

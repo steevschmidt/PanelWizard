@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="PanelWizard - A Home Electrification Guide">
+    <meta property="og:title" content="PanelWizard - A Guide for Home Electrification">
     <meta property="og:description" content="Help homeowners understand how to electrify their home using their existing electrical panel">
     <meta property="og:image" content="https://www.energy.ca.gov/sites/default/files/california-energy-commission-logo_0.png">
     <meta property="og:url" content="https://wizard.hea.com">
@@ -15,11 +15,132 @@
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
             <span class="theme-toggle-icon">🌙</span>
         </button>
-        <header>
-            <h1>Home Electrification Wizard</h1>
-        </header>
+        
+        <nav class="nav-menu">
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <ul class="nav-list">
+                <li><a href="#step1">1. Home Assessment</a></li>
+                <li><a href="#step2">2. Panel Inventory</a></li>
+                <li class="has-dropdown">
+                    <a href="#step3">3. Load Analysis</a>
+                    <ul class="dropdown">
+                        <li><a href="#step3-1">3.1 Current Usage</a></li>
+                        <li><a href="#step3-2">3.2 Future Loads</a></li>
+                        <li><a href="#step3-3">3.3 Peak Demand</a></li>
+                        <li><a href="#step3-4">3.4 Circuit Planning</a></li>
+                    </ul>
+                </li>
+                <li><a href="#step4">4. Recommendations</a></li>
+                <li><a href="#step5">5. Action Plan</a></li>
+            </ul>
+        </nav>
+
         <main>
-            <p class="welcome-text">Your home electrification journey starts here!</p>
+            <section id="step1" class="step-content">
+                <h2>1. Home Assessment</h2>
+                <div class="content-box">
+                    <h3>Basic Home Information</h3>
+                    <p>Let's gather some key details about your home to better understand your electrification needs:</p>
+                    <ul>
+                        <li>Home square footage</li>
+                        <li>Year built</li>
+                        <li>Current heating/cooling system</li>
+                        <li>Insulation status</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="step2" class="step-content">
+                <h2>2. Panel Inventory</h2>
+                <div class="content-box">
+                    <h3>Electrical Service Assessment</h3>
+                    <p>Document your current electrical setup:</p>
+                    <ul>
+                        <li>Main panel amperage</li>
+                        <li>Available breaker spaces</li>
+                        <li>Sub-panel details</li>
+                        <li>Service connection type</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="step3" class="step-content">
+                <h2>3. Load Analysis</h2>
+                
+                <section id="step3-1" class="content-box">
+                    <h3>3.1 Current Usage</h3>
+                    <p>Review your current electrical consumption:</p>
+                    <ul>
+                        <li>Monthly electricity usage</li>
+                        <li>Peak demand periods</li>
+                        <li>Seasonal variations</li>
+                    </ul>
+                </section>
+
+                <section id="step3-2" class="content-box">
+                    <h3>3.2 Future Loads</h3>
+                    <p>Plan for new electrical appliances:</p>
+                    <ul>
+                        <li>Heat pump HVAC</li>
+                        <li>Electric water heater</li>
+                        <li>EV charging</li>
+                        <li>Electric cooking</li>
+                    </ul>
+                </section>
+
+                <section id="step3-3" class="content-box">
+                    <h3>3.3 Peak Demand</h3>
+                    <p>Calculate maximum power needs:</p>
+                    <ul>
+                        <li>Simultaneous usage scenarios</li>
+                        <li>Demand calculations</li>
+                        <li>Safety margins</li>
+                    </ul>
+                </section>
+
+                <section id="step3-4" class="content-box">
+                    <h3>3.4 Circuit Planning</h3>
+                    <p>Map out circuit requirements:</p>
+                    <ul>
+                        <li>Circuit assignments</li>
+                        <li>Load balancing</li>
+                        <li>Dedicated circuits needed</li>
+                    </ul>
+                </section>
+            </section>
+
+            <section id="step4" class="step-content">
+                <h2>4. Recommendations</h2>
+                <div class="content-box">
+                    <h3>Suggested Upgrades</h3>
+                    <p>Based on your assessment, we'll provide:</p>
+                    <ul>
+                        <li>Panel upgrade requirements</li>
+                        <li>Circuit modifications</li>
+                        <li>Equipment recommendations</li>
+                        <li>Prioritized action items</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="step5" class="step-content">
+                <h2>5. Action Plan</h2>
+                <div class="content-box">
+                    <h3>Implementation Strategy</h3>
+                    <p>Your roadmap to electrification:</p>
+                    <ul>
+                        <li>Timeline planning</li>
+                        <li>Budget considerations</li>
+                        <li>Contractor selection</li>
+                        <li>Permit requirements</li>
+                    </ul>
+                </div>
+            </section>
         </main>
     </div>
     <script src="script.js"></script>
