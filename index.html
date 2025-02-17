@@ -24,25 +24,50 @@
             </button>
             
             <ul class="nav-list">
-                <li><a href="#step1">1. Home Assessment</a></li>
-                <li><a href="#step2">2. Panel Inventory</a></li>
+                <li><a href="#step1">1. Introduction</a></li>
+                <li><a href="#step2">2. Home Assessment</a></li>
+                <li><a href="#step3">3. Panel Inventory</a></li>
                 <li class="has-dropdown">
-                    <a href="#step3">3. Load Analysis</a>
+                    <a href="#step4">4. Load Analysis</a>
                     <ul class="dropdown">
-                        <li><a href="#step3-1">3.1 Current Usage</a></li>
-                        <li><a href="#step3-2">3.2 Future Loads</a></li>
-                        <li><a href="#step3-3">3.3 Peak Demand</a></li>
-                        <li><a href="#step3-4">3.4 Circuit Planning</a></li>
+                        <li><a href="#step4-1">4.1 Current Usage</a></li>
+                        <li><a href="#step4-2">4.2 Future Loads</a></li>
+                        <li><a href="#step4-3">4.3 Peak Demand</a></li>
+                        <li><a href="#step4-4">4.4 Circuit Planning</a></li>
                     </ul>
                 </li>
-                <li><a href="#step4">4. Recommendations</a></li>
-                <li><a href="#step5">5. Action Plan</a></li>
+                <li><a href="#step5">5. Recommendations</a></li>
+                <li><a href="#step6">6. Action Plan</a></li>
             </ul>
         </nav>
 
         <main>
             <section id="step1" class="step-content">
-                <h2>1. Home Assessment</h2>
+                <h2>Welcome to the PanelWizard</h2>
+                <div class="content-box">
+                    <h3>Your Home Electrification Guide</h3>
+                    <p>PanelWizard helps you plan your home's transition to all-electric by analyzing your electrical panel capacity and providing a customized upgrade strategy.</p>
+                    
+                    <div class="project-form">
+                        <h3>Name Your Project</h3>
+                        <p>Give your electrification project a name. This will help us save your progress as you work through the steps.</p>
+                        <form id="projectForm" class="form-group">
+                            <label for="projectName">Project Name:</label>
+                            <input 
+                                type="text" 
+                                id="projectName" 
+                                placeholder="e.g., Byrd House or 123 River Road"
+                                required
+                            >
+                            <p class="form-help">This name will be used to save your progress locally</p>
+                            <button type="submit" class="primary-button">Start Project</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section id="step2" class="step-content">
+                <h2>2. Home Assessment</h2>
                 <div class="content-box">
                     <h3>Basic Home Information</h3>
                     <p>Let's gather some key details about your home to better understand your electrification needs:</p>
@@ -55,8 +80,8 @@
                 </div>
             </section>
 
-            <section id="step2" class="step-content">
-                <h2>2. Panel Inventory</h2>
+            <section id="step3" class="step-content">
+                <h2>3. Panel Inventory</h2>
                 <div class="content-box">
                     <h3>Electrical Service Assessment</h3>
                     <p>Document your current electrical setup:</p>
@@ -69,11 +94,11 @@
                 </div>
             </section>
 
-            <section id="step3" class="step-content">
-                <h2>3. Load Analysis</h2>
+            <section id="step4" class="step-content">
+                <h2>4. Load Analysis</h2>
                 
-                <section id="step3-1" class="content-box">
-                    <h3>3.1 Current Usage</h3>
+                <section id="step4-1" class="content-box">
+                    <h3>4.1 Current Usage</h3>
                     <p>Review your current electrical consumption:</p>
                     <ul>
                         <li>Monthly electricity usage</li>
@@ -82,8 +107,8 @@
                     </ul>
                 </section>
 
-                <section id="step3-2" class="content-box">
-                    <h3>3.2 Future Loads</h3>
+                <section id="step4-2" class="content-box">
+                    <h3>4.2 Future Loads</h3>
                     <p>Plan for new electrical appliances:</p>
                     <ul>
                         <li>Heat pump HVAC</li>
@@ -93,8 +118,8 @@
                     </ul>
                 </section>
 
-                <section id="step3-3" class="content-box">
-                    <h3>3.3 Peak Demand</h3>
+                <section id="step4-3" class="content-box">
+                    <h3>4.3 Peak Demand</h3>
                     <p>Calculate maximum power needs:</p>
                     <ul>
                         <li>Simultaneous usage scenarios</li>
@@ -103,8 +128,8 @@
                     </ul>
                 </section>
 
-                <section id="step3-4" class="content-box">
-                    <h3>3.4 Circuit Planning</h3>
+                <section id="step4-4" class="content-box">
+                    <h3>4.4 Circuit Planning</h3>
                     <p>Map out circuit requirements:</p>
                     <ul>
                         <li>Circuit assignments</li>
@@ -114,8 +139,8 @@
                 </section>
             </section>
 
-            <section id="step4" class="step-content">
-                <h2>4. Recommendations</h2>
+            <section id="step5" class="step-content">
+                <h2>5. Recommendations</h2>
                 <div class="content-box">
                     <h3>Suggested Upgrades</h3>
                     <p>Based on your assessment, we'll provide:</p>
@@ -128,8 +153,8 @@
                 </div>
             </section>
 
-            <section id="step5" class="step-content">
-                <h2>5. Action Plan</h2>
+            <section id="step6" class="step-content">
+                <h2>6. Action Plan</h2>
                 <div class="content-box">
                     <h3>Implementation Strategy</h3>
                     <p>Your roadmap to electrification:</p>

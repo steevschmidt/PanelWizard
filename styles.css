@@ -381,4 +381,216 @@ main {
     .content-box h3 {
         font-size: 1.2rem;
     }
+}
+
+/* Project Form Styles */
+.project-form {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 127, 0, 0.2);
+}
+
+.form-group {
+    max-width: 500px;
+    margin: 1.5rem 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 2px solid rgba(255, 127, 0, 0.2);
+    border-radius: 4px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #ff7f00;
+}
+
+.form-help {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-top: 0.5rem;
+}
+
+.primary-button {
+    background-color: #ff7f00;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.primary-button:hover {
+    background-color: #e67300;
+}
+
+/* Projects Modal Styles */
+.projects-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.projects-modal-content {
+    background: var(--background-color);
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.project-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 127, 0, 0.2);
+}
+
+.project-actions button {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.load-btn {
+    background: #4CAF50;
+    color: white;
+}
+
+.download-btn {
+    background: #2196F3;
+    color: white;
+}
+
+.delete-btn {
+    background: #f44336;
+    color: white;
+}
+
+.success-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 4px;
+}
+
+.secondary-button {
+    background: transparent;
+    border: 2px solid #ff7f00;
+    color: #ff7f00;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    margin: 0.5rem;
+    cursor: pointer;
+}
+
+.secondary-button:hover {
+    background: #ff7f00;
+    color: white;
+}
+
+.import-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 127, 0, 0.2);
+}
+
+/* Current Project Display */
+.current-project {
+    background: var(--background-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px solid #ff7f00;
+    position: relative;
+}
+
+.current-project h4 {
+    color: #ff7f00;
+    margin-bottom: 0.5rem;
+}
+
+.current-project .project-name {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.project-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Error Message */
+.error-message {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Delete Success Message */
+.delete-success-message {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Load Success Message */
+.load-success-message {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    animation: fadeIn 0.3s ease-out;
 } 

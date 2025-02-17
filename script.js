@@ -57,4 +57,273 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.overflow = '';
         }
     });
+
+    // Project form handling
+    const projectForm = document.getElementById('projectForm');
+    
+    projectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const projectName = document.getElementById('projectName').value.trim();
+        
+        // Check if project name already exists
+        const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+        if (projects.some(p => p.name === projectName)) {
+            showError('A project with this name already exists. Please choose a different name.');
+            return;
+        }
+        
+        if (projectName) {
+            // Create project data structure
+            const projectData = {
+                name: projectName,
+                dateCreated: new Date().toISOString(),
+                lastModified: new Date().toISOString(),
+                steps: {}
+            };
+            
+            // Save to projects list
+            projects.push(projectData);
+            localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+            
+            // Update form to show current project
+            updateFormToShowCurrentProject(projectName);
+        }
+    });
+    
+    function showError(message) {
+        // Remove any existing error message
+        const existingError = document.querySelector('.error-message');
+        if (existingError) existingError.remove();
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        projectForm.insertBefore(errorDiv, projectForm.querySelector('button'));
+        
+        // Remove error after 3 seconds
+        setTimeout(() => errorDiv.remove(), 3000);
+    }
+    
+    function updateFormToShowCurrentProject(projectName) {
+        // Clear the form and show current project info
+        projectForm.innerHTML = `
+            <div class="current-project">
+                <h4>Current Project:</h4>
+                <p class="project-name">${projectName}</p>
+                <div class="project-actions">
+                    <button type="button" class="secondary-button view-projects-btn">View All Projects</button>
+                    <button type="button" class="secondary-button new-project-btn">Start New Project</button>
+                </div>
+            </div>
+        `;
+        
+        // Add event listeners to new buttons
+        projectForm.querySelector('.view-projects-btn').addEventListener('click', showProjectsList);
+        projectForm.querySelector('.new-project-btn').addEventListener('click', resetProjectForm);
+    }
+    
+    function resetProjectForm() {
+        projectForm.innerHTML = `
+            <label for="projectName">Project Name:</label>
+            <input 
+                type="text" 
+                id="projectName" 
+                placeholder="e.g., Byrd House or 123 River Road"
+                required
+            >
+            <p class="form-help">This name will be used to save your progress locally</p>
+            <button type="submit" class="primary-button">Start Project</button>
+        `;
+    }
+    
+    // Check for existing project on page load
+    const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+    const currentProject = projects.length > 0 ? projects[projects.length - 1] : null;
+    
+    // Initialize the project form based on whether there's a current project
+    if (currentProject) {
+        updateFormToShowCurrentProject(currentProject.name);
+    } else {
+        resetProjectForm(); // Ensure the form is in its initial state
+    }
+    
+    // Function to show projects list
+    function showProjectsList() {
+        const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+        
+        // Remove any existing modal first
+        const existingModal = document.querySelector('.projects-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        const projectsModal = document.createElement('div');
+        projectsModal.className = 'projects-modal';
+        projectsModal.innerHTML = `
+            <div class="projects-modal-content">
+                <h3>Your Projects</h3>
+                <div class="projects-list">
+                    ${projects.length > 0 ? projects.map(project => `
+                        <div class="project-item">
+                            <span>${project.name}</span>
+                            <div class="project-actions">
+                                <button class="load-btn" data-project='${JSON.stringify(project)}'>Load</button>
+                                <button class="download-btn" data-project='${JSON.stringify(project)}'>Download</button>
+                                <button class="delete-btn" data-project-name="${project.name}">Delete</button>
+                            </div>
+                        </div>
+                    `).join('') : '<p>No projects yet. Create a new project to get started!</p>'}
+                </div>
+                <div class="import-section">
+                    <p>Import a previously saved project:</p>
+                    <input type="file" id="importFile" accept=".json">
+                </div>
+                <button class="close-modal-btn">Close</button>
+            </div>
+        `;
+        
+        document.body.appendChild(projectsModal);
+        
+        // Single event listener using event delegation
+        const modalContent = projectsModal.querySelector('.projects-modal-content');
+        modalContent.addEventListener('click', handleModalClick);
+        
+        // Handle file import
+        const importFile = projectsModal.querySelector('#importFile');
+        importFile.addEventListener('change', handleFileImport);
+    }
+    
+    // Separate function for modal click handling
+    function handleModalClick(e) {
+        const target = e.target;
+        
+        if (target.classList.contains('close-modal-btn')) {
+            const modal = document.querySelector('.projects-modal');
+            if (modal) {
+                // Remove event listener before removing modal
+                const modalContent = modal.querySelector('.projects-modal-content');
+                modalContent.removeEventListener('click', handleModalClick);
+                modal.remove();
+            }
+        }
+        
+        if (target.classList.contains('load-btn')) {
+            const project = JSON.parse(target.dataset.project);
+            loadProject(project);
+        }
+        
+        if (target.classList.contains('download-btn')) {
+            const project = JSON.parse(target.dataset.project);
+            downloadProject(project);
+        }
+        
+        if (target.classList.contains('delete-btn')) {
+            const projectName = target.dataset.projectName;
+            deleteProject(projectName);
+        }
+    }
+    
+    function loadProject(project) {
+        // Update the form to show the loaded project
+        updateFormToShowCurrentProject(project.name);
+        
+        // Show success message in the main form area
+        const successMessage = document.createElement('div');
+        successMessage.className = 'load-success-message';
+        successMessage.textContent = `Project "${project.name}" loaded successfully`;
+        
+        // Insert message after the current project display
+        const currentProject = document.querySelector('.current-project');
+        currentProject.appendChild(successMessage);
+        
+        // Delay modal removal to allow success message animation to complete
+        setTimeout(() => {
+            // Remove the modal
+            const projectsModal = document.querySelector('.projects-modal');
+            if (projectsModal) {
+                projectsModal.remove();
+            }
+        }, 100); // Small delay to ensure smooth transition
+        
+        // Remove success message after 3 seconds
+        setTimeout(() => {
+            successMessage.remove();
+        }, 3000);
+        
+        // Update localStorage to mark this as the most recent project
+        let projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+        // Move the loaded project to the end of the array (making it most recent)
+        projects = projects.filter(p => p.name !== project.name);
+        projects.push(project);
+        localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+        
+        // Optional: Scroll to top of page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function downloadProject(project) {
+        const dataStr = JSON.stringify(project, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = `${project.name.replace(/\s+/g, '_')}_panelwizard.json`;
+        downloadLink.click();
+        URL.revokeObjectURL(url);
+    }
+    
+    function deleteProject(projectName) {
+        // Show confirmation dialog
+        const confirmDelete = confirm(`Are you sure you want to delete the project "${projectName}"? Make sure you have downloaded a copy if you want to save it.`);
+        
+        if (confirmDelete) {
+            let projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+            projects = projects.filter(p => p.name !== projectName);
+            localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+            
+            // Show success message
+            const projectsModal = document.querySelector('.projects-modal');
+            const successMessage = document.createElement('div');
+            successMessage.className = 'delete-success-message';
+            successMessage.textContent = `Project "${projectName}" has been deleted`;
+            
+            // Insert message at the top of the modal content
+            const modalContent = projectsModal.querySelector('.projects-modal-content');
+            modalContent.insertBefore(successMessage, modalContent.firstChild);
+            
+            // Remove message after 3 seconds
+            setTimeout(() => {
+                successMessage.remove();
+            }, 3000);
+            
+            // If this was the current project, reset the form
+            const currentProjectElement = document.querySelector('.current-project .project-name');
+            if (currentProjectElement && currentProjectElement.textContent === projectName) {
+                resetProjectForm();
+            }
+            
+            // Refresh projects list
+            showProjectsList();
+        }
+    }
+    
+    function handleFileImport(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const project = JSON.parse(e.target.result);
+                    let projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+                    projects.push(project);
+                    localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+                    showProjectsList(); // Refresh the list
+                } catch (error) {
+                    alert('Invalid project file');
+                }
+            };
+            reader.readAsText(file);
+        }
+    }
 }); 
