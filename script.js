@@ -61,34 +61,74 @@ document.addEventListener('DOMContentLoaded', () => {
     // Project form handling
     const projectForm = document.getElementById('projectForm');
     
+    function validateProjectName(name) {
+        // Remove leading/trailing whitespace
+        const trimmedName = name.trim();
+        
+        // Basic validation rules
+        const rules = {
+            minLength: 3,
+            maxLength: 50,
+            // Allows letters, numbers, spaces, hyphens, and apostrophes
+            pattern: /^[a-zA-Z0-9\s\-']+$/,
+        };
+        
+        const errors = [];
+        
+        if (trimmedName.length < rules.minLength) {
+            errors.push(`Project name must be at least ${rules.minLength} characters long`);
+        }
+        
+        if (trimmedName.length > rules.maxLength) {
+            errors.push(`Project name must be no more than ${rules.maxLength} characters long`);
+        }
+        
+        if (!rules.pattern.test(trimmedName)) {
+            errors.push('Project name can only contain letters, numbers, spaces, hyphens, and apostrophes');
+        }
+        
+        return {
+            isValid: errors.length === 0,
+            errors,
+            sanitizedName: trimmedName
+        };
+    }
+
     projectForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
-        const projectName = document.getElementById('projectName').value.trim();
+        const projectNameInput = document.getElementById('projectName');
+        const projectName = projectNameInput.value;
+        
+        const validation = validateProjectName(projectName);
+        
+        if (!validation.isValid) {
+            // Show first error message
+            showError(validation.errors[0]);
+            return;
+        }
         
         // Check if project name already exists
         const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-        if (projects.some(p => p.name === projectName)) {
+        if (projects.some(p => p.name.toLowerCase() === validation.sanitizedName.toLowerCase())) {
             showError('A project with this name already exists. Please choose a different name.');
             return;
         }
         
-        if (projectName) {
-            // Create project data structure
-            const projectData = {
-                name: projectName,
-                dateCreated: new Date().toISOString(),
-                lastModified: new Date().toISOString(),
-                steps: {}
-            };
-            
-            // Save to projects list
-            projects.push(projectData);
-            localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
-            
-            // Update form to show current project
-            updateFormToShowCurrentProject(projectName);
-        }
+        // Create project with sanitized name
+        const projectData = {
+            name: validation.sanitizedName,
+            dateCreated: new Date().toISOString(),
+            lastModified: new Date().toISOString(),
+            steps: {}
+        };
+        
+        // Save to projects list
+        projects.push(projectData);
+        localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+        
+        // Update form to show current project
+        updateFormToShowCurrentProject(validation.sanitizedName);
     });
     
     function showError(message) {
@@ -99,10 +139,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-message';
         errorDiv.textContent = message;
-        projectForm.insertBefore(errorDiv, projectForm.querySelector('button'));
         
-        // Remove error after 3 seconds
-        setTimeout(() => errorDiv.remove(), 3000);
+        // Add a shake animation class
+        errorDiv.classList.add('shake');
+        
+        // Insert error before the submit button
+        const submitButton = projectForm.querySelector('button[type="submit"]');
+        projectForm.insertBefore(errorDiv, submitButton);
+        
+        // Remove error after 5 seconds
+        setTimeout(() => {
+            errorDiv.classList.add('fade-out');
+            setTimeout(() => errorDiv.remove(), 300); // Wait for fade animation
+        }, 5000);
     }
     
     function updateFormToShowCurrentProject(projectName) {

@@ -14,7 +14,7 @@ Examples of home electrification:
 All of these changes reduce the amount of fossil fuels used by the homeowner.
 
 # Development process
-We are going to build a modern software tool that helps US homeowners understand how to electrify their home using their existing electrical panel. The tool will run in any modern browser and be beautiful. We will use AWS Amplify to serve the tool to the public. We will use HTML + CSS + javascript formatted in separate code blocks and including introductory text. We will use dark mode as the default and it will be responsive and optimized for mobile devices but also desktop friendly. We will use opengraph meta tags for social sharing and viewport tags for optimal viewing. We will use the helvetica neue font, and use #ff7f00 highlights. All scroll elements will be thin and use dark mode.
+We are going to build a modern software tool that helps US homeowners understand how to electrify their home using their existing electrical panel. The tool will run in any modern browser and be beautiful. We will use AWS Amplify to serve the tool to the public. we will create a simple, modern, responsive app using vanilla HTML, CSS, and JavaScript formatted in separate code blocks and including introductory text to each section of these files. We will use dark mode as the default and it will be responsive and optimized for mobile devices but also desktop friendly. We will use opengraph meta tags for social sharing and viewport tags for optimal viewing. We will use the helvetica neue font, and use #ff7f00 highlights. All scroll elements will be thin and use dark mode.
 
 # Requirements:
 - Final requirement is Github open source project.
@@ -24,15 +24,15 @@ We are going to build a modern software tool that helps US homeowners understand
 - Tool will allow users to answer questions and see results.
 
 # Tool inputs from user:
-1. Required: Electric panel size, in Amps.
-2. Reqired: Used panel capacity over past year, either measured or estimated (?)
+1. Required: Current electric panel size, in Amps.
+2. Reqired: Used panel capacity over the past year, either measured or estimated (?)
 3. List of fossil devices to be electrified
-4. Device specific issues, like Minimum tonnage of HVAC needed, how many EV chargers, etc.
+4. Device specific issues, like Minimum tonnage of HVAC needed, EV charging speed, etc.
 5. Proximity to unused and used 240V circuits/outlets
 
 # Tool outputs for the user:
 - Remaining panel capacity before and after electrification
-- List of devices to be electrified
+- List of devices to be replaced and electrified
 - List of devices to be added
 
 # Local Development Setup
