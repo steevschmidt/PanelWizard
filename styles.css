@@ -172,6 +172,12 @@ h1 {
         transition: color 0.3s ease;
     }
 
+    /* Reduce spacing for dropdown items */
+    .nav-list .dropdown li a {
+        padding: 0.5rem 1.5rem;  /* Reduced from 1rem to 0.5rem */
+        margin: 0;               /* Removed margin */
+    }
+
     .has-dropdown .dropdown {
         position: static;
         box-shadow: none;
@@ -270,7 +276,8 @@ h1 {
     }
 
     .nav-list a {
-        padding: 0.8rem 1.5rem;
+        padding: 0.5rem 1.5rem;  /* Reduced padding */
+        margin: 0;               /* Removed margin */
         border-bottom: 1px solid rgba(255, 127, 0, 0.1);
     }
 
@@ -280,6 +287,12 @@ h1 {
 
     .dropdown li:last-child a {
         border-bottom: none;
+    }
+
+    /* Reduce spacing for dropdown items in mobile view */
+    .nav-list .dropdown li a {
+        padding: 0.5rem 1.5rem;  /* Reduced padding */
+        margin: 0;               /* Removed margin */
     }
 }
 
@@ -326,6 +339,18 @@ main {
 .step-content {
     padding: 2rem;
     margin-bottom: 3rem;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.step-content.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.step-content.completed {
+    opacity: 0.8;
+    pointer-events: auto;
 }
 
 .content-box {
@@ -645,4 +670,55 @@ main {
     list-style-type: none;  /* Removes bullet points */
     margin: 0.25rem 0;      /* Reduces vertical spacing between items */
     padding-left: 1.5rem;   /* Maintains indentation but removes default padding */
+}
+
+/* Navigation Status Styles */
+.nav-list a, 
+.nav-list .dropdown a {  /* Added dropdown selector */
+    opacity: 0.5;
+    pointer-events: none;
+    color: var(--text-color);  /* Ensure color is from theme */
+}
+
+.nav-list a.active,
+.nav-list .dropdown a.active {
+    opacity: 1;
+    pointer-events: auto;
+    color: #ff7f00;
+}
+
+.nav-list a.completed,
+.nav-list .dropdown a.completed {
+    opacity: 0.8;
+    pointer-events: auto;
+}
+
+/* Improve visibility in dark mode */
+@media (prefers-color-scheme: dark) {
+    .nav-list a, 
+    .nav-list .dropdown a {
+        opacity: 0.7;  /* Increased from 0.5 for better visibility */
+    }
+}
+
+/* Next Button Styles */
+.next-button {
+    background-color: #ff7f00;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    margin-top: 1.5rem;
+    cursor: pointer;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.next-button.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.next-button:hover {
+    background-color: #e67300;
 } 

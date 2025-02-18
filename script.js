@@ -103,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const validation = validateProjectName(projectName);
         
         if (!validation.isValid) {
-            // Show first error message
             showError(validation.errors[0]);
             return;
         }
@@ -129,6 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update form to show current project
         updateFormToShowCurrentProject(validation.sanitizedName);
+        
+        // Trigger step validation check
+        stepManager.checkStepCompletion();
     });
     
     function showError(message) {
@@ -375,4 +377,164 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.readAsText(file);
         }
     }
+
+    // Step Management System
+    const stepManager = {
+        currentStep: 1,
+        steps: {
+            1: {
+                id: 'step1',
+                isComplete: false,
+                nextStep: 2,
+                validateStep: () => {
+                    const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+                    return projects.length > 0;
+                }
+            },
+            2: {
+                id: 'step2',
+                isComplete: false,
+                nextStep: 3,
+                validateStep: () => {
+                    // Add validation logic for electrification goals
+                    return false; // TODO: Implement actual validation
+                }
+            },
+            3: {
+                id: 'step3',
+                isComplete: false,
+                nextStep: 4,
+                validateStep: () => {
+                    // Add validation logic for panel inventory
+                    return false; // TODO: Implement actual validation
+                }
+            },
+            4: {
+                id: 'step4',
+                isComplete: false,
+                nextStep: 5,
+                validateStep: () => {
+                    // Add validation logic for load analysis
+                    return false; // TODO: Implement actual validation
+                }
+            },
+            5: {
+                id: 'step6', // Note: ID is 'step6' due to original HTML structure
+                isComplete: false,
+                nextStep: null,
+                validateStep: () => {
+                    // Add validation logic for action plan
+                    return false; // TODO: Implement actual validation
+                }
+            }
+        },
+
+        initializeSteps() {
+            // Add next buttons to each step
+            Object.values(this.steps).forEach(step => {
+                const stepElement = document.getElementById(step.id);
+                const nextButton = document.createElement('button');
+                nextButton.className = 'next-button';
+                nextButton.textContent = step.nextStep ? 'Next' : 'Complete';
+                stepElement.appendChild(nextButton);
+
+                nextButton.addEventListener('click', () => this.completeStep(step.id));
+            });
+
+            // Initialize first step
+            this.activateStep(1);
+            this.updateNavigation();
+        },
+
+        activateStep(stepNumber) {
+            const step = this.steps[stepNumber];
+            if (!step) return;
+
+            // Update step visibility
+            Object.values(this.steps).forEach(s => {
+                const element = document.getElementById(s.id);
+                element.classList.remove('active');
+            });
+
+            const stepElement = document.getElementById(step.id);
+            stepElement.classList.add('active');
+            
+            // Update current step
+            this.currentStep = stepNumber;
+            this.updateNavigation();
+            this.checkStepCompletion();
+        },
+
+        completeStep(stepId) {
+            const stepNumber = Object.values(this.steps).findIndex(step => step.id === stepId) + 1;
+            const step = this.steps[stepNumber];
+            
+            if (step && step.validateStep()) {
+                step.isComplete = true;
+                document.getElementById(stepId).classList.add('completed');
+                
+                // Move to next step if available
+                if (step.nextStep) {
+                    this.activateStep(step.nextStep);
+                }
+                
+                this.updateNavigation();
+                this.saveProgress();
+            }
+        },
+
+        checkStepCompletion() {
+            const currentStep = this.steps[this.currentStep];
+            if (!currentStep) return;
+
+            const stepElement = document.getElementById(currentStep.id);
+            const nextButton = stepElement.querySelector('.next-button');
+            
+            if (currentStep.validateStep()) {
+                nextButton.classList.add('active');
+            } else {
+                nextButton.classList.remove('active');
+            }
+
+            // Force a re-render of the navigation
+            this.updateNavigation();
+        },
+
+        updateNavigation() {
+            // Update navigation menu items
+            Object.entries(this.steps).forEach(([number, step]) => {
+                const navLink = document.querySelector(`a[href="#${step.id}"]`);
+                if (!navLink) return;
+
+                navLink.classList.remove('active', 'completed');
+                
+                if (number == this.currentStep) {
+                    navLink.classList.add('active');
+                } else if (step.isComplete) {
+                    navLink.classList.add('completed');
+                }
+            });
+        },
+
+        saveProgress() {
+            const progress = {
+                currentStep: this.currentStep,
+                steps: this.steps
+            };
+            localStorage.setItem('stepProgress', JSON.stringify(progress));
+        },
+
+        loadProgress() {
+            const savedProgress = JSON.parse(localStorage.getItem('stepProgress'));
+            if (savedProgress) {
+                this.currentStep = savedProgress.currentStep;
+                this.steps = savedProgress.steps;
+                this.activateStep(this.currentStep);
+            }
+        }
+    };
+
+    // Initialize step management after DOM content is loaded
+    stepManager.initializeSteps();
+    stepManager.loadProgress();
 }); 
