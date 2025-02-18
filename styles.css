@@ -127,6 +127,26 @@ h1 {
     font-size: 1.2rem;
 }
 
+/* Reset Button Styles */
+.reset-button {
+    position: fixed;
+    top: 20px;
+    right: 80px; /* Position it to the left of theme toggle */
+    background: transparent;
+    border: 2px solid #f44336; /* Red border for warning */
+    color: #f44336;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.reset-button:hover {
+    background: #f44336;
+    color: var(--background-color);
+}
+
 /* Navigation Styles */
 .nav-menu {
     position: fixed;

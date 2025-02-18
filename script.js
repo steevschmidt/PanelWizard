@@ -537,4 +537,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize step management after DOM content is loaded
     stepManager.initializeSteps();
     stepManager.loadProgress();
+
+    // Add reset button
+    const resetButton = document.createElement('button');
+    resetButton.className = 'reset-button';
+    resetButton.textContent = 'Reset All Data';
+    resetButton.onclick = () => {
+        if (confirm('This will clear all saved data and reload the page. Are you sure?')) {
+            localStorage.clear();
+            location.reload();
+        }
+    };
+    document.body.appendChild(resetButton);
 }); 
