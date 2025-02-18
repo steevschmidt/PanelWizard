@@ -476,6 +476,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Move to next step if available
                 if (step.nextStep) {
                     this.activateStep(step.nextStep);
+                    
+                    // Scroll to the next step
+                    const nextStepElement = document.getElementById(this.steps[step.nextStep].id);
+                    if (nextStepElement) {
+                        nextStepElement.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                 }
                 
                 this.updateNavigation();
