@@ -114,13 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Create project with sanitized name
-        const projectData = {
-            name: validation.sanitizedName,
-            dateCreated: new Date().toISOString(),
-            lastModified: new Date().toISOString(),
-            steps: {}
-        };
+        // Create new project
+        const projectData = createProject(validation.sanitizedName);
         
         // Save to projects list
         projects.push(projectData);
@@ -362,19 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleFileImport(e) {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const project = JSON.parse(e.target.result);
-                    let projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-                    projects.push(project);
-                    localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
-                    showProjectsList(); // Refresh the list
-                } catch (error) {
-                    alert('Invalid project file');
-                }
-            };
-            reader.readAsText(file);
+            importProject(file);
         }
     }
 
@@ -396,8 +379,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 isComplete: false,
                 nextStep: 3,
                 validateStep: () => {
-                    // Add validation logic for electrification goals
-                    return false; // TODO: Implement actual validation
+                    const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+                    const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+                    
+                    if (checkedBoxes.length > 0) {
+                        // Get current project
+                        const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+                        const currentProject = projects.find(p => p.name === getCurrentProjectName());
+                        
+                        if (currentProject) {
+                            // Update project with selected appliances
+                            currentProject.steps.electrificationGoals = {
+                                selectedAppliances: checkedBoxes.map(cb => ({
+                                    type: cb.value,
+                                    label: cb.parentElement.querySelector('span').textContent
+                                }))
+                            };
+                            currentProject.lastModified = new Date().toISOString();
+                            
+                            // Save back to localStorage
+                            localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+                        }
+                    }
+                    
+                    return checkedBoxes.length > 0;
                 }
             },
             3: {
@@ -444,6 +449,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initialize first step
             this.activateStep(1);
             this.updateNavigation();
+
+            // Add checkbox change listeners for step 2
+            const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    this.checkStepCompletion();
+                });
+            });
         },
 
         activateStep(stepNumber) {
@@ -558,4 +571,84 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     document.body.appendChild(resetButton);
+
+    // Helper function to get current project name
+    function getCurrentProjectName() {
+        const currentProjectElement = document.querySelector('.current-project .project-name');
+        return currentProjectElement ? currentProjectElement.textContent : null;
+    }
+
+    // Make sure createProject function is defined before it's used
+    function createProject(projectName) {
+        return {
+            name: projectName,
+            dateCreated: new Date().toISOString(),
+            lastModified: new Date().toISOString(),
+            steps: {
+                projectInfo: {
+                    name: projectName
+                },
+                electrificationGoals: {
+                    selectedAppliances: []
+                }
+            },
+            version: "1.0"
+        };
+    }
+
+    // Update the import project function
+    function importProject(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const projectData = JSON.parse(e.target.result);
+                
+                // Validate project data
+                if (!projectData.name || !projectData.steps) {
+                    throw new Error('Invalid project file format');
+                }
+                
+                // Check if project name already exists
+                const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+                if (projects.some(p => p.name === projectData.name)) {
+                    if (!confirm(`A project named "${projectData.name}" already exists. Do you want to replace it?`)) {
+                        return;
+                    }
+                    // Remove existing project
+                    const index = projects.findIndex(p => p.name === projectData.name);
+                    if (index !== -1) {
+                        projects.splice(index, 1);
+                    }
+                }
+                
+                // Add the imported project
+                projects.push(projectData);
+                localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+                
+                // Update UI to show imported project
+                updateFormToShowCurrentProject(projectData.name);
+                
+                // Load saved electrification goals if they exist
+                if (projectData.steps.electrificationGoals && 
+                    projectData.steps.electrificationGoals.selectedAppliances) {
+                    const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => {
+                        // Check if this appliance was selected in the imported data
+                        const isSelected = projectData.steps.electrificationGoals.selectedAppliances
+                            .some(appliance => appliance.type === checkbox.value);
+                        checkbox.checked = isSelected;
+                    });
+                    
+                    // Trigger validation check to update Next button
+                    stepManager.checkStepCompletion();
+                }
+                
+                alert('Project imported successfully!');
+                
+            } catch (error) {
+                alert('Error importing project: ' + error.message);
+            }
+        };
+        reader.readAsText(file);
+    }
 }); 
