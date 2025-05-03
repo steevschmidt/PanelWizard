@@ -16,6 +16,10 @@
             <span class="theme-toggle-icon">🌙</span>
         </button>
         
+        <button id="reset-button" class="reset-button" aria-label="Reset all data">
+            Reset All Data
+        </button>
+        
         <nav class="nav-menu">
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span></span>
@@ -44,21 +48,40 @@
                 <div class="content-box">
                     <h3>Your Home Electrification Guide</h3>
                     <p>PanelWizard helps you plan your home's transition to all-electric by analyzing your electrical panel capacity and providing a customized upgrade strategy.</p>
-                    
+                    <p>It is being developed under a <a href="https://www.energizeinnovation.fund/projects/decision-tool-electrify-homes-limited-electrical-panel-capacity#tab-overview">grant</a> from the California Energy Commission.</p>
                     <div class="project-form">
-                        <h3>Name Your Project</h3>
-                        <p>Give your electrification project a name. This will help us save your progress as you work through the steps.</p>
-                        <form id="projectForm" class="form-group">
-                            <label for="projectName">Project Name:</label>
-                            <input 
-                                type="text" 
-                                id="projectName" 
-                                placeholder="e.g., Byrd House or 123 River Road"
-                                required
-                            >
-                            <p class="form-help">This name will be used to save your progress locally</p>
-                            <button type="submit" class="primary-button">Start Project</button>
-                        </form>
+                        <h3>Project Management</h3>
+                        <p>Choose whether to start a new project or open an existing one.</p>
+                        
+                        <div class="project-options">
+                            <div class="project-option new-project-option">
+                                <h4>Start a New Project</h4>
+                                <p>Create a new electrification project from scratch.</p>
+                                <form id="newProjectForm" class="form-group">
+                                    <label for="projectName">Project Name:</label>
+                                    <input 
+                                        type="text" 
+                                        id="projectName" 
+                                        placeholder="e.g., Byrd House or 123 River Road"
+                                        required
+                                    >
+                                    <p class="form-help">This name will be used to save your progress locally</p>
+                                    <button type="submit" class="primary-button">Create Project</button>
+                                </form>
+                            </div>
+
+                            <div class="project-option open-project-option">
+                                <h4>Open Existing Project</h4>
+                                <p>Continue working on a previously saved project.</p>
+                                <div class="form-group">
+                                    <button type="button" class="primary-button" id="openProjectBtn">Browse Projects</button>
+                                    <div class="import-section">
+                                        <p>Or import a project file:</p>
+                                        <input type="file" id="importFile" accept=".json">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -133,6 +156,14 @@
                         <li>Service connection type</li>
                     </ul>
                 </div>
+                <form class="checklist-form" autocomplete="off">
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="skipStep3" autocomplete="off">
+                            <span>Skip this step</span>
+                        </label>
+                    </div>
+                </form>
             </section>
 
             <section id="step4" class="step-content">
@@ -157,6 +188,14 @@
                         <li>Safety margins</li>
                     </ul>
                 </section>
+                <form class="checklist-form" autocomplete="off">
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="skipStep4" autocomplete="off">
+                            <span>Skip this step</span>
+                        </label>
+                    </div>
+                </form>
             </section>
 
             <section id="step6" class="step-content">
@@ -171,6 +210,14 @@
                         <li>Permit requirements</li>
                     </ul>
                 </div>
+                <form class="checklist-form" autocomplete="off">
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="skipStep6" autocomplete="off">
+                            <span>Skip this step</span>
+                        </label>
+                    </div>
+                </form>
             </section>
         </main>
     </div>

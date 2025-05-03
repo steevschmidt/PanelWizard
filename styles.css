@@ -1,9 +1,258 @@
+/* Base styles */
+:root {
+    --primary-color: #4CAF50;
+    --secondary-color: #2196F3;
+    --error-color: #f44336;
+    --success-color: #4CAF50;
+    --warning-color: #ff9800;
+    --text-primary: #121212;
+    --text-secondary: #666;
+    --background-primary: #ffffff;
+    --background-secondary: #f5f5f5;
+    --border-color: #ddd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+}
+
+[data-theme="dark"] {
+    --text-primary: #ffffff;
+    --text-secondary: #aaa;
+    --background-primary: #121212;
+    --background-secondary: #1e1e1e;
+    --border-color: #333;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* Layout */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+/* Navigation */
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li {
+    margin-bottom: 0.125rem;
+}
+
+.nav-list a {
+    display: block;
+    padding: 0.125rem 0.5rem;
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-list a:hover {
+    background-color: var(--hover-color);
+}
+
+.nav-list a.active {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.nav-list a.completed {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+/* Dropdown spacing */
+.nav-list .dropdown {
+    margin-top: 0.125rem;
+    margin-bottom: 0.125rem;
+    padding-left: 1rem;
+}
+
+.nav-list .dropdown li {
+    margin-bottom: 0.125rem;
+}
+
+.nav-list .dropdown li a {
+    padding: 0.125rem 0.5rem;
+    padding-left: 1rem;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    transition: border-color var(--transition-speed);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Buttons */
+button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+.primary-button {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.secondary-button {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.next-button {
+    background-color: var(--primary-color);
+    color: white;
+    margin-top: 1rem;
+}
+
+.next-button:not(.active) {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Steps */
+.step-content {
+    padding: 2rem;
+    background-color: var(--background-secondary);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    transition: opacity var(--transition-speed);
+}
+
+.step-content:not(.active):not(.completed) {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Project Form */
+.project-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.project-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.project-option {
+    padding: 2rem;
+    background-color: var(--background-secondary);
+    border-radius: 8px;
+    transition: transform var(--transition-speed);
+}
+
+.project-option:hover {
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .nav-list {
+        flex-direction: column;
+    }
+
+    .project-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
 /* Theme variables */
 :root[data-theme="dark"] {
     --background-color: #121212;
     --text-color: #ffffff;
     --scrollbar-track: #1a1a1a;
     --scrollbar-thumb: #333;
+    --link-color: #ff7f00;
+    --link-hover-color: #ff9f40;
 }
 
 :root[data-theme="light"] {
@@ -11,6 +260,8 @@
     --text-color: #121212;
     --scrollbar-track: #f1f1f1;
     --scrollbar-thumb: #888;
+    --link-color: #ff7f00;
+    --link-hover-color: #e67300;
 }
 
 /* Reset and base styles */
@@ -118,33 +369,23 @@ h1 {
     z-index: 1000;
 }
 
-.theme-toggle:hover {
-    background: #ff7f00;
-    color: var(--background-color);
-}
-
-.theme-toggle-icon {
-    font-size: 1.2rem;
-}
-
-/* Reset Button Styles */
-.reset-button {
-    position: fixed;
-    top: 20px;
-    right: 80px; /* Position it to the left of theme toggle */
-    background: transparent;
-    border: 2px solid #f44336; /* Red border for warning */
-    color: #f44336;
-    padding: 10px;
-    border-radius: 4px;
+/* Mobile Navigation Toggle Button */
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    padding: 1rem;
     cursor: pointer;
-    z-index: 1000;
-    transition: all 0.3s ease;
+    z-index: 1001;
 }
 
-.reset-button:hover {
-    background: #f44336;
-    color: var(--background-color);
+.nav-toggle span {
+    display: block;
+    width: 25px;
+    height: 2px;
+    background-color: var(--text-color);
+    margin: 5px 0;
+    transition: 0.3s;
 }
 
 /* Navigation Styles */
@@ -156,11 +397,50 @@ h1 {
 }
 
 .nav-list {
-    list-style: none;  /* Remove bullets from main nav list */
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
+.nav-list li {
+    margin-bottom: 0.5rem;
+}
+
+.nav-list a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-list a:hover {
+    background-color: var(--hover-color);
+}
+
+.nav-list a.active {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.nav-list a.completed {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+/* Adjust dropdown spacing */
 .nav-list .dropdown {
-    list-style: none;  /* Remove bullets from dropdown */
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.nav-list .dropdown li {
+    margin-bottom: 0.25rem;
+}
+
+.nav-list .dropdown li a {
+    padding: 0.5rem 1.5rem;
 }
 
 /* Desktop Navigation */
@@ -170,7 +450,7 @@ h1 {
         left: 0;
         height: 100vh;
         width: 250px;
-        padding-top: 60px; /* Space for theme toggle */
+        padding-top: 60px;
     }
 
     .nav-list {
@@ -186,16 +466,11 @@ h1 {
     .nav-list a {
         padding: 1rem 1.5rem;
         margin: 0.5rem 0;
-        display: block;
-        color: var(--text-color);
-        text-decoration: none;
-        transition: color 0.3s ease;
     }
 
-    /* Reduce spacing for dropdown items */
     .nav-list .dropdown li a {
-        padding: 0.5rem 1.5rem;  /* Reduced from 1rem to 0.5rem */
-        margin: 0;               /* Removed margin */
+        padding: 0.5rem 1.5rem;
+        margin: 0;
     }
 
     .has-dropdown .dropdown {
@@ -210,13 +485,11 @@ h1 {
         border-left: 3px solid #ff7f00;
     }
 
-    /* Main content adjustment */
     .container {
         margin-left: 250px;
         width: calc(100% - 250px);
     }
 
-    /* Theme toggle adjustment */
     .theme-toggle {
         left: 20px;
         top: 20px;
@@ -224,43 +497,15 @@ h1 {
     }
 }
 
-/* Mobile Navigation Toggle Button */
-.nav-toggle {
-    display: none;
-    background: none;
-    border: none;
-    padding: 1rem;
-    cursor: pointer;
-    z-index: 1001; /* Ensure it's above other elements */
-}
-
-.nav-toggle span {
-    display: block;
-    width: 25px;
-    height: 2px;
-    background-color: var(--text-color); /* Use theme color */
-    margin: 5px 0;
-    transition: 0.3s;
-}
-
-/* Mobile styles */
+/* Mobile Navigation */
 @media (max-width: 768px) {
-    .nav-menu {
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: auto;
-        padding: 0.5rem;
-    }
-
     .nav-toggle {
         display: block;
-        position: fixed; /* Change to fixed */
+        position: fixed;
         top: 15px;
         left: 15px;
     }
 
-    /* Hamburger menu active state */
     .nav-toggle.active span:nth-child(1) {
         transform: rotate(45deg) translate(5px, 5px);
     }
@@ -271,6 +516,14 @@ h1 {
 
     .nav-toggle.active span:nth-child(3) {
         transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .nav-menu {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        padding: 0.5rem;
     }
 
     .nav-list {
@@ -296,8 +549,8 @@ h1 {
     }
 
     .nav-list a {
-        padding: 0.5rem 1.5rem;  /* Reduced padding */
-        margin: 0;               /* Removed margin */
+        padding: 0.5rem 1.5rem;
+        margin: 0;
         border-bottom: 1px solid rgba(255, 127, 0, 0.1);
     }
 
@@ -309,14 +562,13 @@ h1 {
         border-bottom: none;
     }
 
-    /* Reduce spacing for dropdown items in mobile view */
     .nav-list .dropdown li a {
-        padding: 0.5rem 1.5rem;  /* Reduced padding */
-        margin: 0;               /* Removed margin */
+        padding: 0.5rem 1.5rem;
+        margin: 0;
     }
 }
 
-/* Scrollbar styles for nav menu */
+/* Scrollbar styles */
 .nav-list::-webkit-scrollbar {
     width: 4px;
 }
@@ -361,6 +613,7 @@ main {
     margin-bottom: 3rem;
     opacity: 0.5;
     pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
 .step-content.active {
@@ -450,6 +703,48 @@ main {
     margin-top: 2rem;
     padding-top: 2rem;
     border-top: 1px solid rgba(255, 127, 0, 0.2);
+}
+
+.project-options {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.project-option {
+    flex: 1;
+    padding: 1.5rem;
+    background-color: var(--background-color);
+    border: 1px solid rgba(255, 127, 0, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.project-option h4 {
+    color: #ff7f00;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+}
+
+.project-option p {
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.project-option .form-group {
+    margin-top: 1rem;
+}
+
+/* Responsive adjustments for project options */
+@media (max-width: 768px) {
+    .project-options {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .project-option {
+        padding: 1rem;
+    }
 }
 
 .form-group {
@@ -693,30 +988,27 @@ main {
 }
 
 /* Navigation Status Styles */
-.nav-list a, 
-.nav-list .dropdown a {  /* Added dropdown selector */
+.nav-list a {
     opacity: 0.5;
     pointer-events: none;
-    color: var(--text-color);  /* Ensure color is from theme */
+    color: var(--text-color);
+    transition: opacity 0.3s ease;
 }
 
-.nav-list a.active,
-.nav-list .dropdown a.active {
+.nav-list a.active {
     opacity: 1;
     pointer-events: auto;
     color: #ff7f00;
 }
 
-.nav-list a.completed,
-.nav-list .dropdown a.completed {
+.nav-list a.completed {
     opacity: 0.8;
     pointer-events: auto;
 }
 
 /* Improve visibility in dark mode */
 @media (prefers-color-scheme: dark) {
-    .nav-list a, 
-    .nav-list .dropdown a {
+    .nav-list a {
         opacity: 0.7;  /* Increased from 0.5 for better visibility */
     }
 }
@@ -732,6 +1024,7 @@ main {
     cursor: pointer;
     opacity: 0.5;
     pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
 .next-button.active {
@@ -845,4 +1138,16 @@ main {
         transform: translateX(-50%);
         border-color: transparent transparent var(--text-color) transparent;
     }
+}
+
+/* Link styles */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--link-hover-color);
+    text-decoration: underline;
 } 

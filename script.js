@@ -1,66 +1,149 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Wrap everything in an IIFE to avoid global scope pollution
+(function() {
+    console.log('Script loading...');
+
+    // Theme handling
     const themeToggle = document.getElementById('theme-toggle');
     const themeToggleIcon = themeToggle.querySelector('.theme-toggle-icon');
     
     // Check for saved theme preference, otherwise use dark theme
     const savedTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggleIcon.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
+    console.log('Theme system initialized');
+    console.log('Current theme:', savedTheme);
 
     // Theme toggle functionality
     themeToggle.addEventListener('click', () => {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeToggleIcon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
     });
 
-    // Function to set theme
-    function setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        updateIcon(theme);
-    }
+    // Reset button functionality
+    const resetButton = document.getElementById('reset-button');
+    resetButton.addEventListener('click', () => {
+        if (confirm('This will clear all saved data and reload the page. Are you sure?')) {
+            localStorage.clear();
+            location.reload();
+        }
+    });
 
-    // Update icon based on theme
-    function updateIcon(theme) {
-        themeToggleIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
-    }
-
-    // Log for debugging
-    console.log('Theme system initialized');
-    console.log('Current theme:', savedTheme);
-
-    // Navigation Toggle
+    // Navigation toggle functionality
     const navToggle = document.querySelector('.nav-toggle');
     const navList = document.querySelector('.nav-list');
     
     navToggle.addEventListener('click', () => {
         navList.classList.toggle('active');
         navToggle.classList.toggle('active');
-        // Prevent body scrolling when menu is open
-        document.body.style.overflow = navList.classList.contains('active') ? 'hidden' : '';
-    });
-
-    // Close mobile menu when clicking a link
-    document.querySelectorAll('.nav-list a').forEach(link => {
-        link.addEventListener('click', () => {
-            navList.classList.remove('active');
-            navToggle.classList.remove('active');
-            document.body.style.overflow = '';
-        });
-    });
-
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!navToggle.contains(e.target) && !navList.contains(e.target)) {
-            navList.classList.remove('active');
-            navToggle.classList.remove('active');
-            document.body.style.overflow = '';
-        }
     });
 
     // Project form handling
-    const projectForm = document.getElementById('projectForm');
-    
+    const newProjectForm = document.getElementById('newProjectForm');
+    const openProjectBtn = document.getElementById('openProjectBtn');
+    const importFile = document.getElementById('importFile');
+
+    if (newProjectForm) {
+        newProjectForm.addEventListener('submit', handleNewProject);
+        console.log('Project form initialized');
+    }
+
+    if (openProjectBtn) {
+        openProjectBtn.addEventListener('click', showProjectsList);
+        console.log('Open project button initialized');
+    }
+
+    if (importFile) {
+        importFile.addEventListener('change', handleFileImport);
+        console.log('File import initialized');
+    }
+
+    // Initialize step 1
+    const step1 = document.getElementById('step1');
+    if (step1) {
+        step1.classList.add('active');
+        step1.style.opacity = '1';
+        step1.style.pointerEvents = 'auto';
+        console.log('Step 1 activated');
+    }
+
+    // Initialize navigation
+    const step1Link = document.querySelector('.nav-list a[href="#step1"]');
+    if (step1Link) {
+        step1Link.classList.add('active');
+        console.log('Step 1 navigation activated');
+    }
+
+    // Add event listeners for step 2 checkboxes
+    const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            stepManager.checkStepCompletion();
+        });
+    });
+
+    console.log('Initialization complete');
+
+    // Project handling functions
+    function handleNewProject(e) {
+        e.preventDefault();
+        
+        const projectNameInput = document.getElementById('projectName');
+        const projectName = projectNameInput.value;
+        
+        const validation = validateProjectName(projectName);
+        
+        if (!validation.isValid) {
+            showError(validation.errors[0]);
+            return;
+        }
+        
+        // Check if project name already exists
+        const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+        if (projects.some(p => p.name.toLowerCase() === validation.sanitizedName.toLowerCase())) {
+            showError('A project with this name already exists. Please choose a different name.');
+            return;
+        }
+        
+        // Create new project
+        const projectData = createProject(validation.sanitizedName);
+        
+        // Save to projects list
+        projects.push(projectData);
+        localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+        
+        // Update form to show current project
+        updateFormToShowCurrentProject(validation.sanitizedName);
+        
+        // Add Next button to step 1
+        const step1 = document.getElementById('step1');
+        if (step1) {
+            // Remove existing next button if it exists
+            const existingButton = step1.querySelector('.next-button');
+            if (existingButton) {
+                existingButton.remove();
+            }
+            
+            const nextButton = document.createElement('button');
+            nextButton.className = 'next-button active';
+            nextButton.textContent = 'Next';
+            step1.appendChild(nextButton);
+
+            nextButton.addEventListener('click', () => {
+                stepManager.completeStep('step1');
+                stepManager.activateStep(2);
+            });
+        }
+        
+        // Update step completion status
+        stepManager.steps[1].isComplete = true;
+        stepManager.updateNavigation();
+    }
+
+    // Function to validate project name
     function validateProjectName(name) {
         // Remove leading/trailing whitespace
         const trimmedName = name.trim();
@@ -94,119 +177,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    projectForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const projectNameInput = document.getElementById('projectName');
-        const projectName = projectNameInput.value;
-        
-        const validation = validateProjectName(projectName);
-        
-        if (!validation.isValid) {
-            showError(validation.errors[0]);
-            return;
-        }
-        
-        // Check if project name already exists
-        const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-        if (projects.some(p => p.name.toLowerCase() === validation.sanitizedName.toLowerCase())) {
-            showError('A project with this name already exists. Please choose a different name.');
-            return;
-        }
-        
-        // Create new project
-        const projectData = createProject(validation.sanitizedName);
-        
-        // Save to projects list
-        projects.push(projectData);
-        localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
-        
-        // Update form to show current project
-        updateFormToShowCurrentProject(validation.sanitizedName);
-        
-        // Trigger step validation check
-        stepManager.checkStepCompletion();
-    });
-    
-    function showError(message) {
-        // Remove any existing error message
-        const existingError = document.querySelector('.error-message');
-        if (existingError) existingError.remove();
-        
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
-        
-        // Add a shake animation class
-        errorDiv.classList.add('shake');
-        
-        // Insert error before the submit button
-        const submitButton = projectForm.querySelector('button[type="submit"]');
-        projectForm.insertBefore(errorDiv, submitButton);
-        
-        // Remove error after 5 seconds
-        setTimeout(() => {
-            errorDiv.classList.add('fade-out');
-            setTimeout(() => errorDiv.remove(), 300); // Wait for fade animation
-        }, 5000);
-    }
-    
-    function updateFormToShowCurrentProject(projectName) {
-        // Clear the form and show current project info
-        projectForm.innerHTML = `
-            <div class="current-project">
-                <h4>Current Project:</h4>
-                <p class="project-name">${projectName}</p>
-                <div class="project-actions">
-                    <button type="button" class="secondary-button view-projects-btn">View All Projects</button>
-                    <button type="button" class="secondary-button new-project-btn">Start New Project</button>
-                </div>
-            </div>
-        `;
-        
-        // Add event listeners to new buttons
-        projectForm.querySelector('.view-projects-btn').addEventListener('click', showProjectsList);
-        projectForm.querySelector('.new-project-btn').addEventListener('click', resetProjectForm);
-    }
-    
-    function resetProjectForm() {
-        projectForm.innerHTML = `
-            <label for="projectName">Project Name:</label>
-            <input 
-                type="text" 
-                id="projectName" 
-                placeholder="e.g., Byrd House or 123 River Road"
-                required
-            >
-            <p class="form-help">This name will be used to save your progress locally</p>
-            <button type="submit" class="primary-button">Start Project</button>
-        `;
-    }
-    
-    // Check for existing project on page load
-    const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-    const currentProject = projects.length > 0 ? projects[projects.length - 1] : null;
-    
-    // Initialize the project form based on whether there's a current project
-    if (currentProject) {
-        updateFormToShowCurrentProject(currentProject.name);
-    } else {
-        resetProjectForm(); // Ensure the form is in its initial state
-    }
-    
     // Function to show projects list
     function showProjectsList() {
         const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
         
-        // Remove any existing modal first
-        const existingModal = document.querySelector('.projects-modal');
-        if (existingModal) {
-            existingModal.remove();
-        }
-        
-        const projectsModal = document.createElement('div');
-        projectsModal.className = 'projects-modal';
-        projectsModal.innerHTML = `
+        // Create modal for projects list
+        const modal = document.createElement('div');
+        modal.className = 'projects-modal';
+        modal.innerHTML = `
             <div class="projects-modal-content">
                 <h3>Your Projects</h3>
                 <div class="projects-list">
@@ -221,91 +199,65 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `).join('') : '<p>No projects yet. Create a new project to get started!</p>'}
                 </div>
-                <div class="import-section">
-                    <p>Import a previously saved project:</p>
-                    <input type="file" id="importFile" accept=".json">
-                </div>
                 <button class="close-modal-btn">Close</button>
             </div>
         `;
         
-        document.body.appendChild(projectsModal);
+        document.body.appendChild(modal);
         
-        // Single event listener using event delegation
-        const modalContent = projectsModal.querySelector('.projects-modal-content');
-        modalContent.addEventListener('click', handleModalClick);
+        // Add event listeners
+        modal.querySelector('.close-modal-btn').addEventListener('click', () => modal.remove());
         
-        // Handle file import
-        const importFile = projectsModal.querySelector('#importFile');
-        importFile.addEventListener('change', handleFileImport);
-    }
-    
-    // Separate function for modal click handling
-    function handleModalClick(e) {
-        const target = e.target;
-        
-        if (target.classList.contains('close-modal-btn')) {
-            const modal = document.querySelector('.projects-modal');
-            if (modal) {
-                // Remove event listener before removing modal
-                const modalContent = modal.querySelector('.projects-modal-content');
-                modalContent.removeEventListener('click', handleModalClick);
+        // Handle project loading
+        modal.querySelectorAll('.load-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const project = JSON.parse(btn.dataset.project);
+                loadProject(project);
                 modal.remove();
-            }
-        }
-        
-        if (target.classList.contains('load-btn')) {
-            const project = JSON.parse(target.dataset.project);
-            loadProject(project);
-        }
-        
-        if (target.classList.contains('download-btn')) {
-            const project = JSON.parse(target.dataset.project);
-            downloadProject(project);
-        }
-        
-        if (target.classList.contains('delete-btn')) {
-            const projectName = target.dataset.projectName;
-            deleteProject(projectName);
-        }
+            });
+        });
     }
     
     function loadProject(project) {
         // Update the form to show the loaded project
         updateFormToShowCurrentProject(project.name);
         
-        // Show success message in the main form area
-        const successMessage = document.createElement('div');
-        successMessage.className = 'load-success-message';
-        successMessage.textContent = `Project "${project.name}" loaded successfully`;
-        
-        // Insert message after the current project display
-        const currentProject = document.querySelector('.current-project');
-        currentProject.appendChild(successMessage);
-        
-        // Delay modal removal to allow success message animation to complete
-        setTimeout(() => {
-            // Remove the modal
-            const projectsModal = document.querySelector('.projects-modal');
-            if (projectsModal) {
-                projectsModal.remove();
+        // Add Next button to step 1
+        const step1 = document.getElementById('step1');
+        if (step1) {
+            // Remove existing next button if it exists
+            const existingButton = step1.querySelector('.next-button');
+            if (existingButton) {
+                existingButton.remove();
             }
-        }, 100); // Small delay to ensure smooth transition
+            
+            const nextButton = document.createElement('button');
+            nextButton.className = 'next-button active';
+            nextButton.textContent = 'Next';
+            step1.appendChild(nextButton);
+
+            nextButton.addEventListener('click', () => {
+                stepManager.completeStep('step1');
+            });
+        }
         
-        // Remove success message after 3 seconds
-        setTimeout(() => {
-            successMessage.remove();
-        }, 3000);
-        
-        // Update localStorage to mark this as the most recent project
-        let projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-        // Move the loaded project to the end of the array (making it most recent)
-        projects = projects.filter(p => p.name !== project.name);
-        projects.push(project);
-        localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
-        
-        // Optional: Scroll to top of page
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Update step completion status
+        stepManager.steps[1].isComplete = true;
+        stepManager.updateNavigation();
+
+        // Load saved electrification goals if they exist
+        if (project.steps.electrificationGoals && 
+            project.steps.electrificationGoals.selectedAppliances) {
+            const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                const isSelected = project.steps.electrificationGoals.selectedAppliances
+                    .some(appliance => appliance.type === checkbox.value);
+                checkbox.checked = isSelected;
+            });
+            
+            // Update step 2 completion status
+            stepManager.checkStepCompletion();
+        }
     }
     
     function downloadProject(project) {
@@ -362,174 +314,221 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Step Management System
-    const stepManager = {
+    const StepManager = {
         currentStep: 1,
-        steps: {
-            1: {
-                id: 'step1',
-                isComplete: false,
-                nextStep: 2,
-                validateStep: () => {
-                    const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-                    return projects.length > 0;
-                }
-            },
-            2: {
-                id: 'step2',
-                isComplete: false,
-                nextStep: 3,
-                validateStep: () => {
-                    const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
-                    const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
-                    
-                    if (checkedBoxes.length > 0) {
-                        // Get current project
+        steps: {},
+
+        init() {
+            this.defineSteps();
+            this.initializeSteps();
+            this.setupEventListeners();
+            this.loadProgress();
+        },
+
+        defineSteps() {
+            console.log('Defining steps...');
+            this.steps = {
+                1: this.createStep({
+                    id: 'step1',
+                    nextStep: 2,
+                    validate: () => {
                         const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-                        const currentProject = projects.find(p => p.name === getCurrentProjectName());
-                        
-                        if (currentProject) {
-                            // Update project with selected appliances
-                            currentProject.steps.electrificationGoals = {
-                                selectedAppliances: checkedBoxes.map(cb => ({
-                                    type: cb.value,
-                                    label: cb.parentElement.querySelector('span').textContent
-                                }))
-                            };
-                            currentProject.lastModified = new Date().toISOString();
-                            
-                            // Save back to localStorage
-                            localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
-                        }
+                        console.log('Validating step 1, projects:', projects);
+                        return projects.length > 0;
                     }
+                }),
+                2: this.createStep({
+                    id: 'step2',
+                    nextStep: 3,
+                    validate: () => {
+                        const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+                        const isChecked = Array.from(checkboxes).some(cb => cb.checked);
+                        console.log('Validating step 2, any checkbox checked:', isChecked);
+                        return isChecked;
+                    }
+                }),
+                3: this.createStep({
+                    id: 'step3',
+                    nextStep: 4,
+                    validate: () => {
+                        const skipCheckbox = document.querySelector('#step3 input[type="checkbox"]');
+                        return skipCheckbox ? skipCheckbox.checked : false;
+                    }
+                }),
+                4: this.createStep({
+                    id: 'step4',
+                    nextStep: 5,
+                    validate: () => {
+                        const skipCheckbox = document.querySelector('#step4 input[type="checkbox"]');
+                        return skipCheckbox ? skipCheckbox.checked : false;
+                    }
+                }),
+                5: this.createStep({
+                    id: 'step6',  // This is the final step in the HTML
+                    nextStep: null,
+                    validate: () => {
+                        const skipCheckbox = document.querySelector('#step6 input[type="checkbox"]');
+                        return skipCheckbox ? skipCheckbox.checked : false;
+                    }
+                })
+            };
+            console.log('Steps defined:', this.steps);
+        },
+
+        createStep({ id, nextStep, validate }) {
+            return {
+                id,
+                nextStep,
+                isComplete: false,
+                validateStep: validate,
+                element: document.getElementById(id),
+                getNextButton() {
+                    return this.element?.querySelector('.next-button');
+                },
+                createNextButton() {
+                    if (!this.element) return null;
                     
-                    return checkedBoxes.length > 0;
+                    const existingButton = this.getNextButton();
+                    if (existingButton) return existingButton;
+                    
+                    const button = document.createElement('button');
+                    button.className = 'next-button';
+                    button.textContent = this.nextStep ? 'Next' : 'Complete';
+                    this.element.appendChild(button);
+                    
+                    return button;
                 }
-            },
-            3: {
-                id: 'step3',
-                isComplete: false,
-                nextStep: 4,
-                validateStep: () => {
-                    // Add validation logic for panel inventory
-                    return false; // TODO: Implement actual validation
-                }
-            },
-            4: {
-                id: 'step4',
-                isComplete: false,
-                nextStep: 5,
-                validateStep: () => {
-                    // Add validation logic for load analysis
-                    return false; // TODO: Implement actual validation
-                }
-            },
-            5: {
-                id: 'step6', // Note: ID is 'step6' due to original HTML structure
-                isComplete: false,
-                nextStep: null,
-                validateStep: () => {
-                    // Add validation logic for action plan
-                    return false; // TODO: Implement actual validation
-                }
-            }
+            };
         },
 
         initializeSteps() {
-            // Add next buttons to each step
             Object.values(this.steps).forEach(step => {
-                const stepElement = document.getElementById(step.id);
-                const nextButton = document.createElement('button');
-                nextButton.className = 'next-button';
-                nextButton.textContent = step.nextStep ? 'Next' : 'Complete';
-                stepElement.appendChild(nextButton);
-
-                nextButton.addEventListener('click', () => this.completeStep(step.id));
+                if (step.element) {
+                    step.createNextButton();
+                    step.element.classList.remove('active', 'completed');
+                    step.element.style.opacity = '0.5';
+                    step.element.style.pointerEvents = 'none';
+                }
             });
 
-            // Initialize first step
             this.activateStep(1);
-            this.updateNavigation();
+        },
 
-            // Add checkbox change listeners for step 2
+        setupEventListeners() {
+            // Step 2 checkbox listeners
             const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    this.checkStepCompletion();
+                checkbox.addEventListener('change', () => this.checkStepCompletion());
+            });
+
+            // Skip step checkbox listeners
+            const skipCheckboxes = document.querySelectorAll('input[name^="skipStep"]');
+            skipCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => this.checkStepCompletion());
+            });
+
+            // Navigation listeners
+            document.querySelectorAll('.nav-list a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const stepId = link.getAttribute('href').slice(1);
+                    const stepNumber = Object.values(this.steps).findIndex(s => s.id === stepId) + 1;
+                    if (stepNumber) this.activateStep(stepNumber);
                 });
             });
         },
 
         activateStep(stepNumber) {
+            console.log('activateStep called with stepNumber:', stepNumber);
             const step = this.steps[stepNumber];
+            console.log('Found step:', step);
             if (!step) return;
 
-            // Update step visibility
             Object.values(this.steps).forEach(s => {
-                const element = document.getElementById(s.id);
-                element.classList.remove('active');
+                if (s.element) {
+                    console.log('Processing step element:', s.id);
+                    if (s.id === step.id) {
+                        console.log('Activating step:', s.id);
+                        s.element.classList.add('active');
+                        s.element.style.opacity = '1';
+                        s.element.style.pointerEvents = 'auto';
+                    } else if (s.isComplete) {
+                        console.log('Marking step as completed:', s.id);
+                        s.element.classList.add('completed');
+                        s.element.style.opacity = '0.8';
+                        s.element.style.pointerEvents = 'auto';
+                    } else {
+                        console.log('Deactivating step:', s.id);
+                        s.element.classList.remove('active', 'completed');
+                        s.element.style.opacity = '0.5';
+                        s.element.style.pointerEvents = 'none';
+                    }
+                }
             });
 
-            const stepElement = document.getElementById(step.id);
-            stepElement.classList.add('active');
-            
-            // Update current step
             this.currentStep = stepNumber;
             this.updateNavigation();
             this.checkStepCompletion();
         },
 
-        completeStep(stepId) {
-            const stepNumber = Object.values(this.steps).findIndex(step => step.id === stepId) + 1;
-            const step = this.steps[stepNumber];
-            
-            if (step && step.validateStep()) {
-                step.isComplete = true;
-                document.getElementById(stepId).classList.add('completed');
-                
-                // Move to next step if available
-                if (step.nextStep) {
-                    this.activateStep(step.nextStep);
-                    
-                    // Scroll to the next step
-                    const nextStepElement = document.getElementById(this.steps[step.nextStep].id);
-                    if (nextStepElement) {
-                        nextStepElement.scrollIntoView({ 
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                }
-                
-                this.updateNavigation();
-                this.saveProgress();
-            }
-        },
-
         checkStepCompletion() {
-            const currentStep = this.steps[this.currentStep];
-            if (!currentStep) return;
+            const step = this.steps[this.currentStep];
+            if (!step || !step.element) return;
 
-            const stepElement = document.getElementById(currentStep.id);
-            const nextButton = stepElement.querySelector('.next-button');
-            
-            if (currentStep.validateStep()) {
+            const nextButton = step.getNextButton() || step.createNextButton();
+            if (!nextButton) return;
+
+            const isValid = step.validateStep();
+            console.log(`Step ${step.id} validation result:`, isValid);
+
+            if (isValid) {
                 nextButton.classList.add('active');
+                step.isComplete = true;
+                nextButton.onclick = () => this.completeStep(step.id);
             } else {
                 nextButton.classList.remove('active');
+                step.isComplete = false;
+                nextButton.onclick = null;
             }
 
-            // Force a re-render of the navigation
             this.updateNavigation();
         },
 
+        completeStep(stepId) {
+            console.log('completeStep called with stepId:', stepId);
+            const step = Object.values(this.steps).find(s => s.id === stepId);
+            console.log('Found step:', step);
+            if (!step) return;
+
+            step.isComplete = true;
+            console.log('Step marked as complete');
+            if (step.element) {
+                step.element.classList.add('completed');
+                console.log('Added completed class to step element');
+            }
+
+            if (step.nextStep) {
+                console.log('Moving to next step:', step.nextStep);
+                this.activateStep(step.nextStep);
+                const nextStep = this.steps[step.nextStep];
+                if (nextStep && nextStep.element) {
+                    nextStep.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                console.log('Final step completed');
+                // Handle final step completion if needed
+            }
+
+            this.updateNavigation();
+            this.saveProgress();
+        },
+
         updateNavigation() {
-            // Update navigation menu items
             Object.entries(this.steps).forEach(([number, step]) => {
                 const navLink = document.querySelector(`a[href="#${step.id}"]`);
                 if (!navLink) return;
 
                 navLink.classList.remove('active', 'completed');
-                
                 if (number == this.currentStep) {
                     navLink.classList.add('active');
                 } else if (step.isComplete) {
@@ -541,7 +540,10 @@ document.addEventListener('DOMContentLoaded', () => {
         saveProgress() {
             const progress = {
                 currentStep: this.currentStep,
-                steps: this.steps
+                steps: Object.entries(this.steps).reduce((acc, [key, step]) => {
+                    acc[key] = { isComplete: step.isComplete };
+                    return acc;
+                }, {})
             };
             localStorage.setItem('stepProgress', JSON.stringify(progress));
         },
@@ -550,27 +552,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const savedProgress = JSON.parse(localStorage.getItem('stepProgress'));
             if (savedProgress) {
                 this.currentStep = savedProgress.currentStep;
-                this.steps = savedProgress.steps;
+                Object.entries(savedProgress.steps).forEach(([key, data]) => {
+                    if (this.steps[key]) {
+                        this.steps[key].isComplete = data.isComplete;
+                    }
+                });
                 this.activateStep(this.currentStep);
             }
         }
     };
 
-    // Initialize step management after DOM content is loaded
-    stepManager.initializeSteps();
-    stepManager.loadProgress();
+    // Create global stepManager variable after StepManager is defined
+    const stepManager = StepManager;
 
-    // Add reset button
-    const resetButton = document.createElement('button');
-    resetButton.className = 'reset-button';
-    resetButton.textContent = 'Reset All Data';
-    resetButton.onclick = () => {
-        if (confirm('This will clear all saved data and reload the page. Are you sure?')) {
-            localStorage.clear();
-            location.reload();
-        }
-    };
-    document.body.appendChild(resetButton);
+    // Initialize StepManager after it's defined
+    StepManager.init();
 
     // Helper function to get current project name
     function getCurrentProjectName() {
@@ -579,14 +575,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Make sure createProject function is defined before it's used
-    function createProject(projectName) {
+    function createProject(name) {
         return {
-            name: projectName,
+            name: name,
             dateCreated: new Date().toISOString(),
             lastModified: new Date().toISOString(),
             steps: {
                 projectInfo: {
-                    name: projectName
+                    name: name
                 },
                 electrificationGoals: {
                     selectedAppliances: []
@@ -651,4 +647,66 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         reader.readAsText(file);
     }
-}); 
+
+    function updateFormToShowCurrentProject(projectName) {
+        // Clear the form and show current project info
+        const projectForm = document.querySelector('.project-form');
+        projectForm.innerHTML = `
+            <div class="current-project">
+                <h4>Current Project:</h4>
+                <p class="project-name">${projectName}</p>
+                <div class="project-actions">
+                    <button type="button" class="secondary-button view-projects-btn">View All Projects</button>
+                    <button type="button" class="secondary-button new-project-btn">Start New Project</button>
+                </div>
+            </div>
+        `;
+        
+        // Add event listeners to new buttons
+        projectForm.querySelector('.view-projects-btn').addEventListener('click', showProjectsList);
+        projectForm.querySelector('.new-project-btn').addEventListener('click', resetProjectForm);
+    }
+    
+    function resetProjectForm() {
+        const projectForm = document.querySelector('.project-form');
+        projectForm.innerHTML = `
+            <h3>Project Management</h3>
+            <p>Choose whether to start a new project or open an existing one.</p>
+            
+            <div class="project-options">
+                <div class="project-option new-project-option">
+                    <h4>Start a New Project</h4>
+                    <p>Create a new electrification project from scratch.</p>
+                    <form id="newProjectForm" class="form-group">
+                        <label for="projectName">Project Name:</label>
+                        <input 
+                            type="text" 
+                            id="projectName" 
+                            placeholder="e.g., Byrd House or 123 River Road"
+                            required
+                        >
+                        <p class="form-help">This name will be used to save your progress locally</p>
+                        <button type="submit" class="primary-button">Create Project</button>
+                    </form>
+                </div>
+
+                <div class="project-option open-project-option">
+                    <h4>Open Existing Project</h4>
+                    <p>Continue working on a previously saved project.</p>
+                    <div class="form-group">
+                        <button type="button" class="primary-button" id="openProjectBtn">Browse Projects</button>
+                        <div class="import-section">
+                            <p>Or import a project file:</p>
+                            <input type="file" id="importFile" accept=".json">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Reattach event listeners
+        document.getElementById('newProjectForm').addEventListener('submit', handleNewProject);
+        document.getElementById('openProjectBtn').addEventListener('click', showProjectsList);
+        document.getElementById('importFile').addEventListener('change', handleFileImport);
+    }
+})(); 
