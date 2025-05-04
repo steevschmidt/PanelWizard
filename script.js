@@ -364,10 +364,10 @@
                     }
                 }),
                 5: this.createStep({
-                    id: 'step6',  // This is the final step in the HTML
+                    id: 'step5',  // This is the final step in the HTML
                     nextStep: null,
                     validate: () => {
-                        const skipCheckbox = document.querySelector('#step6 input[type="checkbox"]');
+                        const skipCheckbox = document.querySelector('#step5 input[type="checkbox"]');
                         return skipCheckbox ? skipCheckbox.checked : false;
                     }
                 })
