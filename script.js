@@ -260,23 +260,130 @@
         }
     }
     
-    function downloadProject(project) {
-        const dataStr = JSON.stringify(project, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(dataBlob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = url;
-        downloadLink.download = `${project.name.replace(/\s+/g, '_')}_panelwizard.json`;
-        downloadLink.click();
-        URL.revokeObjectURL(url);
+    // Consolidated file saving function
+    async function saveFile(project, options = {}) {
+        console.log('saveFile called with project:', project);
+        
+        try {
+            const dataStr = JSON.stringify(project, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const fileName = `${project.name.replace(/\s+/g, '_')}_panelwizard.json`;
+            
+            // Try different file saving methods based on browser support
+            if (window.showSaveFilePicker) {
+                // Chrome/Edge File System Access API
+                console.log('Using File System Access API');
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: fileName,
+                        types: [{
+                            description: 'PanelWizard Project File',
+                            accept: {
+                                'application/json': ['.json']
+                            }
+                        }]
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(dataBlob);
+                    await writable.close();
+                    if (options.showSuccessMessage !== false) {
+                        alert('Project saved successfully!');
+                    }
+                    return;
+                } catch (err) {
+                    if (err.name === 'AbortError') return;
+                    console.error('File System Access API error:', err);
+                }
+            }
+            
+            if (window.webkitRequestFileSystem) {
+                // Safari File System API
+                console.log('Using Safari File System API');
+                try {
+                    const fs = await new Promise((resolve, reject) => {
+                        window.webkitRequestFileSystem(window.TEMPORARY, dataBlob.size, resolve, reject);
+                    });
+                    const fileEntry = await new Promise((resolve, reject) => {
+                        fs.root.getFile(fileName, { create: true }, resolve, reject);
+                    });
+                    const fileWriter = await new Promise((resolve, reject) => {
+                        fileEntry.createWriter(resolve, reject);
+                    });
+                    await new Promise((resolve, reject) => {
+                        fileWriter.onwriteend = resolve;
+                        fileWriter.onerror = reject;
+                        fileWriter.write(dataBlob);
+                    });
+                    if (options.showSuccessMessage !== false) {
+                        alert('Project saved successfully!');
+                    }
+                    return;
+                } catch (err) {
+                    console.error('Safari File System API error:', err);
+                }
+            }
+            
+            // Fallback method for Firefox and other browsers
+            console.log('Using fallback download method');
+            const url = URL.createObjectURL(dataBlob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = fileName;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+            
+            if (options.showSuccessMessage !== false) {
+                const message = `The file has been downloaded as: ${fileName}\n\n` +
+                               `You can move it to your preferred location.`;
+                alert(message);
+            }
+            
+        } catch (err) {
+            console.error('Error in saveFile:', err);
+            alert('Error saving project: ' + err.message);
+            throw err;
+        }
     }
-    
+
+    // Update downloadProject to use the consolidated function
+    async function downloadProject(project) {
+        await saveFile(project, { showSuccessMessage: false });
+    }
+
+    // Update saveProjectFile to use the consolidated function
+    async function saveProjectFile() {
+        console.log('saveProjectFile called');
+        const currentProjectName = getCurrentProjectName();
+        console.log('Current project name:', currentProjectName);
+        
+        if (!currentProjectName) {
+            alert('No project is currently loaded. Please create or load a project first.');
+            return;
+        }
+
+        const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+        const currentProject = projects.find(p => p.name === currentProjectName);
+        
+        if (!currentProject) {
+            alert('Project data not found. Please try again.');
+            return;
+        }
+
+        console.log('Found current project:', currentProject);
+        // Add completion timestamp
+        currentProject.completedAt = new Date().toISOString();
+        
+        await saveFile(currentProject);
+    }
+
     function deleteProject(projectName) {
         // Show confirmation dialog
         const confirmDelete = confirm(`Are you sure you want to delete the project "${projectName}"? Make sure you have downloaded a copy if you want to save it.`);
         
         if (confirmDelete) {
-            let projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+            let proSects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
             projects = projects.filter(p => p.name !== projectName);
             localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
             
@@ -393,8 +500,17 @@
                     
                     const button = document.createElement('button');
                     button.className = 'next-button';
-                    button.textContent = this.nextStep ? 'Next' : 'Complete';
+                    button.textContent = this.nextStep ? 'Next' : 'Save Project File';
                     this.element.appendChild(button);
+                    
+                    // Add click handler for the final step's save button
+                    if (!this.nextStep) {
+                        button.addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation(); // Prevent event bubbling
+                            await saveProjectFile();
+                        });
+                    }
                     
                     return button;
                 }
@@ -484,7 +600,16 @@
             if (isValid) {
                 nextButton.classList.add('active');
                 step.isComplete = true;
-                nextButton.onclick = () => this.completeStep(step.id);
+                if (step.nextStep) {
+                    nextButton.onclick = () => this.completeStep(step.id);
+                } else {
+                    // For the final step, we want to handle the click directly
+                    nextButton.onclick = async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation(); // Prevent event bubbling
+                        await saveProjectFile();
+                    };
+                }
             } else {
                 nextButton.classList.remove('active');
                 step.isComplete = false;
@@ -516,7 +641,7 @@
                 }
             } else {
                 console.log('Final step completed');
-                // Handle final step completion if needed
+                // No need to do anything special here as the save button is already set up
             }
 
             this.updateNavigation();
