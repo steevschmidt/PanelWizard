@@ -301,6 +301,23 @@
             // Update step 2 completion status
             stepManager.checkStepCompletion();
         }
+
+        // Load skip states if they exist
+        if (project.steps.skipStates) {
+            const skipStates = project.steps.skipStates;
+            if (skipStates.step3) {
+                document.querySelector('input[name="skipStep3"]').checked = true;
+            }
+            if (skipStates.step4) {
+                document.querySelector('input[name="skipStep4"]').checked = true;
+            }
+            if (skipStates.step5) {
+                document.querySelector('input[name="skipStep5"]').checked = true;
+            }
+            
+            // Update step completion status for all steps
+            stepManager.checkStepCompletion();
+        }
     }
     
     // Consolidated file saving function
@@ -424,6 +441,16 @@
                 selectedAppliances: selectedAppliances
             };
         }
+
+        // Update skip states
+        window.currentProject.steps.skipStates = {
+            step3: document.querySelector('input[name="skipStep3"]')?.checked || false,
+            step4: document.querySelector('input[name="skipStep4"]')?.checked || false,
+            step5: document.querySelector('input[name="skipStep5"]')?.checked || false
+        };
+
+        // Update version number
+        window.currentProject.version = window.APP_VERSION;
 
         // Add completion timestamp
         window.currentProject.completedAt = new Date().toISOString();
@@ -829,9 +856,14 @@
                 },
                 electrificationGoals: {
                     selectedAppliances: []
+                },
+                skipStates: {
+                    step3: false,
+                    step4: false,
+                    step5: false
                 }
             },
-            version: "1.0"
+            version: window.APP_VERSION || 'v0'
         };
     }
 
