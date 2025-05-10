@@ -982,4 +982,25 @@ a:hover {
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+/* ==========================================================================
+   Version Info
+   ========================================================================== */
+
+.version-info {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    padding: 5px 10px;
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-sm);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.version-info:hover {
+    opacity: 1;
 } 

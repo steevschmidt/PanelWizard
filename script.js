@@ -1,5 +1,60 @@
 // Wrap everything in an IIFE to avoid global scope pollution
 (function() {
+    // Version handling
+    const versionInfo = document.getElementById('versionInfo');
+    
+    // Set initial version
+    window.APP_VERSION = window.APP_VERSION || 'v0';
+    
+    async function fetchGitHubVersion() {
+        try {
+            const response = await fetch('https://api.github.com/repos/steevschmidt/PanelWizard/commits');
+            if (!response.ok) throw new Error('Failed to fetch version');
+            
+            const commits = await response.json();
+            if (commits && commits.length > 0) {
+                const commitDate = new Date(commits[0].commit.author.date);
+                // Convert to Pacific Time and format date
+                const pacificDate = new Date(commitDate.toLocaleString('en-US', {
+                    timeZone: 'America/Los_Angeles'
+                }));
+                const year = pacificDate.getFullYear();
+                const month = String(pacificDate.getMonth() + 1).padStart(2, '0');
+                const day = String(pacificDate.getDate()).padStart(2, '0');
+                return `v${year}-${month}-${day}`;
+            }
+        } catch (error) {
+            console.error('Error fetching version:', error);
+            return null;
+        }
+    }
+    
+    async function updateVersion() {
+        if (window.APP_VERSION.startsWith('v0')) {
+            const githubVersion = await fetchGitHubVersion();
+            if (githubVersion) {
+                window.APP_VERSION = githubVersion;
+            } else {
+                // Fallback to current date in Pacific Time
+                const now = new Date();
+                const pacificDate = new Date(now.toLocaleString('en-US', {
+                    timeZone: 'America/Los_Angeles'
+                }));
+                const year = pacificDate.getFullYear();
+                const month = String(pacificDate.getMonth() + 1).padStart(2, '0');
+                const day = String(pacificDate.getDate()).padStart(2, '0');
+                window.APP_VERSION = `v${year}-${month}-${day}`;
+            }
+        }
+        
+        if (versionInfo) {
+            versionInfo.textContent = window.APP_VERSION;
+        }
+    }
+    
+    // Initialize version display
+    updateVersion();
+
     console.log('Script loading...');
 
     // Theme handling
@@ -26,7 +81,7 @@
     // Reset button functionality
     const resetButton = document.getElementById('reset-button');
     resetButton.addEventListener('click', () => {
-        if (confirm('This will clear all saved data and reload the page. Are you sure?')) {
+        if (confirm('This will clear all saved data and reload the page. Make sure you have saved your project file before proceeding. Clear all?')) {
             localStorage.clear();
             location.reload();
         }
