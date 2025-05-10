@@ -54,7 +54,7 @@
                     <p>This tool is being developed under a <a href="https://www.energizeinnovation.fund/projects/decision-tool-electrify-homes-limited-electrical-panel-capacity#tab-overview" target="_blank">grant</a> from the California Energy Commission.</p>
                     <div class="project-form">
                         <h3>Project Management</h3>
-                        <p>Choose whether to start a new project or open an existing one.</p>
+                        <p>Start a new project or open an existing one from a file.</p>
                         
                         <div class="project-options">
                             <div class="project-option new-project-option">
@@ -68,19 +68,18 @@
                                         placeholder="e.g., Byrd House or 123 River Road"
                                         required
                                     >
-                                    <p class="form-help">This name will be used to save your progress locally</p>
+                                    <p class="form-help">This name will be used for your project file</p>
                                     <button type="submit" class="primary-button">Create Project</button>
                                 </form>
                             </div>
 
                             <div class="project-option open-project-option">
                                 <h4>Open Existing Project</h4>
-                                <p>Continue working on a previously saved project.</p>
+                                <p>Continue working on a previously saved project file.</p>
                                 <div class="form-group">
-                                    <button type="button" class="primary-button" id="openProjectBtn">Browse Projects</button>
                                     <div class="import-section">
-                                        <p>Or import a project file:</p>
                                         <input type="file" id="importFile" accept=".json">
+                                        <p class="form-help">Select a PanelWizard project file (.json)</p>
                                     </div>
                                 </div>
                             </div>

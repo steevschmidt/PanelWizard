@@ -88,7 +88,7 @@
     console.log('Initialization complete');
 
     // Project handling functions
-    function handleNewProject(e) {
+    async function handleNewProject(e) {
         e.preventDefault();
         
         const projectNameInput = document.getElementById('projectName');
@@ -101,19 +101,8 @@
             return;
         }
         
-        // Check if project name already exists
-        const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-        if (projects.some(p => p.name.toLowerCase() === validation.sanitizedName.toLowerCase())) {
-            showError('A project with this name already exists. Please choose a different name.');
-            return;
-        }
-        
-        // Create new project
-        const projectData = createProject(validation.sanitizedName);
-        
-        // Save to projects list
-        projects.push(projectData);
-        localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+        // Create new project and store in memory
+        window.currentProject = createProject(validation.sanitizedName);
         
         // Update form to show current project
         updateFormToShowCurrentProject(validation.sanitizedName);
@@ -134,7 +123,6 @@
 
             nextButton.addEventListener('click', () => {
                 stepManager.completeStep('step1');
-                stepManager.activateStep(2);
             });
         }
         
@@ -352,30 +340,46 @@
         await saveFile(project, { showSuccessMessage: false });
     }
 
-    // Update saveProjectFile to use the consolidated function
+    // Update saveProjectFile to handle project data properly
     async function saveProjectFile() {
         console.log('saveProjectFile called');
-        const currentProjectName = getCurrentProjectName();
-        console.log('Current project name:', currentProjectName);
         
-        if (!currentProjectName) {
+        if (!window.currentProject) {
             alert('No project is currently loaded. Please create or load a project first.');
             return;
         }
 
-        const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-        const currentProject = projects.find(p => p.name === currentProjectName);
-        
-        if (!currentProject) {
-            alert('Project data not found. Please try again.');
-            return;
+        // Update project data with current state
+        const currentProjectName = getCurrentProjectName();
+        if (currentProjectName) {
+            window.currentProject.name = currentProjectName;
         }
 
-        console.log('Found current project:', currentProject);
+        // Update electrification goals if we're past step 2
+        if (stepManager.currentStep >= 2) {
+            const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+            const selectedAppliances = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => ({
+                    type: cb.value,
+                    name: cb.nextElementSibling.textContent.trim()
+                }));
+            
+            window.currentProject.steps.electrificationGoals = {
+                selectedAppliances: selectedAppliances
+            };
+        }
+
         // Add completion timestamp
-        currentProject.completedAt = new Date().toISOString();
+        window.currentProject.completedAt = new Date().toISOString();
         
-        await saveFile(currentProject);
+        try {
+            await saveFile(window.currentProject);
+            alert('Project saved successfully!');
+        } catch (error) {
+            console.error('Error saving project:', error);
+            alert('Error saving project: ' + error.message);
+        }
     }
 
     function deleteProject(projectName) {
@@ -439,9 +443,7 @@
                     id: 'step1',
                     nextStep: 2,
                     validate: () => {
-                        const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-                        console.log('Validating step 1, projects:', projects);
-                        return projects.length > 0;
+                        return !!window.currentProject;
                     }
                 }),
                 2: this.createStep({
@@ -492,6 +494,9 @@
                 getNextButton() {
                     return this.element?.querySelector('.next-button');
                 },
+                getSaveButton() {
+                    return this.element?.querySelector('.save-button');
+                },
                 createNextButton() {
                     if (!this.element) return null;
                     
@@ -511,6 +516,25 @@
                             await saveProjectFile();
                         });
                     }
+                    
+                    return button;
+                },
+                createSaveButton() {
+                    if (!this.element) return null;
+                    
+                    const existingButton = this.getSaveButton();
+                    if (existingButton) return existingButton;
+                    
+                    const button = document.createElement('button');
+                    button.className = 'save-button';
+                    button.textContent = 'Save Project to File';
+                    this.element.appendChild(button);
+                    
+                    button.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        await saveProjectFile();
+                    });
                     
                     return button;
                 }
@@ -560,25 +584,31 @@
             console.log('Found step:', step);
             if (!step) return;
 
+            // First, deactivate all steps
             Object.values(this.steps).forEach(s => {
                 if (s.element) {
-                    console.log('Processing step element:', s.id);
-                    if (s.id === step.id) {
-                        console.log('Activating step:', s.id);
-                        s.element.classList.add('active');
-                        s.element.style.opacity = '1';
-                        s.element.style.pointerEvents = 'auto';
-                    } else if (s.isComplete) {
-                        console.log('Marking step as completed:', s.id);
-                        s.element.classList.add('completed');
-                        s.element.style.opacity = '0.8';
-                        s.element.style.pointerEvents = 'auto';
-                    } else {
-                        console.log('Deactivating step:', s.id);
-                        s.element.classList.remove('active', 'completed');
-                        s.element.style.opacity = '0.5';
-                        s.element.style.pointerEvents = 'none';
-                    }
+                    s.element.classList.remove('active', 'completed');
+                    s.element.style.opacity = '0';
+                    s.element.style.visibility = 'hidden';
+                    s.element.style.pointerEvents = 'none';
+                }
+            });
+
+            // Then, activate the current step
+            if (step.element) {
+                step.element.classList.add('active');
+                step.element.style.opacity = '1';
+                step.element.style.visibility = 'visible';
+                step.element.style.pointerEvents = 'auto';
+            }
+
+            // Show completed steps
+            Object.values(this.steps).forEach(s => {
+                if (s.isComplete && s.element) {
+                    s.element.classList.add('completed');
+                    s.element.style.opacity = '0.8';
+                    s.element.style.visibility = 'visible';
+                    s.element.style.pointerEvents = 'auto';
                 }
             });
 
@@ -610,41 +640,57 @@
                         await saveProjectFile();
                     };
                 }
+
+                // Add save button for step 2 and beyond
+                if (this.currentStep >= 2) {
+                    const saveButton = step.getSaveButton() || step.createSaveButton();
+                    if (saveButton) {
+                        saveButton.classList.add('active');
+                    }
+                }
             } else {
                 nextButton.classList.remove('active');
                 step.isComplete = false;
                 nextButton.onclick = null;
+
+                // Remove save button if step is not complete
+                const saveButton = step.getSaveButton();
+                if (saveButton) {
+                    saveButton.classList.remove('active');
+                }
             }
 
             this.updateNavigation();
         },
 
         completeStep(stepId) {
-            console.log('completeStep called with stepId:', stepId);
             const step = Object.values(this.steps).find(s => s.id === stepId);
-            console.log('Found step:', step);
             if (!step) return;
 
             step.isComplete = true;
-            console.log('Step marked as complete');
-            if (step.element) {
-                step.element.classList.add('completed');
-                console.log('Added completed class to step element');
+            
+            // Update project data based on current step
+            if (window.currentProject) {
+                if (stepId === 'step2') {
+                    const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+                    const selectedAppliances = Array.from(checkboxes)
+                        .filter(cb => cb.checked)
+                        .map(cb => ({
+                            type: cb.value,
+                            name: cb.nextElementSibling.textContent.trim()
+                        }));
+                    
+                    window.currentProject.steps.electrificationGoals = {
+                        selectedAppliances: selectedAppliances
+                    };
+                }
+                // Add more step-specific data updates here as needed
             }
 
             if (step.nextStep) {
-                console.log('Moving to next step:', step.nextStep);
                 this.activateStep(step.nextStep);
-                const nextStep = this.steps[step.nextStep];
-                if (nextStep && nextStep.element) {
-                    nextStep.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            } else {
-                console.log('Final step completed');
-                // No need to do anything special here as the save button is already set up
             }
-
-            this.updateNavigation();
+            
             this.saveProgress();
         },
 
@@ -729,32 +775,41 @@
                     throw new Error('Invalid project file format');
                 }
                 
-                // Check if project name already exists
-                const projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
-                if (projects.some(p => p.name === projectData.name)) {
-                    if (!confirm(`A project named "${projectData.name}" already exists. Do you want to replace it?`)) {
-                        return;
-                    }
-                    // Remove existing project
-                    const index = projects.findIndex(p => p.name === projectData.name);
-                    if (index !== -1) {
-                        projects.splice(index, 1);
-                    }
-                }
-                
-                // Add the imported project
-                projects.push(projectData);
-                localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
+                // Store in memory
+                window.currentProject = projectData;
                 
                 // Update UI to show imported project
                 updateFormToShowCurrentProject(projectData.name);
+                
+                // Add Next button to step 1
+                const step1 = document.getElementById('step1');
+                if (step1) {
+                    // Remove existing next button if it exists
+                    const existingButton = step1.querySelector('.next-button');
+                    if (existingButton) {
+                        existingButton.remove();
+                    }
+                    
+                    const nextButton = document.createElement('button');
+                    nextButton.className = 'next-button active';
+                    nextButton.textContent = 'Next';
+                    step1.appendChild(nextButton);
+
+                    // Update the click handler to use the StepManager's methods
+                    nextButton.addEventListener('click', () => {
+                        stepManager.completeStep('step1');
+                    });
+                }
+                
+                // Update step completion status
+                stepManager.steps[1].isComplete = true;
+                stepManager.updateNavigation();
                 
                 // Load saved electrification goals if they exist
                 if (projectData.steps.electrificationGoals && 
                     projectData.steps.electrificationGoals.selectedAppliances) {
                     const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
                     checkboxes.forEach(checkbox => {
-                        // Check if this appliance was selected in the imported data
                         const isSelected = projectData.steps.electrificationGoals.selectedAppliances
                             .some(appliance => appliance.type === checkbox.value);
                         checkbox.checked = isSelected;
@@ -764,10 +819,10 @@
                     stepManager.checkStepCompletion();
                 }
                 
-                alert('Project imported successfully!');
+                alert('Project loaded successfully!');
                 
             } catch (error) {
-                alert('Error importing project: ' + error.message);
+                alert('Error loading project: ' + error.message);
             }
         };
         reader.readAsText(file);
@@ -778,25 +833,27 @@
         const projectForm = document.querySelector('.project-form');
         projectForm.innerHTML = `
             <div class="current-project">
-                <h4>Current Project:</h4>
-                <p class="project-name">${projectName}</p>
-                <div class="project-actions">
-                    <button type="button" class="secondary-button view-projects-btn">View All Projects</button>
-                    <button type="button" class="secondary-button new-project-btn">Start New Project</button>
+                <div class="current-project-content">
+                    <div class="project-info">
+                        <h4>Current Project:</h4>
+                        <p class="project-name">${projectName}</p>
+                    </div>
+                    <div class="project-actions">
+                        <button type="button" class="secondary-button switch-project-btn">Switch to a different project</button>
+                    </div>
                 </div>
             </div>
         `;
         
-        // Add event listeners to new buttons
-        projectForm.querySelector('.view-projects-btn').addEventListener('click', showProjectsList);
-        projectForm.querySelector('.new-project-btn').addEventListener('click', resetProjectForm);
+        // Add event listener to new button
+        projectForm.querySelector('.switch-project-btn').addEventListener('click', resetProjectForm);
     }
     
     function resetProjectForm() {
         const projectForm = document.querySelector('.project-form');
         projectForm.innerHTML = `
             <h3>Project Management</h3>
-            <p>Choose whether to start a new project or open an existing one.</p>
+            <p>Start a new project or open an existing one from a file.</p>
             
             <div class="project-options">
                 <div class="project-option new-project-option">
@@ -810,19 +867,18 @@
                             placeholder="e.g., Byrd House or 123 River Road"
                             required
                         >
-                        <p class="form-help">This name will be used to save your progress locally</p>
+                        <p class="form-help">This name will be used for your project file</p>
                         <button type="submit" class="primary-button">Create Project</button>
                     </form>
                 </div>
 
                 <div class="project-option open-project-option">
                     <h4>Open Existing Project</h4>
-                    <p>Continue working on a previously saved project.</p>
+                    <p>Continue working on a previously saved project file.</p>
                     <div class="form-group">
-                        <button type="button" class="primary-button" id="openProjectBtn">Browse Projects</button>
                         <div class="import-section">
-                            <p>Or import a project file:</p>
                             <input type="file" id="importFile" accept=".json">
+                            <p class="form-help">Select a PanelWizard project file (.json)</p>
                         </div>
                     </div>
                 </div>
@@ -831,7 +887,6 @@
 
         // Reattach event listeners
         document.getElementById('newProjectForm').addEventListener('submit', handleNewProject);
-        document.getElementById('openProjectBtn').addEventListener('click', showProjectsList);
         document.getElementById('importFile').addEventListener('change', handleFileImport);
     }
 })(); 
