@@ -949,4 +949,37 @@ a:hover {
     gap: 1rem;
     margin-top: 2rem;
     justify-content: flex-start;
+}
+
+/* Add celebration message styles */
+.celebration-message {
+    background: linear-gradient(135deg, #ff7f00, #ff4d00);
+    color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+}
+
+.celebration-message h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.celebration-message p {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+    opacity: 0.9;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 } 

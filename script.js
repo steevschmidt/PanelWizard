@@ -505,18 +505,41 @@
                     
                     const button = document.createElement('button');
                     button.className = 'next-button';
-                    button.textContent = this.nextStep ? 'Next' : 'Save Project File';
-                    this.element.appendChild(button);
                     
-                    // Add click handler for the final step's save button
+                    // Special handling for the final step
                     if (!this.nextStep) {
-                        button.addEventListener('click', async (e) => {
+                        button.textContent = 'Celebrate!';
+                        button.addEventListener('click', (e) => {
                             e.preventDefault();
-                            e.stopPropagation(); // Prevent event bubbling
-                            await saveProjectFile();
+                            e.stopPropagation();
+                            
+                            // Trigger confetti
+                            confetti({
+                                particleCount: 100,
+                                spread: 70,
+                                origin: { y: 0.6 }
+                            });
+                            
+                            // Show celebration message
+                            const celebrationMessage = document.createElement('div');
+                            celebrationMessage.className = 'celebration-message';
+                            celebrationMessage.innerHTML = `
+                                <h3>🎉 Congratulations! 🎉</h3>
+                                <p>You've completed your electrification plan!</p>
+                                <p>Don't forget to save your project file for future reference.</p>
+                            `;
+                            
+                            // Insert the message before the buttons
+                            const buttonContainer = this.element.querySelector('.button-container');
+                            if (buttonContainer) {
+                                buttonContainer.parentNode.insertBefore(celebrationMessage, buttonContainer);
+                            }
                         });
+                    } else {
+                        button.textContent = 'Next';
                     }
                     
+                    this.element.appendChild(button);
                     return button;
                 },
                 createSaveButton() {
@@ -632,14 +655,8 @@
                 step.isComplete = true;
                 if (step.nextStep) {
                     nextButton.onclick = () => this.completeStep(step.id);
-                } else {
-                    // For the final step, we want to handle the click directly
-                    nextButton.onclick = async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation(); // Prevent event bubbling
-                        await saveProjectFile();
-                    };
                 }
+                // No else clause here - the final step's click handler is set in createNextButton
 
                 // Add save button for step 2 and beyond
                 if (this.currentStep >= 2) {
