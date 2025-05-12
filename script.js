@@ -302,22 +302,21 @@
             stepManager.checkStepCompletion();
         }
 
-        // Load skip states if they exist
-        if (project.steps.skipStates) {
-            const skipStates = project.steps.skipStates;
-            if (skipStates.step3) {
-                document.querySelector('input[name="skipStep3"]').checked = true;
+        // Load skip states from project data
+        ['step3', 'step4', 'step5'].forEach(stepId => {
+            const skipCheckbox = document.querySelector(`#${stepId} input[type="checkbox"]`);
+            if (skipCheckbox && project.steps[stepId] && project.steps[stepId].skipState !== undefined) {
+                skipCheckbox.checked = project.steps[stepId].skipState;
+                // Also update the step manager's state
+                const step = Object.values(stepManager.steps).find(s => s.id === stepId);
+                if (step) {
+                    step.skipState = project.steps[stepId].skipState;
+                }
             }
-            if (skipStates.step4) {
-                document.querySelector('input[name="skipStep4"]').checked = true;
-            }
-            if (skipStates.step5) {
-                document.querySelector('input[name="skipStep5"]').checked = true;
-            }
-            
-            // Update step completion status for all steps
-            stepManager.checkStepCompletion();
-        }
+        });
+        
+        // Update step completion status for all steps
+        stepManager.checkStepCompletion();
     }
     
     // Consolidated file saving function
@@ -414,40 +413,29 @@
 
     // Update saveProjectFile to handle project data properly
     async function saveProjectFile() {
-        console.log('saveProjectFile called');
-        
         if (!window.currentProject) {
-            alert('No project is currently loaded. Please create or load a project first.');
+            showError('No project to save');
             return;
         }
 
-        // Update project data with current state
-        const currentProjectName = getCurrentProjectName();
-        if (currentProjectName) {
-            window.currentProject.name = currentProjectName;
+        // Create a steps object in the project if it doesn't exist
+        if (!window.currentProject.steps) {
+            window.currentProject.steps = {};
         }
 
-        // Update electrification goals if we're past step 2
-        if (stepManager.currentStep >= 2) {
-            const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
-            const selectedAppliances = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => ({
-                    type: cb.value,
-                    name: cb.nextElementSibling.textContent.trim()
-                }));
-            
-            window.currentProject.steps.electrificationGoals = {
-                selectedAppliances: selectedAppliances
-            };
-        }
-
-        // Update skip states
-        window.currentProject.steps.skipStates = {
-            step3: document.querySelector('input[name="skipStep3"]')?.checked || false,
-            step4: document.querySelector('input[name="skipStep4"]')?.checked || false,
-            step5: document.querySelector('input[name="skipStep5"]')?.checked || false
-        };
+        // Update skip states for each step
+        Object.values(stepManager.steps).forEach(step => {
+            if (step.id === 'step3' || step.id === 'step4' || step.id === 'step5') {
+                const skipCheckbox = document.querySelector(`#${step.id} input[type="checkbox"]`);
+                if (skipCheckbox) {
+                    // Store skip state in the project data
+                    if (!window.currentProject.steps[step.id]) {
+                        window.currentProject.steps[step.id] = {};
+                    }
+                    window.currentProject.steps[step.id].skipState = skipCheckbox.checked;
+                }
+            }
+        });
 
         // Update version number
         window.currentProject.version = window.APP_VERSION;
@@ -544,7 +532,8 @@
                     validate: () => {
                         const skipCheckbox = document.querySelector('#step3 input[type="checkbox"]');
                         return skipCheckbox ? skipCheckbox.checked : false;
-                    }
+                    },
+                    skipState: false
                 }),
                 4: this.createStep({
                     id: 'step4',
@@ -552,25 +541,28 @@
                     validate: () => {
                         const skipCheckbox = document.querySelector('#step4 input[type="checkbox"]');
                         return skipCheckbox ? skipCheckbox.checked : false;
-                    }
+                    },
+                    skipState: false
                 }),
                 5: this.createStep({
-                    id: 'step5',  // This is the final step in the HTML
+                    id: 'step5',
                     nextStep: null,
                     validate: () => {
                         const skipCheckbox = document.querySelector('#step5 input[type="checkbox"]');
                         return skipCheckbox ? skipCheckbox.checked : false;
-                    }
+                    },
+                    skipState: false
                 })
             };
             console.log('Steps defined:', this.steps);
         },
 
-        createStep({ id, nextStep, validate }) {
+        createStep({ id, nextStep, validate, skipState = false }) {
             return {
                 id,
                 nextStep,
                 isComplete: false,
+                skipState,
                 validateStep: validate,
                 element: document.getElementById(id),
                 getNextButton() {
@@ -857,10 +849,14 @@
                 electrificationGoals: {
                     selectedAppliances: []
                 },
-                skipStates: {
-                    step3: false,
-                    step4: false,
-                    step5: false
+                step3: {
+                    skipState: false
+                },
+                step4: {
+                    skipState: false
+                },
+                step5: {
+                    skipState: false
                 }
             },
             version: window.APP_VERSION || 'v0'
@@ -922,6 +918,22 @@
                     // Trigger validation check to update Next button
                     stepManager.checkStepCompletion();
                 }
+
+                // Load skip states from project data
+                ['step3', 'step4', 'step5'].forEach(stepId => {
+                    const skipCheckbox = document.querySelector(`#${stepId} input[type="checkbox"]`);
+                    if (skipCheckbox && projectData.steps[stepId] && projectData.steps[stepId].skipState !== undefined) {
+                        skipCheckbox.checked = projectData.steps[stepId].skipState;
+                        // Also update the step manager's state
+                        const step = Object.values(stepManager.steps).find(s => s.id === stepId);
+                        if (step) {
+                            step.skipState = projectData.steps[stepId].skipState;
+                        }
+                    }
+                });
+                
+                // Update step completion status for all steps
+                stepManager.checkStepCompletion();
                 
                 alert('Project loaded successfully!');
                 
