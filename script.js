@@ -117,7 +117,7 @@
     }
 
     // Initialize step 1
-    const step1 = document.getElementById('step1');
+    const step1 = document.getElementById('projectInfo');
     if (step1) {
         step1.classList.add('active');
         step1.style.opacity = '1';
@@ -126,7 +126,7 @@
     }
 
     // Initialize navigation
-    const step1Link = document.querySelector('.nav-list a[href="#step1"]');
+    const step1Link = document.querySelector('.nav-list a[href="#projectInfo"]');
     if (step1Link) {
         step1Link.classList.add('active');
         console.log('Step 1 navigation activated');
@@ -163,7 +163,7 @@
         updateFormToShowCurrentProject(validation.sanitizedName);
         
         // Add Next button to step 1
-        const step1 = document.getElementById('step1');
+        const step1 = document.getElementById('projectInfo');
         if (step1) {
             // Remove existing next button if it exists
             const existingButton = step1.querySelector('.next-button');
@@ -177,7 +177,7 @@
             step1.appendChild(nextButton);
 
             nextButton.addEventListener('click', () => {
-                stepManager.completeStep('step1');
+                stepManager.completeStep('projectInfo');
             });
         }
         
@@ -266,7 +266,7 @@
         updateFormToShowCurrentProject(project.name);
         
         // Add Next button to step 1
-        const step1 = document.getElementById('step1');
+        const step1 = document.getElementById('projectInfo');
         if (step1) {
             // Remove existing next button if it exists
             const existingButton = step1.querySelector('.next-button');
@@ -280,7 +280,7 @@
             step1.appendChild(nextButton);
 
             nextButton.addEventListener('click', () => {
-                stepManager.completeStep('step1');
+                stepManager.completeStep('projectInfo');
             });
         }
         
@@ -289,8 +289,7 @@
         stepManager.updateNavigation();
 
         // Load saved electrification goals if they exist
-        if (project.steps.electrificationGoals && 
-            project.steps.electrificationGoals.selectedAppliances) {
+        if (project.steps.electrificationGoals?.selectedAppliances) {
             const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
                 const isSelected = project.steps.electrificationGoals.selectedAppliances
@@ -303,9 +302,9 @@
         }
 
         // Load skip states from project data
-        ['step3', 'step4', 'step5'].forEach(stepId => {
+        ['currentUsage', 'loadAnalysis', 'actionPlan'].forEach(stepId => {
             const skipCheckbox = document.querySelector(`#${stepId} input[type="checkbox"]`);
-            if (skipCheckbox && project.steps[stepId] && project.steps[stepId].skipState !== undefined) {
+            if (skipCheckbox && project.steps[stepId]?.skipState !== undefined) {
                 skipCheckbox.checked = project.steps[stepId].skipState;
                 // Also update the step manager's state
                 const step = Object.values(stepManager.steps).find(s => s.id === stepId);
@@ -423,16 +422,14 @@
             window.currentProject.steps = {};
         }
 
-        // Update skip states for each step
+        // Update project data with results from each step
         Object.values(stepManager.steps).forEach(step => {
-            if (step.id === 'step3' || step.id === 'step4' || step.id === 'step5') {
-                const skipCheckbox = document.querySelector(`#${step.id} input[type="checkbox"]`);
-                if (skipCheckbox) {
-                    // Store skip state in the project data
-                    if (!window.currentProject.steps[step.id]) {
-                        window.currentProject.steps[step.id] = {};
-                    }
-                    window.currentProject.steps[step.id].skipState = skipCheckbox.checked;
+            const results = step.getResults();
+            if (results) {
+                if (step.isOptional) {
+                    window.currentProject.steps[step.id] = results;
+                } else {
+                    Object.assign(window.currentProject.steps, results);
                 }
             }
         });
@@ -494,7 +491,107 @@
         }
     }
 
-    // Step Management System
+    // First, add the Step class definition
+    class Step {
+        constructor(config) {
+            this.id = config.id;
+            this.title = config.title;
+            this.description = config.description;
+            this.isOptional = config.isOptional;
+            this.nextStep = config.nextStep;
+            this.isComplete = false;
+            this.skipState = config.skipState || false;
+            this.validateStep = config.validation;
+            this.getResults = config.getResults;
+            this.element = document.getElementById(this.id);
+            
+            // Add skip state change listener if this is an optional step
+            if (this.isOptional) {
+                const skipCheckbox = this.element?.querySelector('input[type="checkbox"]');
+                if (skipCheckbox) {
+                    skipCheckbox.addEventListener('change', () => {
+                        this.skipState = skipCheckbox.checked;
+                    });
+                }
+            }
+        }
+
+        getNextButton() {
+            return this.element?.querySelector('.next-button');
+        }
+
+        getSaveButton() {
+            return this.element?.querySelector('.save-button');
+        }
+
+        createNextButton() {
+            if (!this.element) return null;
+            
+            const existingButton = this.getNextButton();
+            if (existingButton) return existingButton;
+            
+            const button = document.createElement('button');
+            button.className = 'next-button';
+            
+            // Special handling for the final step
+            if (!this.nextStep) {
+                button.textContent = 'Celebrate!';
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Trigger confetti
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                    
+                    // Show celebration message
+                    const celebrationMessage = document.createElement('div');
+                    celebrationMessage.className = 'celebration-message';
+                    celebrationMessage.innerHTML = `
+                        <h3>🎉 Congratulations! 🎉</h3>
+                        <p>You've completed your electrification plan!</p>
+                        <p>Don't forget to save your project file for future reference.</p>
+                    `;
+                    
+                    // Insert the message before the buttons
+                    const buttonContainer = this.element.querySelector('.button-container');
+                    if (buttonContainer) {
+                        buttonContainer.parentNode.insertBefore(celebrationMessage, buttonContainer);
+                    }
+                });
+            } else {
+                button.textContent = 'Next';
+            }
+            
+            this.element.appendChild(button);
+            return button;
+        }
+
+        createSaveButton() {
+            if (!this.element) return null;
+            
+            const existingButton = this.getSaveButton();
+            if (existingButton) return existingButton;
+            
+            const button = document.createElement('button');
+            button.className = 'save-button';
+            button.textContent = 'Save Project to File';
+            this.element.appendChild(button);
+            
+            button.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                await saveProjectFile();
+            });
+            
+            return button;
+        }
+    }
+
+    // Then modify the StepManager to use the Step class
     const StepManager = {
         currentStep: 1,
         steps: {},
@@ -509,133 +606,96 @@
         defineSteps() {
             console.log('Defining steps...');
             this.steps = {
-                1: this.createStep({
-                    id: 'step1',
+                1: new Step({
+                    id: 'projectInfo',
+                    title: 'Project Information',
+                    description: 'Enter basic project details',
+                    isOptional: false,
                     nextStep: 2,
-                    validate: () => {
-                        return !!window.currentProject;
-                    }
+                    validation: () => !!window.currentProject,
+                    getResults: () => ({
+                        projectInfo: {
+                            name: window.currentProject?.name
+                        }
+                    })
                 }),
-                2: this.createStep({
-                    id: 'step2',
+                2: new Step({
+                    id: 'electrificationGoals',
+                    title: 'Electrification Goals',
+                    description: 'Select your electrification goals',
+                    isOptional: false,
                     nextStep: 3,
-                    validate: () => {
+                    validation: () => {
                         const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
-                        const isChecked = Array.from(checkboxes).some(cb => cb.checked);
-                        console.log('Validating step 2, any checkbox checked:', isChecked);
-                        return isChecked;
+                        return Array.from(checkboxes).some(cb => cb.checked);
+                    },
+                    getResults: () => {
+                        const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+                        return {
+                            electrificationGoals: {
+                                selectedAppliances: Array.from(checkboxes)
+                                    .filter(cb => cb.checked)
+                                    .map(cb => ({
+                                        type: cb.value,
+                                        name: cb.nextElementSibling.textContent.trim()
+                                    }))
+                            }
+                        };
                     }
                 }),
-                3: this.createStep({
-                    id: 'step3',
+                3: new Step({
+                    id: 'currentUsage',
+                    title: 'Current Usage',
+                    description: 'Review your current electrical consumption',
+                    isOptional: true,
                     nextStep: 4,
-                    validate: () => {
-                        const skipCheckbox = document.querySelector('#step3 input[type="checkbox"]');
+                    validation: () => {
+                        const skipCheckbox = document.querySelector('#currentUsage input[type="checkbox"]');
                         return skipCheckbox ? skipCheckbox.checked : false;
                     },
-                    skipState: false
+                    getResults: () => {
+                        const skipCheckbox = document.querySelector('#currentUsage input[type="checkbox"]');
+                        return {
+                            skipState: skipCheckbox ? skipCheckbox.checked : false
+                        };
+                    }
                 }),
-                4: this.createStep({
-                    id: 'step4',
+                4: new Step({
+                    id: 'loadAnalysis',
+                    title: 'Load Analysis',
+                    description: 'Calculate maximum power needs',
+                    isOptional: true,
                     nextStep: 5,
-                    validate: () => {
-                        const skipCheckbox = document.querySelector('#step4 input[type="checkbox"]');
+                    validation: () => {
+                        const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
                         return skipCheckbox ? skipCheckbox.checked : false;
                     },
-                    skipState: false
+                    getResults: () => {
+                        const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
+                        return {
+                            skipState: skipCheckbox ? skipCheckbox.checked : false
+                        };
+                    }
                 }),
-                5: this.createStep({
-                    id: 'step5',
+                5: new Step({
+                    id: 'actionPlan',
+                    title: 'Action Plan',
+                    description: 'Review and save your electrification plan',
+                    isOptional: true,
                     nextStep: null,
-                    validate: () => {
-                        const skipCheckbox = document.querySelector('#step5 input[type="checkbox"]');
+                    validation: () => {
+                        const skipCheckbox = document.querySelector('#actionPlan input[type="checkbox"]');
                         return skipCheckbox ? skipCheckbox.checked : false;
                     },
-                    skipState: false
+                    getResults: () => {
+                        const skipCheckbox = document.querySelector('#actionPlan input[type="checkbox"]');
+                        return {
+                            skipState: skipCheckbox ? skipCheckbox.checked : false
+                        };
+                    }
                 })
             };
             console.log('Steps defined:', this.steps);
-        },
-
-        createStep({ id, nextStep, validate, skipState = false }) {
-            return {
-                id,
-                nextStep,
-                isComplete: false,
-                skipState,
-                validateStep: validate,
-                element: document.getElementById(id),
-                getNextButton() {
-                    return this.element?.querySelector('.next-button');
-                },
-                getSaveButton() {
-                    return this.element?.querySelector('.save-button');
-                },
-                createNextButton() {
-                    if (!this.element) return null;
-                    
-                    const existingButton = this.getNextButton();
-                    if (existingButton) return existingButton;
-                    
-                    const button = document.createElement('button');
-                    button.className = 'next-button';
-                    
-                    // Special handling for the final step
-                    if (!this.nextStep) {
-                        button.textContent = 'Celebrate!';
-                        button.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            
-                            // Trigger confetti
-                            confetti({
-                                particleCount: 100,
-                                spread: 70,
-                                origin: { y: 0.6 }
-                            });
-                            
-                            // Show celebration message
-                            const celebrationMessage = document.createElement('div');
-                            celebrationMessage.className = 'celebration-message';
-                            celebrationMessage.innerHTML = `
-                                <h3>🎉 Congratulations! 🎉</h3>
-                                <p>You've completed your electrification plan!</p>
-                                <p>Don't forget to save your project file for future reference.</p>
-                            `;
-                            
-                            // Insert the message before the buttons
-                            const buttonContainer = this.element.querySelector('.button-container');
-                            if (buttonContainer) {
-                                buttonContainer.parentNode.insertBefore(celebrationMessage, buttonContainer);
-                            }
-                        });
-                    } else {
-                        button.textContent = 'Next';
-                    }
-                    
-                    this.element.appendChild(button);
-                    return button;
-                },
-                createSaveButton() {
-                    if (!this.element) return null;
-                    
-                    const existingButton = this.getSaveButton();
-                    if (existingButton) return existingButton;
-                    
-                    const button = document.createElement('button');
-                    button.className = 'save-button';
-                    button.textContent = 'Save Project to File';
-                    this.element.appendChild(button);
-                    
-                    button.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        await saveProjectFile();
-                    });
-                    
-                    return button;
-                }
-            };
         },
 
         initializeSteps() {
@@ -730,7 +790,6 @@
                 if (step.nextStep) {
                     nextButton.onclick = () => this.completeStep(step.id);
                 }
-                // No else clause here - the final step's click handler is set in createNextButton
 
                 // Add save button for step 2 and beyond
                 if (this.currentStep >= 2) {
@@ -759,27 +818,19 @@
             if (!step) return;
 
             step.isComplete = true;
-            
-            // Update project data based on current step
-            if (window.currentProject) {
-                if (stepId === 'step2') {
-                    const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
-                    const selectedAppliances = Array.from(checkboxes)
-                        .filter(cb => cb.checked)
-                        .map(cb => ({
-                            type: cb.value,
-                            name: cb.nextElementSibling.textContent.trim()
-                        }));
-                    
-                    window.currentProject.steps.electrificationGoals = {
-                        selectedAppliances: selectedAppliances
-                    };
-                }
-                // Add more step-specific data updates here as needed
-            }
+            step.getResults();  // Save step results when completing
 
             if (step.nextStep) {
                 this.activateStep(step.nextStep);
+                
+                // Add smooth scrolling to the next step
+                const nextStepElement = this.steps[step.nextStep].element;
+                if (nextStepElement) {
+                    nextStepElement.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             }
             
             this.saveProgress();
@@ -849,13 +900,13 @@
                 electrificationGoals: {
                     selectedAppliances: []
                 },
-                step3: {
+                currentUsage: {
                     skipState: false
                 },
-                step4: {
+                loadAnalysis: {
                     skipState: false
                 },
-                step5: {
+                actionPlan: {
                     skipState: false
                 }
             },
@@ -882,7 +933,7 @@
                 updateFormToShowCurrentProject(projectData.name);
                 
                 // Add Next button to step 1
-                const step1 = document.getElementById('step1');
+                const step1 = document.getElementById('projectInfo');
                 if (step1) {
                     // Remove existing next button if it exists
                     const existingButton = step1.querySelector('.next-button');
@@ -897,7 +948,7 @@
 
                     // Update the click handler to use the StepManager's methods
                     nextButton.addEventListener('click', () => {
-                        stepManager.completeStep('step1');
+                        stepManager.completeStep('projectInfo');
                     });
                 }
                 
@@ -920,7 +971,7 @@
                 }
 
                 // Load skip states from project data
-                ['step3', 'step4', 'step5'].forEach(stepId => {
+                ['currentUsage', 'loadAnalysis', 'actionPlan'].forEach(stepId => {
                     const skipCheckbox = document.querySelector(`#${stepId} input[type="checkbox"]`);
                     if (skipCheckbox && projectData.steps[stepId] && projectData.steps[stepId].skipState !== undefined) {
                         skipCheckbox.checked = projectData.steps[stepId].skipState;
