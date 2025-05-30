@@ -672,11 +672,25 @@
                         const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
                         const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
                         
+                        // Calculate maxCapacity
+                        const topDown = topDownCapacity ? parseInt(topDownCapacity.value) : null;
+                        const bottomUp = bottomUpCapacity ? parseInt(bottomUpCapacity.value) : null;
+                        let maxCapacity = null;
+                        
+                        if (topDown !== null && bottomUp !== null) {
+                            maxCapacity = Math.max(topDown, bottomUp);
+                        } else if (topDown !== null) {
+                            maxCapacity = topDown;
+                        } else if (bottomUp !== null) {
+                            maxCapacity = bottomUp;
+                        }
+                        
                         return {
                             loadAnalysis: {
                                 skipState: skipCheckbox ? skipCheckbox.checked : false,
-                                topDownCapacity: topDownCapacity ? parseInt(topDownCapacity.value) : null,
-                                bottomUpCapacity: bottomUpCapacity ? parseInt(bottomUpCapacity.value) : null
+                                topDownCapacity: topDown,
+                                bottomUpCapacity: bottomUp,
+                                maxCapacity: maxCapacity
                             }
                         };
                     }
@@ -734,10 +748,16 @@
             const topDownCapacity = document.querySelector('#topDownCapacity');
             const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
             if (topDownCapacity) {
-                topDownCapacity.addEventListener('input', () => this.checkStepCompletion());
+                topDownCapacity.addEventListener('input', () => {
+                    this.checkStepCompletion();
+                    this.updateCapacitySummary();
+                });
             }
             if (bottomUpCapacity) {
-                bottomUpCapacity.addEventListener('input', () => this.checkStepCompletion());
+                bottomUpCapacity.addEventListener('input', () => {
+                    this.checkStepCompletion();
+                    this.updateCapacitySummary();
+                });
             }
 
             // Navigation listeners
@@ -749,6 +769,36 @@
                     if (stepNumber) this.activateStep(stepNumber);
                 });
             });
+        },
+
+        updateCapacitySummary() {
+            const summarySection = document.querySelector('#capacitySummary');
+            const summaryText = document.querySelector('#capacitySummaryText');
+            const panelAmps = document.querySelector('#panelAmps');
+            const topDownCapacity = document.querySelector('#topDownCapacity');
+            const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+            
+            if (!summarySection || !summaryText || !panelAmps || !panelAmps.value) return;
+            
+            const panelSize = parseInt(panelAmps.value);
+            const topDown = topDownCapacity && topDownCapacity.value ? parseInt(topDownCapacity.value) : null;
+            const bottomUp = bottomUpCapacity && bottomUpCapacity.value ? parseInt(bottomUpCapacity.value) : null;
+            
+            let maxCapacity = null;
+            if (topDown !== null && bottomUp !== null) {
+                maxCapacity = Math.max(topDown, bottomUp);
+            } else if (topDown !== null) {
+                maxCapacity = topDown;
+            } else if (bottomUp !== null) {
+                maxCapacity = bottomUp;
+            }
+            
+            if (maxCapacity !== null && !isNaN(maxCapacity)) {
+                summarySection.style.display = 'block';
+                summaryText.textContent = `You have ${maxCapacity} amps of remaining capacity on your ${panelSize} amp panel.`;
+            } else {
+                summarySection.style.display = 'none';
+            }
         },
 
         activateStep(stepNumber) {
