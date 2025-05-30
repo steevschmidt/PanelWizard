@@ -398,6 +398,7 @@
             electrificationGoals: {},
             currentEquipment: {},
             loadAnalysis: {},
+            gasAnalysis: {},
             actionPlan: {}
         };
 
@@ -673,8 +674,8 @@
                         const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
                         
                         // Calculate maxCapacity
-                        const topDown = topDownCapacity ? parseInt(topDownCapacity.value) : null;
-                        const bottomUp = bottomUpCapacity ? parseInt(bottomUpCapacity.value) : null;
+                        const topDown = topDownCapacity && topDownCapacity.value ? parseInt(topDownCapacity.value) : null;
+                        const bottomUp = bottomUpCapacity && bottomUpCapacity.value ? parseInt(bottomUpCapacity.value) : null;
                         let maxCapacity = null;
                         
                         if (topDown !== null && bottomUp !== null) {
@@ -696,6 +697,45 @@
                     }
                 }),
                 5: new Step({
+                    id: 'gasAnalysis',
+                    title: 'Natural Gas Analysis',
+                    description: 'Analyze gas usage and estimate electrification impacts',
+                    isOptional: true,
+                    nextStep: 6,
+                    validation: () => {
+                        const skipCheckbox = document.querySelector('#gasAnalysis input[type="checkbox"]');
+                        if (skipCheckbox && skipCheckbox.checked) return true;
+                        
+                        // Check if any of the inputs are filled
+                        const homeSize = document.querySelector('#homeSize');
+                        const currentGasUsage = document.querySelector('#currentGasUsage');
+                        const currentGasBill = document.querySelector('#currentGasBill');
+                        const currentElectricBill = document.querySelector('#currentElectricBill');
+                        
+                        return (homeSize && homeSize.value) || 
+                               (currentGasUsage && currentGasUsage.value) ||
+                               (currentGasBill && currentGasBill.value) ||
+                               (currentElectricBill && currentElectricBill.value);
+                    },
+                    getResults: () => {
+                        const skipCheckbox = document.querySelector('#gasAnalysis input[type="checkbox"]');
+                        const homeSize = document.querySelector('#homeSize');
+                        const currentGasUsage = document.querySelector('#currentGasUsage');
+                        const currentGasBill = document.querySelector('#currentGasBill');
+                        const currentElectricBill = document.querySelector('#currentElectricBill');
+                        
+                        return {
+                            gasAnalysis: {
+                                skipState: skipCheckbox ? skipCheckbox.checked : false,
+                                homeSize: homeSize ? parseInt(homeSize.value) : null,
+                                currentGasUsage: currentGasUsage ? parseInt(currentGasUsage.value) : null,
+                                currentGasBill: currentGasBill ? parseFloat(currentGasBill.value) : null,
+                                currentElectricBill: currentElectricBill ? parseFloat(currentElectricBill.value) : null
+                            }
+                        };
+                    }
+                }),
+                6: new Step({
                     id: 'actionPlan',
                     title: 'Action Plan',
                     description: 'Review and save your electrification plan',
@@ -703,7 +743,7 @@
                     nextStep: null,
                     validation: () => {
                         const skipCheckbox = document.querySelector('#actionPlan input[type="checkbox"]');
-                        return skipCheckbox && skipCheckbox.checked;  // Only true when skip is checked
+                        return skipCheckbox && skipCheckbox.checked;
                     },
                     getResults: () => {
                         const skipCheckbox = document.querySelector('#actionPlan input[type="checkbox"]');
@@ -759,6 +799,20 @@
                     this.updateCapacitySummary();
                 });
             }
+
+            // Step 5 gas analysis input listeners
+            const gasInputs = [
+                '#homeSize',
+                '#currentGasUsage',
+                '#currentGasBill',
+                '#currentElectricBill'
+            ];
+            gasInputs.forEach(selector => {
+                const input = document.querySelector(selector);
+                if (input) {
+                    input.addEventListener('input', () => this.checkStepCompletion());
+                }
+            });
 
             // Navigation listeners
             document.querySelectorAll('.nav-list a').forEach(link => {
@@ -981,6 +1035,9 @@
                 loadAnalysis: {
                     skipState: false
                 },
+                gasAnalysis: {
+                    skipState: false
+                },
                 actionPlan: {
                     skipState: false
                 }
@@ -1046,7 +1103,7 @@
                 }
 
                 // Load skip states from project data
-                ['currentUsage', 'loadAnalysis', 'actionPlan'].forEach(stepId => {
+                ['currentUsage', 'loadAnalysis', 'gasAnalysis', 'actionPlan'].forEach(stepId => {
                     const skipCheckbox = document.querySelector(`#${stepId} input[type="checkbox"]`);
                     if (skipCheckbox && projectData.steps[stepId] && projectData.steps[stepId].skipState !== undefined) {
                         skipCheckbox.checked = projectData.steps[stepId].skipState;

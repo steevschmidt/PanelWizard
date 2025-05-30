@@ -32,7 +32,8 @@
                 <a href="#electrificationGoals">2. Electrification Goals</a>
                 <a href="#currentEquipment">3. Current Equipment</a>
                 <a href="#loadAnalysis">4. Load Analysis</a>
-                <a href="#actionPlan">5. Action Plan</a>
+                <a href="#gasAnalysis">5. Natural Gas Analysis</a>
+                <a href="#actionPlan">6. Action Plan</a>
             </nav>
         </nav>
 
@@ -231,8 +232,85 @@
                 </form>
             </section>
 
+            <section id="gasAnalysis" class="step-content">
+                <h2>5. Natural Gas Analysis</h2>
+                
+                <section id="step5-1" class="content-box">
+                    <h3>5.1 Heat Pump Sizing</h3>
+                    <p>If you're replacing a gas heating system with a heat pump, we can help estimate the size you'll need:</p>
+                    <form class="form-group">
+                        <label for="homeSize">Home Size (square feet):</label>
+                        <input 
+                            type="number" 
+                            id="homeSize" 
+                            name="homeSize"
+                            min="100"
+                            max="10000"
+                            step="100"
+                            placeholder="e.g., 2000"
+                            class="large-input"
+                        >
+                        <p class="form-help">Enter your home's total square footage</p>
+                        
+                        <label for="currentGasUsage">Current Annual Gas Usage (therms):</label>
+                        <input 
+                            type="number" 
+                            id="currentGasUsage" 
+                            name="currentGasUsage"
+                            min="0"
+                            max="10000"
+                            step="10"
+                            placeholder="e.g., 500"
+                            class="large-input"
+                        >
+                        <p class="form-help">Find this on your gas bill or utility website</p>
+                    </form>
+                </section>
+
+                <section id="step5-2" class="content-box">
+                    <h3>5.2 Monthly Energy Bill Impacts</h3>
+                    <p>Estimate how your energy bills will change as you electrify:</p>
+                    <form class="form-group">
+                        <label for="currentGasBill">Current Monthly Gas Bill ($):</label>
+                        <input 
+                            type="number" 
+                            id="currentGasBill" 
+                            name="currentGasBill"
+                            min="0"
+                            max="1000"
+                            step="10"
+                            placeholder="e.g., 100"
+                            class="large-input"
+                        >
+                        <p class="form-help">Enter your average monthly gas bill</p>
+                        
+                        <label for="currentElectricBill">Current Monthly Electric Bill ($):</label>
+                        <input 
+                            type="number" 
+                            id="currentElectricBill" 
+                            name="currentElectricBill"
+                            min="0"
+                            max="1000"
+                            step="10"
+                            placeholder="e.g., 150"
+                            class="large-input"
+                        >
+                        <p class="form-help">Enter your average monthly electric bill</p>
+                    </form>
+                </section>
+
+                <form class="checklist-form" autocomplete="off">
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="skipStep5" autocomplete="off">
+                            <span>Skip this step</span>
+                        </label>
+                    </div>
+                </form>
+            </section>
+
             <section id="actionPlan" class="step-content">
-                <h2>5. Action Plan</h2>
+                <h2>6. Action Plan</h2>
                 <div class="content-box">
                     <h3>Implementation Strategy</h3>
                     <p>Your roadmap to electrification:</p>
@@ -246,7 +324,7 @@
                 <form class="checklist-form" autocomplete="off">
                     <div class="checkbox-group">
                         <label class="checkbox-label">
-                            <input type="checkbox" name="skipStep5" autocomplete="off">
+                            <input type="checkbox" name="skipStep6" autocomplete="off">
                             <span>I'm ready to move on</span>
                         </label>
                     </div>
