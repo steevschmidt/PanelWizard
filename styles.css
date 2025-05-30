@@ -1003,4 +1003,11 @@ a:hover {
 
 .version-info:hover {
     opacity: 1;
+}
+
+.large-input {
+    width: 200px;
+    height: 40px;
+    font-size: 1.2em;
+    padding: 8px;
 } 

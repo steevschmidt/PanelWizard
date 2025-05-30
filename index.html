@@ -30,7 +30,7 @@
             <nav class="nav-list">
                 <a href="#projectInfo">1. Project Information</a>
                 <a href="#electrificationGoals">2. Electrification Goals</a>
-                <a href="#currentUsage">3. Current Usage</a>
+                <a href="#currentEquipment">3. Current Equipment</a>
                 <a href="#loadAnalysis">4. Load Analysis</a>
                 <a href="#actionPlan">5. Action Plan</a>
             </nav>
@@ -140,26 +140,27 @@
                 </div>
             </section>
 
-            <section id="currentUsage" class="step-content">
-                <h2>3. Electric Service Assessment</h2>
+            <section id="currentEquipment" class="step-content">
+                <h2>3. Current Equipment</h2>
                 <div class="content-box">
                     <h3>About your electric panel</h3>
-                    <p>Document your current electrical setup:</p>
-                    <ul>
-                        <li>Main panel amperage</li>
-                        <li>Available breaker spaces</li>
-                        <li>Sub-panel details</li>
-                        <li>Service connection type</li>
-                    </ul>
+                    <p>Please enter your current electrical panel size in amps. This information is required to help us calculate your panel's capacity for electrification.</p>
+                    <form id="panelSizeForm" class="form-group">
+                        <label for="panelAmps">Panel Size (Amps):</label>
+                        <input 
+                            type="number" 
+                            id="panelAmps" 
+                            name="panelAmps"
+                            min="10"
+                            max="1000"
+                            step="10"
+                            placeholder="e.g., 100"
+                            required
+                            class="large-input"
+                        >
+                        <p class="form-help">Enter a value between 10 and 1000 amps</p>
+                    </form>
                 </div>
-                <form class="checklist-form" autocomplete="off">
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="skipStep3" autocomplete="off">
-                            <span>Skip this step</span>
-                        </label>
-                    </div>
-                </form>
             </section>
 
             <section id="loadAnalysis" class="step-content">

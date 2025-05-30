@@ -265,54 +265,24 @@
         // Update the form to show the loaded project
         updateFormToShowCurrentProject(project.name);
         
-        // Add Next button to step 1
-        const step1 = document.getElementById('projectInfo');
-        if (step1) {
-            // Remove existing next button if it exists
-            const existingButton = step1.querySelector('.next-button');
-            if (existingButton) {
-                existingButton.remove();
-            }
-            
-            const nextButton = document.createElement('button');
-            nextButton.className = 'next-button active';
-            nextButton.textContent = 'Next';
-            step1.appendChild(nextButton);
-
-            nextButton.addEventListener('click', () => {
-                stepManager.completeStep('projectInfo');
-            });
-        }
-        
-        // Update step completion status
-        stepManager.steps[1].isComplete = true;
-        stepManager.updateNavigation();
-
         // Load saved electrification goals if they exist
-        if (project.steps.electrificationGoals?.selectedAppliances) {
+        if (project.steps.electrificationGoals && 
+            project.steps.electrificationGoals.selectedAppliances) {
             const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
                 const isSelected = project.steps.electrificationGoals.selectedAppliances
                     .some(appliance => appliance.type === checkbox.value);
                 checkbox.checked = isSelected;
             });
-            
-            // Update step 2 completion status
-            stepManager.checkStepCompletion();
         }
 
-        // Load skip states from project data
-        ['currentUsage', 'loadAnalysis', 'actionPlan'].forEach(stepId => {
-            const skipCheckbox = document.querySelector(`#${stepId} input[type="checkbox"]`);
-            if (skipCheckbox && project.steps[stepId]?.skipState !== undefined) {
-                skipCheckbox.checked = project.steps[stepId].skipState;
-                // Also update the step manager's state
-                const step = Object.values(stepManager.steps).find(s => s.id === stepId);
-                if (step) {
-                    step.skipState = project.steps[stepId].skipState;
-                }
+        // Load panel size if it exists
+        if (project.steps.currentEquipment && project.steps.currentEquipment.panelSize) {
+            const panelAmps = document.querySelector('#panelAmps');
+            if (panelAmps) {
+                panelAmps.value = project.steps.currentEquipment.panelSize;
             }
-        });
+        }
         
         // Update step completion status for all steps
         stepManager.checkStepCompletion();
@@ -422,17 +392,31 @@
             window.currentProject.steps = {};
         }
 
+        // Create a new steps object to ensure correct order
+        const orderedSteps = {
+            projectInfo: {},
+            electrificationGoals: {},
+            currentEquipment: {},
+            loadAnalysis: {},
+            actionPlan: {}
+        };
+
         // Update project data with results from each step
         Object.values(stepManager.steps).forEach(step => {
             const results = step.getResults();
             if (results) {
-                if (step.isOptional) {
-                    window.currentProject.steps[step.id] = results;
-                } else {
-                    Object.assign(window.currentProject.steps, results);
-                }
+                // Merge the results into the ordered steps object
+                Object.assign(orderedSteps, results);
             }
         });
+
+        // Update the project's steps with the ordered data
+        window.currentProject.steps = orderedSteps;
+
+        // Remove any duplicate panel size data
+        if (window.currentProject.panelSize) {
+            delete window.currentProject.panelSize;
+        }
 
         // Update version number
         window.currentProject.version = window.APP_VERSION;
@@ -511,6 +495,8 @@
                 if (skipCheckbox) {
                     skipCheckbox.addEventListener('change', () => {
                         this.skipState = skipCheckbox.checked;
+                        // Force step completion check when checkbox state changes
+                        stepManager.checkStepCompletion();
                     });
                 }
             }
@@ -644,19 +630,23 @@
                     }
                 }),
                 3: new Step({
-                    id: 'currentUsage',
-                    title: 'Current Usage',
-                    description: 'Review your current electrical consumption',
-                    isOptional: true,
+                    id: 'currentEquipment',
+                    title: 'Current Equipment',
+                    description: 'Enter your current panel size',
+                    isOptional: false,
                     nextStep: 4,
                     validation: () => {
-                        const skipCheckbox = document.querySelector('#currentUsage input[type="checkbox"]');
-                        return skipCheckbox ? skipCheckbox.checked : false;
+                        const panelAmps = document.querySelector('#panelAmps');
+                        return panelAmps && panelAmps.value && 
+                               parseInt(panelAmps.value) >= 10 && 
+                               parseInt(panelAmps.value) <= 1000;
                     },
                     getResults: () => {
-                        const skipCheckbox = document.querySelector('#currentUsage input[type="checkbox"]');
+                        const panelAmps = document.querySelector('#panelAmps');
                         return {
-                            skipState: skipCheckbox ? skipCheckbox.checked : false
+                            currentEquipment: {
+                                panelSize: panelAmps ? parseInt(panelAmps.value) : null
+                            }
                         };
                     }
                 }),
@@ -668,12 +658,14 @@
                     nextStep: 5,
                     validation: () => {
                         const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
-                        return skipCheckbox ? skipCheckbox.checked : false;
+                        return skipCheckbox && skipCheckbox.checked;  // Only true when skip is checked
                     },
                     getResults: () => {
                         const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
                         return {
-                            skipState: skipCheckbox ? skipCheckbox.checked : false
+                            loadAnalysis: {
+                                skipState: skipCheckbox ? skipCheckbox.checked : false
+                            }
                         };
                     }
                 }),
@@ -685,12 +677,14 @@
                     nextStep: null,
                     validation: () => {
                         const skipCheckbox = document.querySelector('#actionPlan input[type="checkbox"]');
-                        return skipCheckbox ? skipCheckbox.checked : false;
+                        return skipCheckbox && skipCheckbox.checked;  // Only true when skip is checked
                     },
                     getResults: () => {
                         const skipCheckbox = document.querySelector('#actionPlan input[type="checkbox"]');
                         return {
-                            skipState: skipCheckbox ? skipCheckbox.checked : false
+                            actionPlan: {
+                                skipState: skipCheckbox ? skipCheckbox.checked : false
+                            }
                         };
                     }
                 })
@@ -718,11 +712,11 @@
                 checkbox.addEventListener('change', () => this.checkStepCompletion());
             });
 
-            // Skip step checkbox listeners
-            const skipCheckboxes = document.querySelectorAll('input[name^="skipStep"]');
-            skipCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', () => this.checkStepCompletion());
-            });
+            // Panel size input listener
+            const panelAmps = document.querySelector('#panelAmps');
+            if (panelAmps) {
+                panelAmps.addEventListener('input', () => this.checkStepCompletion());
+            }
 
             // Navigation listeners
             document.querySelectorAll('.nav-list a').forEach(link => {
@@ -810,7 +804,16 @@
                 }
             }
 
+            // Force UI update
             this.updateNavigation();
+            
+            // Log the current state for debugging
+            console.log(`Step ${step.id} state:`, {
+                isValid,
+                isComplete: step.isComplete,
+                skipState: step.skipState,
+                nextButtonActive: nextButton.classList.contains('active')
+            });
         },
 
         completeStep(stepId) {
@@ -901,7 +904,7 @@
                     selectedAppliances: []
                 },
                 currentUsage: {
-                    skipState: false
+                    panelSize: null
                 },
                 loadAnalysis: {
                     skipState: false
