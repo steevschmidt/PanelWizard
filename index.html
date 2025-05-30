@@ -159,6 +159,7 @@
                             class="large-input"
                         >
                         <p class="form-help">Enter a value between 10 and 1000 amps</p>
+                        <p class="form-help">Not sure about your panel size? Try using the <a href="https://www.kopperfield.com/panel-schedule" target="_blank">Kopperfield panel schedule tool</a> - it can help determine your panel size from a photo!</p>
                     </form>
                 </div>
             </section>
@@ -167,23 +168,52 @@
                 <h2>4. Load Analysis</h2>
                 
                 <section id="step4-1" class="content-box">
-                    <h3>4.1 Current Usage</h3>
-                    <p>Review your current electrical consumption:</p>
-                    <ul>
-                        <li>Monthly electricity usage</li>
-                        <li>Peak demand periods</li>
-                        <li>Seasonal variations</li>
-                    </ul>
+                    <h3>4.1 Top-Down Approach</h3>
+                    <p>Use your actual electricity usage data to determine your available panel capacity:</p>
+                    <ol>
+                        <li>Visit the <a href="https://panel.hea.com/" target="_blank">Panel Capacity Calculator</a></li>
+                        <li>Upload your smart meter data (PG&E customers can export this from their account)</li>
+                        <li>Enter your panel size (from step 3)</li>
+                        <li>Run the calculator to see your available capacity</li>
+                    </ol>
+                    <form class="form-group">
+                        <label for="topDownCapacity">Available Capacity (Amps):</label>
+                        <input 
+                            type="number" 
+                            id="topDownCapacity" 
+                            name="topDownCapacity"
+                            min="0"
+                            max="1000"
+                            step="1"
+                            placeholder="e.g., 40"
+                            class="large-input"
+                        >
+                        <p class="form-help">Enter the available capacity shown by the calculator</p>
+                    </form>
                 </section>
 
-                <section id="step4-3" class="content-box">
-                    <h3>4.2 Peak Demand</h3>
-                    <p>Calculate maximum power needs:</p>
-                    <ul>
-                        <li>Simultaneous usage scenarios</li>
-                        <li>Demand calculations</li>
-                        <li>Safety margins</li>
-                    </ul>
+                <section id="step4-2" class="content-box">
+                    <h3>4.2 Bottom-Up Approach</h3>
+                    <p>Calculate your available panel capacity by adding up your current electrical loads:</p>
+                    <ol>
+                        <li>Visit the <a href="https://www.kopperfield.com/load-calculator" target="_blank">Kopperfield Load Calculator</a></li>
+                        <li>Enter your home's details and electrical equipment</li>
+                        <li>Run the calculator to see your available capacity</li>
+                    </ol>
+                    <form class="form-group">
+                        <label for="bottomUpCapacity">Available Capacity (Amps):</label>
+                        <input 
+                            type="number" 
+                            id="bottomUpCapacity" 
+                            name="bottomUpCapacity"
+                            min="0"
+                            max="1000"
+                            step="1"
+                            placeholder="e.g., 35"
+                            class="large-input"
+                        >
+                        <p class="form-help">Enter the available capacity shown by the calculator</p>
+                    </form>
                 </section>
                 <form class="checklist-form" autocomplete="off">
                     <div class="checkbox-group">

@@ -658,13 +658,25 @@
                     nextStep: 5,
                     validation: () => {
                         const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
-                        return skipCheckbox && skipCheckbox.checked;  // Only true when skip is checked
+                        if (skipCheckbox && skipCheckbox.checked) return true;
+                        
+                        const topDownCapacity = document.querySelector('#topDownCapacity');
+                        const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+                        
+                        // At least one method should be filled out
+                        return (topDownCapacity && topDownCapacity.value) || 
+                               (bottomUpCapacity && bottomUpCapacity.value);
                     },
                     getResults: () => {
+                        const topDownCapacity = document.querySelector('#topDownCapacity');
+                        const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
                         const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
+                        
                         return {
                             loadAnalysis: {
-                                skipState: skipCheckbox ? skipCheckbox.checked : false
+                                skipState: skipCheckbox ? skipCheckbox.checked : false,
+                                topDownCapacity: topDownCapacity ? parseInt(topDownCapacity.value) : null,
+                                bottomUpCapacity: bottomUpCapacity ? parseInt(bottomUpCapacity.value) : null
                             }
                         };
                     }
@@ -716,6 +728,16 @@
             const panelAmps = document.querySelector('#panelAmps');
             if (panelAmps) {
                 panelAmps.addEventListener('input', () => this.checkStepCompletion());
+            }
+
+            // Step 4 capacity input listeners
+            const topDownCapacity = document.querySelector('#topDownCapacity');
+            const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+            if (topDownCapacity) {
+                topDownCapacity.addEventListener('input', () => this.checkStepCompletion());
+            }
+            if (bottomUpCapacity) {
+                bottomUpCapacity.addEventListener('input', () => this.checkStepCompletion());
             }
 
             // Navigation listeners
