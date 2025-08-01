@@ -140,18 +140,17 @@
                             <h4>Additional considerations:</h4>
                             <div class="checkbox-subgroup">
                                 <label class="checkbox-label tooltip-container">
-                                    <input type="checkbox" name="electrification" value="gasmeter" autocomplete="off">
-                                    <span>Remove Gas Meter to get more space</span>
-                                    <div class="tooltip">
-                                        If your electrical panel is near your gas meter, removing the gas meter may create space for a larger electrical panel or additional electrical equipment.
-                                    </div>
-                                </label>
-                                
-                                <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="ev" autocomplete="off">
                                     <span>Add EV Charger</span>
                                     <div class="tooltip">
                                         Most homes will eventually have at least one electric vehicle charger, so it's best to leave some panel capacity for it.
+                                    </div>
+                                </label>
+                                <label class="checkbox-label tooltip-container">
+                                    <input type="checkbox" name="electrification" value="gasmeter" autocomplete="off">
+                                    <span>Remove Gas Meter to get more space</span>
+                                    <div class="tooltip">
+                                        If your electrical panel is near your gas meter, removing the gas meter may create space for a larger electrical panel or additional electrical equipment.
                                     </div>
                                 </label>
                             </div>
@@ -183,8 +182,16 @@
                             To find out, look for the <a href="https://static.hea.com/images/Service_Amps_on_Meter.png" target="_blank">CL number on your meter</a>, see instructions <a href="https://www.quitcarbon.com/help/how-to-find-your-main-electrical-service" target="_blank">here</a>, or watch this <a href="https://www.thespruce.com/electrical-service-size-of-my-home-1152752" target="_blank">video</a>.
                             Or try using the <a href="https://www.kopperfield.com/panel-schedule" target="_blank">Kopperfield panel schedule tool</a> - it can help determine your panel size from a photo!</p><br>
                     </form>
-                    <h3>Additional Equipment Information</h3>
-                    <p>In a future version of this tool, we may also ask about your panel type (some are dangerous and need to be replaced), the number of available breaker slots, whether there's room to add a subpanel, if you have any unused or shareable 240 volt outlets, etc.</p>
+                    <h3>Additional Equipment Information -- FUTURE ENHANCEMENTS</h3>
+                    <p>In a future version of this tool, we may also ask about other useful information including: 
+                        <ul>
+                            <li>Your panel type (some are dangerous and need to be replaced, like Federal Pacific, Zinsco, Stablock & Pushmatic)</li>
+                            <li>The number of available breaker slots, or if tandem or twin breakers are used</li>
+                            <li>Whether there's physical space to add a subpanel</li>
+                            <li>If you have any unused 240 volt outlets (like for an unused electric dryer or cooktop)</li>
+                            <li>If you have any existing 240 volt outlets that can be shared using a smart circuit splitter</li>
+                        </ul>
+                    </p>
                     <p>But for now the panel size is the most important information.</p>
                 </div>
             </section>
