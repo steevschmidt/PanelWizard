@@ -88,12 +88,13 @@
                 <div class="content-box">
                     <h3>Which of these are needed to fully electrify your home?</h3>
                     <p>Let's identify which appliances are needed to fully electricfy your home. </p>
-                    <p>To future proof your home, we recommend building a plan that includes ALL of your electrification needs upfront, then you can stage them at your convenience.</p>
+                    <p>To future proof your home, we recommend building a plan that includes ALL of your electrification needs upfront, then you can stage them at your convenience. 
+                        There's no need to do them all at once, but since electric capacity is limited it's best to plan for all of them upfront.</p>
                     
                     <form id="electrificationForm" class="checklist-form" autocomplete="off">
                         <div class="checkbox-group">
-                            <h4>Replace these fossil fueled appliances:</h4>
-                            <p>Fossil fueled appliances are those that use natural gas, propane or oil as a fuel source.</p>
+                            <h4>Replace these natural gas appliances:</h4>
+                            <p>Select the natural gas appliances currently at your home.</p>
                             <div class="checkbox-subgroup">
                                 <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="heating" autocomplete="off">
@@ -107,7 +108,7 @@
                                     <input type="checkbox" name="electrification" value="waterheater" autocomplete="off">
                                     <span>Water Heaters</span>
                                     <div class="tooltip">
-                                        Check your water heater to see if it's connected to a gas line.
+                                        Check your water heater to see if it's connected to a natural gas line.
                                     </div>
                                 </label>
                                 
@@ -115,7 +116,7 @@
                                     <input type="checkbox" name="electrification" value="cooking" autocomplete="off">
                                     <span>Cooking Appliances</span>
                                     <div class="tooltip">
-                                        This would include a gas stove, oven, or range. Gas cooking appliances have flames.
+                                        This would include a natural gas stove, oven, or range. Note: gas cooking appliances have flames.
                                     </div>
                                 </label>
                                 
@@ -123,7 +124,7 @@
                                     <input type="checkbox" name="electrification" value="dryer" autocomplete="off">
                                     <span>Clothes Dryers</span>
                                     <div class="tooltip">
-                                        Check the back of your clothes dryer to see if it's connected to a gas line.
+                                        Check the back of your clothes dryer to see if it's connected to a natural gas line.
                                     </div>
                                 </label>
                                 
@@ -131,7 +132,7 @@
                                     <input type="checkbox" name="electrification" value="other" autocomplete="off">
                                     <span>Other Gas Appliances</span>
                                     <div class="tooltip">
-                                        Other gas appliances might include pool heaters, outdoor BBQs or space heaters, gas fireplaces, and even kilns.
+                                        Other natural gas appliances might include pool heaters, outdoor BBQs or space heaters, gas fireplaces, and even kilns.
                                     </div>
                                 </label>
                             </div>
@@ -162,7 +163,7 @@
             <section id="currentEquipment" class="step-content">
                 <h2>3. Current Equipment</h2>
                 <div class="content-box">
-                    <h3>Current Electrical Panel Size</h3>
+                    <h3>Your Current Electrical Panel Size</h3>
                     <p>Please enter your current electrical panel size in amps. This information is required to help us calculate your panel's capacity for electrification.</p>
                     <form id="panelSizeForm" class="form-group">
                         <label for="panelAmps">Panel Size (Amps):</label>
@@ -182,14 +183,14 @@
                             To find out, look for the <a href="https://static.hea.com/images/Service_Amps_on_Meter.png" target="_blank">CL number on your meter</a>, see instructions <a href="https://www.quitcarbon.com/help/how-to-find-your-main-electrical-service" target="_blank">here</a>, or watch this <a href="https://www.thespruce.com/electrical-service-size-of-my-home-1152752" target="_blank">video</a>.
                             Or try using the <a href="https://www.kopperfield.com/panel-schedule" target="_blank">Kopperfield panel schedule tool</a> - it can help determine your panel size from a photo!</p><br>
                     </form>
-                    <h3>Additional equipment information</h3>
-                    <p>In a future version, we may also ask about your panel type (some are dangerous and need to be replaced), the number of available breaker slots, whether there's room to add a subpanel, if you have any unused or shareable 240 volt outlets, etc.</p>
+                    <h3>Additional Equipment Information</h3>
+                    <p>In a future version of this tool, we may also ask about your panel type (some are dangerous and need to be replaced), the number of available breaker slots, whether there's room to add a subpanel, if you have any unused or shareable 240 volt outlets, etc.</p>
                     <p>But for now the panel size is the most important information.</p>
                 </div>
             </section>
 
             <section id="loadAnalysis" class="step-content">
-                <h2>4. Load Analysis</h2>
+                <h2>4. Current Load Analysis</h2>
                 <p>Now we will calculate how much remaining panel capacity you have for electrification.</p>
                 <p>We can do this in two ways:</p>
                 <ol>
@@ -247,7 +248,7 @@
                 </section>
 
                 <section id="capacitySummary" class="content-box" style="display: none;">
-                    <h3>Capacity Summary</h3>
+                    <h3>Existing Capacity Summary</h3>
                     <p id="capacitySummaryText"></p>
                 </section>
 
@@ -262,77 +263,25 @@
             </section>
 
             <section id="gasAnalysis" class="step-content">
-                <h2>5. Natural Gas Analysis</h2>
+                <h2>5. Optional Natural Gas Analysis</h2>
                 
-                <section id="step5-1" class="content-box">
-                    <h3>5.1 Heat Pump Sizing</h3>
-                    <p>If you're replacing a gas heating system with a heat pump, we can help estimate the size you'll need:</p>
-                    <form class="form-group">
-                        <label for="homeSize">Home Size (square feet):</label>
-                        <input 
-                            type="number" 
-                            id="homeSize" 
-                            name="homeSize"
-                            min="100"
-                            max="10000"
-                            step="100"
-                            placeholder="e.g., 2000"
-                            class="large-input"
-                        >
-                        <p class="form-help">Enter your home's total square footage</p>
-                        
-                        <label for="currentGasUsage">Current Annual Gas Usage (therms):</label>
-                        <input 
-                            type="number" 
-                            id="currentGasUsage" 
-                            name="currentGasUsage"
-                            min="0"
-                            max="10000"
-                            step="10"
-                            placeholder="e.g., 500"
-                            class="large-input"
-                        >
-                        <p class="form-help">Find this on your gas bill or utility website</p>
-                    </form>
-                </section>
-
-                <section id="step5-2" class="content-box">
-                    <h3>5.2 Monthly Energy Bill Impacts</h3>
-                    <p>Estimate how your energy bills will change as you electrify:</p>
-                    <form class="form-group">
-                        <label for="currentGasBill">Current Monthly Gas Bill ($):</label>
-                        <input 
-                            type="number" 
-                            id="currentGasBill" 
-                            name="currentGasBill"
-                            min="0"
-                            max="1000"
-                            step="10"
-                            placeholder="e.g., 100"
-                            class="large-input"
-                        >
-                        <p class="form-help">Enter your average monthly gas bill</p>
-                        
-                        <label for="currentElectricBill">Current Monthly Electric Bill ($):</label>
-                        <input 
-                            type="number" 
-                            id="currentElectricBill" 
-                            name="currentElectricBill"
-                            min="0"
-                            max="1000"
-                            step="10"
-                            placeholder="e.g., 150"
-                            class="large-input"
-                        >
-                        <p class="form-help">Enter your average monthly electric bill</p>
-                    </form>
-                </section>
+                <div class="content-box">
+                    <p>If you have your home's natural gas usage data for the past year we can do some additional analysis, such as analyzing the impact on your bill of switching from natural gas to electric appliances, and estimating the size of a new heat pump for heating your home. </p>
+                    <p>Please note these are rough estimates, and you should always consult with a professional to get a more accurate analysis.</p>
+                    <p>Here are the steps to follow:</p>
+                    <ol>
+                        <li>Download a copy of this <a href="https://1drv.ms/x/c/428e7d625e39de0e/EQEdseWX0WJCrVr2EfqFimUB-Z-UR4ThedxRMsmSqGqgEA?e=OpmzKD" target="_blank">spreadsheet</a> and follow the directions within it.</li>
+                        <li>Enter your monthly natural gas usage data into the spreadsheet.</li>
+                        <li>Answer other questions about your home and natural gas usage.</li>
+                        <li>See the results in the spreadsheet.</li>
+                    </ol>
+                </div>
 
                 <form class="checklist-form" autocomplete="off">
                     <div class="checkbox-group">
                         <label class="checkbox-label">
                             <input type="checkbox" name="skipStep5" autocomplete="off">
-                            <span>Skip this step</span>
+                            <span>I'm ready to move on</span>
                         </label>
                     </div>
                 </form>
@@ -354,7 +303,7 @@
                     <div class="checkbox-group">
                         <label class="checkbox-label">
                             <input type="checkbox" name="skipStep6" autocomplete="off">
-                            <span>I'm ready to move on</span>
+                            <span>I'm ready to save my project file and celebrate</span>
                         </label>
                     </div>
                 </form>

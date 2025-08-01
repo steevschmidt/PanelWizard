@@ -702,35 +702,16 @@
                     description: 'Analyze gas usage and estimate electrification impacts',
                     isOptional: true,
                     nextStep: 6,
-                    validation: () => {
-                        const skipCheckbox = document.querySelector('#gasAnalysis input[type="checkbox"]');
-                        if (skipCheckbox && skipCheckbox.checked) return true;
-                        
-                        // Check if any of the inputs are filled
-                        const homeSize = document.querySelector('#homeSize');
-                        const currentGasUsage = document.querySelector('#currentGasUsage');
-                        const currentGasBill = document.querySelector('#currentGasBill');
-                        const currentElectricBill = document.querySelector('#currentElectricBill');
-                        
-                        return (homeSize && homeSize.value) || 
-                               (currentGasUsage && currentGasUsage.value) ||
-                               (currentGasBill && currentGasBill.value) ||
-                               (currentElectricBill && currentElectricBill.value);
-                    },
+                                    validation: () => {
+                    const skipCheckbox = document.querySelector('#gasAnalysis input[type="checkbox"]');
+                    return skipCheckbox && skipCheckbox.checked;
+                },
                     getResults: () => {
                         const skipCheckbox = document.querySelector('#gasAnalysis input[type="checkbox"]');
-                        const homeSize = document.querySelector('#homeSize');
-                        const currentGasUsage = document.querySelector('#currentGasUsage');
-                        const currentGasBill = document.querySelector('#currentGasBill');
-                        const currentElectricBill = document.querySelector('#currentElectricBill');
                         
                         return {
                             gasAnalysis: {
-                                skipState: skipCheckbox ? skipCheckbox.checked : false,
-                                homeSize: homeSize ? parseInt(homeSize.value) : null,
-                                currentGasUsage: currentGasUsage ? parseInt(currentGasUsage.value) : null,
-                                currentGasBill: currentGasBill ? parseFloat(currentGasBill.value) : null,
-                                currentElectricBill: currentElectricBill ? parseFloat(currentElectricBill.value) : null
+                                skipState: skipCheckbox ? skipCheckbox.checked : false
                             }
                         };
                     }
@@ -800,19 +781,7 @@
                 });
             }
 
-            // Step 5 gas analysis input listeners
-            const gasInputs = [
-                '#homeSize',
-                '#currentGasUsage',
-                '#currentGasBill',
-                '#currentElectricBill'
-            ];
-            gasInputs.forEach(selector => {
-                const input = document.querySelector(selector);
-                if (input) {
-                    input.addEventListener('input', () => this.checkStepCompletion());
-                }
-            });
+
 
             // Navigation listeners
             document.querySelectorAll('.nav-list a').forEach(link => {
