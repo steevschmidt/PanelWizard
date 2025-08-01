@@ -86,8 +86,8 @@
             <section id="electrificationGoals" class="step-content">
                 <h2>2. Electrification Goals</h2>
                 <div class="content-box">
-                    <h3>Which of these tasks are needed to fully electrify your home?</h3>
-                    <p>Let's identify which tasks are needed to fully electricfy your home. </p>
+                    <h3>Which of these are needed to fully electrify your home?</h3>
+                    <p>Let's identify which appliances are needed to fully electricfy your home. </p>
                     <p>To future proof your home, we recommend building a plan that includes ALL of your electrification needs upfront, then you can stage them at your convenience.</p>
                     
                     <form id="electrificationForm" class="checklist-form" autocomplete="off">
@@ -95,29 +95,44 @@
                             <h4>Replace these fossil fueled appliances:</h4>
                             <p>Fossil fueled appliances are those that use natural gas, propane or oil as a fuel source.</p>
                             <div class="checkbox-subgroup">
-                                <label class="checkbox-label">
+                                <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="heating" autocomplete="off">
                                     <span>Heating Systems</span>
+                                    <div class="tooltip">
+                                        This could be a natural gas furnace, boiler or wall heater. Or even a gas fireplace if it is used for heating.
+                                    </div>
                                 </label>
                                 
-                                <label class="checkbox-label">
+                                <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="waterheater" autocomplete="off">
                                     <span>Water Heaters</span>
+                                    <div class="tooltip">
+                                        Check your water heater to see if it's connected to a gas line.
+                                    </div>
                                 </label>
                                 
-                                <label class="checkbox-label">
+                                <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="cooking" autocomplete="off">
                                     <span>Cooking Appliances</span>
+                                    <div class="tooltip">
+                                        This would include a gas stove, oven, or range. Gas cooking appliances have flames.
+                                    </div>
                                 </label>
                                 
-                                <label class="checkbox-label">
+                                <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="dryer" autocomplete="off">
                                     <span>Clothes Dryers</span>
+                                    <div class="tooltip">
+                                        Check the back of your clothes dryer to see if it's connected to a gas line.
+                                    </div>
                                 </label>
                                 
-                                <label class="checkbox-label">
+                                <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="other" autocomplete="off">
                                     <span>Other Gas Appliances</span>
+                                    <div class="tooltip">
+                                        Other gas appliances might include pool heaters, outdoor BBQs or space heaters, gas fireplaces, and even kilns.
+                                    </div>
                                 </label>
                             </div>
 
@@ -125,15 +140,18 @@
                             <div class="checkbox-subgroup">
                                 <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="gasmeter" autocomplete="off">
-                                    <span>Remove Gas Meter</span>
+                                    <span>Remove Gas Meter to get more space</span>
                                     <div class="tooltip">
                                         If your electrical panel is near your gas meter, removing the gas meter may create space for a larger electrical panel or additional electrical equipment.
                                     </div>
                                 </label>
                                 
-                                <label class="checkbox-label">
+                                <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="ev" autocomplete="off">
                                     <span>Add EV Charger</span>
+                                    <div class="tooltip">
+                                        Most homes will eventually have at least one electric vehicle charger, so it's best to leave some panel capacity for it.
+                                    </div>
                                 </label>
                             </div>
                         </div>
@@ -144,7 +162,7 @@
             <section id="currentEquipment" class="step-content">
                 <h2>3. Current Equipment</h2>
                 <div class="content-box">
-                    <h3>About your electric panel</h3>
+                    <h3>Current Electrical Panel Size</h3>
                     <p>Please enter your current electrical panel size in amps. This information is required to help us calculate your panel's capacity for electrification.</p>
                     <form id="panelSizeForm" class="form-group">
                         <label for="panelAmps">Panel Size (Amps):</label>
@@ -160,23 +178,34 @@
                             class="large-input"
                         >
                         <p class="form-help">Enter a value between 10 and 1000 amps</p>
-                        <p class="form-help">Not sure about your panel size? Try using the <a href="https://www.kopperfield.com/panel-schedule" target="_blank">Kopperfield panel schedule tool</a> - it can help determine your panel size from a photo!</p>
+                        <p class="form-help">Not sure about your panel size? <br>
+                            To find out, look for the <a href="https://static.hea.com/images/Service_Amps_on_Meter.png" target="_blank">CL number on your meter</a>, see instructions <a href="https://www.quitcarbon.com/help/how-to-find-your-main-electrical-service" target="_blank">here</a>, or watch this <a href="https://www.thespruce.com/electrical-service-size-of-my-home-1152752" target="_blank">video</a>.
+                            Or try using the <a href="https://www.kopperfield.com/panel-schedule" target="_blank">Kopperfield panel schedule tool</a> - it can help determine your panel size from a photo!</p><br>
                     </form>
+                    <h3>Additional equipment information</h3>
+                    <p>In a future version, we may also ask about your panel type (some are dangerous and need to be replaced), the number of available breaker slots, whether there's room to add a subpanel, if you have any unused or shareable 240 volt outlets, etc.</p>
+                    <p>But for now the panel size is the most important information.</p>
                 </div>
             </section>
 
             <section id="loadAnalysis" class="step-content">
                 <h2>4. Load Analysis</h2>
-                
+                <p>Now we will calculate how much remaining panel capacity you have for electrification.</p>
+                <p>We can do this in two ways:</p>
+                <ol>
+                    <li>Top-down approach: Use your actual electricity usage data to determine your available panel capacity.</li>
+                    <li>Bottom-up approach: Calculate your available panel capacity by adding up your current electrical loads.</li>
+                </ol>
+                <br><p>The first approach is easy if you have a smart meter, but it's not always available. The second approach always works, but it's more time-consuming.</p>
                 <section id="step4-1" class="content-box">
                     <h3>4.1 Top-Down Approach</h3>
                     <p>Use your actual electricity usage data to determine your available panel capacity:</p>
                     <ol>
                         <li>Visit the <a href="https://panel.hea.com/" target="_blank">Panel Capacity Calculator</a></li>
-                        <li>Upload your smart meter data (PG&E customers can export this from their account)</li>
-                        <li>Enter your panel size (from step 3)</li>
-                        <li>Run the calculator to see your available capacity</li>
-                    </ol>
+                        <li>Upload your smart meter data into that tool</li>
+                        <li>Enter your existing panel size (from step 3)</li>
+                        <li>Run the calculator to see your available capacity and enter it below</li>
+                    </ol><br>
                     <form class="form-group">
                         <label for="topDownCapacity">Available Capacity (Amps):</label>
                         <input 
@@ -189,7 +218,7 @@
                             placeholder="e.g., 40"
                             class="large-input"
                         >
-                        <p class="form-help">Enter the available capacity shown by the calculator</p>
+                        <p class="form-help">Enter the available capacity shown by the Panel Capacity Calculator</p>
                     </form>
                 </section>
 
@@ -200,7 +229,7 @@
                         <li>Visit the <a href="https://www.kopperfield.com/load-calculator" target="_blank">Kopperfield Load Calculator</a></li>
                         <li>Enter your home's details and electrical equipment</li>
                         <li>Run the calculator to see your available capacity</li>
-                    </ol>
+                    </ol><br>
                     <form class="form-group">
                         <label for="bottomUpCapacity">Available Capacity (Amps):</label>
                         <input 
