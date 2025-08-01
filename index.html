@@ -103,6 +103,9 @@
                                         This could be a natural gas furnace, boiler or wall heater. Or even a gas fireplace if it is used for heating.
                                     </div>
                                 </label>
+                                <div class="quantity-field" data-for="heating">
+                                    <label>Replace <input type="number" min="1" max="10" value="1" name="heating_quantity"> gas heating system(s)</label>
+                                </div>
                                 
                                 <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="waterheater" autocomplete="off">
@@ -111,6 +114,9 @@
                                         Check your water heater to see if it's connected to a natural gas line.
                                     </div>
                                 </label>
+                                <div class="quantity-field" data-for="waterheater">
+                                    <label>Replace <input type="number" min="1" max="10" value="1" name="waterheater_quantity"> gas water heater(s)</label>
+                                </div>
                                 
                                 <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="cooking" autocomplete="off">
@@ -119,6 +125,9 @@
                                         This would include a natural gas stove, oven, or range. Note: gas cooking appliances have flames.
                                     </div>
                                 </label>
+                                <div class="quantity-field" data-for="cooking">
+                                    <label>Replace <input type="number" min="1" max="10" value="1" name="cooking_quantity"> gas cooking appliance(s)</label>
+                                </div>
                                 
                                 <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="dryer" autocomplete="off">
@@ -127,6 +136,9 @@
                                         Check the back of your clothes dryer to see if it's connected to a natural gas line.
                                     </div>
                                 </label>
+                                <div class="quantity-field" data-for="dryer">
+                                    <label>Replace <input type="number" min="1" max="10" value="1" name="dryer_quantity"> gas clothes dryer(s)</label>
+                                </div>
                                 
                                 <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="other" autocomplete="off">
@@ -135,6 +147,9 @@
                                         Other natural gas appliances might include pool heaters, outdoor BBQs or space heaters, gas fireplaces, and even kilns.
                                     </div>
                                 </label>
+                                <div class="quantity-field" data-for="other">
+                                    <label>Replace <input type="number" min="1" max="10" value="1" name="other_quantity"> other gas appliance(s)</label>
+                                </div>
                             </div>
 
                             <h4>Additional considerations:</h4>
@@ -146,6 +161,9 @@
                                         Most homes will eventually have at least one electric vehicle charger, so it's best to leave some panel capacity for it.
                                     </div>
                                 </label>
+                                <div class="quantity-field" data-for="ev">
+                                    <label>Add <input type="number" min="1" max="10" value="1" name="ev_quantity"> EV charger(s)</label>
+                                </div>
                                 <label class="checkbox-label tooltip-container">
                                     <input type="checkbox" name="electrification" value="gasmeter" autocomplete="off">
                                     <span>Remove Gas Meter to get more space</span>

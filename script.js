@@ -137,10 +137,30 @@
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             stepManager.checkStepCompletion();
+            handleQuantityFieldVisibility(checkbox);
         });
     });
 
+    // Initialize quantity field visibility
+    checkboxes.forEach(checkbox => {
+        handleQuantityFieldVisibility(checkbox);
+    });
+
     console.log('Initialization complete');
+
+    // Function to handle quantity field visibility
+    function handleQuantityFieldVisibility(checkbox) {
+        const value = checkbox.value;
+        const quantityField = document.querySelector(`.quantity-field[data-for="${value}"]`);
+        
+        if (quantityField) {
+            if (checkbox.checked) {
+                quantityField.classList.add('show');
+            } else {
+                quantityField.classList.remove('show');
+            }
+        }
+    }
 
     // Project handling functions
     async function handleNewProject(e) {
@@ -270,9 +290,23 @@
             project.steps.electrificationGoals.selectedAppliances) {
             const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
-                const isSelected = project.steps.electrificationGoals.selectedAppliances
-                    .some(appliance => appliance.type === checkbox.value);
-                checkbox.checked = isSelected;
+                const appliance = project.steps.electrificationGoals.selectedAppliances
+                    .find(appliance => appliance.type === checkbox.value);
+                
+                if (appliance) {
+                    checkbox.checked = true;
+                    
+                    // Load quantity value if available
+                    const quantityField = document.querySelector(`.quantity-field[data-for="${checkbox.value}"] input[type="number"]`);
+                    if (quantityField && appliance.quantity) {
+                        quantityField.value = appliance.quantity;
+                    }
+                } else {
+                    checkbox.checked = false;
+                }
+                
+                // Update quantity field visibility
+                handleQuantityFieldVisibility(checkbox);
             });
         }
 
@@ -635,14 +669,29 @@
                     },
                     getResults: () => {
                         const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+                        const selectedAppliances = [];
+                        
+                        checkboxes.forEach(cb => {
+                            if (cb.checked) {
+                                const appliance = {
+                                    type: cb.value,
+                                    name: cb.nextElementSibling.textContent.trim(),
+                                    quantity: 1 // default quantity
+                                };
+                                
+                                // Get quantity if available
+                                const quantityField = document.querySelector(`.quantity-field[data-for="${cb.value}"] input[type="number"]`);
+                                if (quantityField) {
+                                    appliance.quantity = parseInt(quantityField.value) || 1;
+                                }
+                                
+                                selectedAppliances.push(appliance);
+                            }
+                        });
+                        
                         return {
                             electrificationGoals: {
-                                selectedAppliances: Array.from(checkboxes)
-                                    .filter(cb => cb.checked)
-                                    .map(cb => ({
-                                        type: cb.value,
-                                        name: cb.nextElementSibling.textContent.trim()
-                                    }))
+                                selectedAppliances: selectedAppliances
                             }
                         };
                     }
@@ -1079,9 +1128,23 @@
                     projectData.steps.electrificationGoals.selectedAppliances) {
                     const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
                     checkboxes.forEach(checkbox => {
-                        const isSelected = projectData.steps.electrificationGoals.selectedAppliances
-                            .some(appliance => appliance.type === checkbox.value);
-                        checkbox.checked = isSelected;
+                        const appliance = projectData.steps.electrificationGoals.selectedAppliances
+                            .find(appliance => appliance.type === checkbox.value);
+                        
+                        if (appliance) {
+                            checkbox.checked = true;
+                            
+                            // Load quantity value if available
+                            const quantityField = document.querySelector(`.quantity-field[data-for="${checkbox.value}"] input[type="number"]`);
+                            if (quantityField && appliance.quantity) {
+                                quantityField.value = appliance.quantity;
+                            }
+                        } else {
+                            checkbox.checked = false;
+                        }
+                        
+                        // Update quantity field visibility
+                        handleQuantityFieldVisibility(checkbox);
                     });
                     
                     // Trigger validation check to update Next button

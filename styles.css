@@ -1010,4 +1010,51 @@ a:hover {
     height: 40px;
     font-size: 1.2em;
     padding: 8px;
+}
+
+/* Quantity field styles */
+.quantity-field {
+    display: none;
+    margin-top: var(--spacing-sm);
+    margin-left: 2rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    animation: slideIn 0.3s ease-out;
+}
+
+.quantity-field.show {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.quantity-field label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+    white-space: nowrap;
+}
+
+.quantity-field input[type="number"] {
+    width: 60px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.quantity-field input[type="number"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+.quantity-field input[type="number"]::-webkit-inner-spin-button,
+.quantity-field input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
 } 
