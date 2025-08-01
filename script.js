@@ -283,9 +283,26 @@
                 panelAmps.value = project.steps.currentEquipment.panelSize;
             }
         }
+
+        // Load capacity data from step 4 if it exists
+        if (project.steps.loadAnalysis) {
+            const topDownCapacity = document.querySelector('#topDownCapacity');
+            const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+            
+            if (project.steps.loadAnalysis.topDownCapacity && topDownCapacity) {
+                topDownCapacity.value = project.steps.loadAnalysis.topDownCapacity;
+            }
+            
+            if (project.steps.loadAnalysis.bottomUpCapacity && bottomUpCapacity) {
+                bottomUpCapacity.value = project.steps.loadAnalysis.bottomUpCapacity;
+            }
+        }
         
         // Update step completion status for all steps
         stepManager.checkStepCompletion();
+        
+        // Update capacity summary if panel size and capacity data are loaded
+        stepManager.updateCapacitySummary();
     }
     
     // Consolidated file saving function
@@ -1071,8 +1088,30 @@
                     stepManager.checkStepCompletion();
                 }
 
+                // Load panel size if it exists
+                if (projectData.steps.currentEquipment && projectData.steps.currentEquipment.panelSize) {
+                    const panelAmps = document.querySelector('#panelAmps');
+                    if (panelAmps) {
+                        panelAmps.value = projectData.steps.currentEquipment.panelSize;
+                    }
+                }
+
+                // Load capacity data from step 4 if it exists
+                if (projectData.steps.loadAnalysis) {
+                    const topDownCapacity = document.querySelector('#topDownCapacity');
+                    const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+                    
+                    if (projectData.steps.loadAnalysis.topDownCapacity && topDownCapacity) {
+                        topDownCapacity.value = projectData.steps.loadAnalysis.topDownCapacity;
+                    }
+                    
+                    if (projectData.steps.loadAnalysis.bottomUpCapacity && bottomUpCapacity) {
+                        bottomUpCapacity.value = projectData.steps.loadAnalysis.bottomUpCapacity;
+                    }
+                }
+
                 // Load skip states from project data
-                ['currentUsage', 'loadAnalysis', 'gasAnalysis', 'actionPlan'].forEach(stepId => {
+                ['loadAnalysis', 'gasAnalysis', 'actionPlan'].forEach(stepId => {
                     const skipCheckbox = document.querySelector(`#${stepId} input[type="checkbox"]`);
                     if (skipCheckbox && projectData.steps[stepId] && projectData.steps[stepId].skipState !== undefined) {
                         skipCheckbox.checked = projectData.steps[stepId].skipState;
@@ -1086,6 +1125,9 @@
                 
                 // Update step completion status for all steps
                 stepManager.checkStepCompletion();
+                
+                // Update capacity summary if panel size and capacity data are loaded
+                stepManager.updateCapacitySummary();
                 
                 alert('Project loaded successfully!');
                 
