@@ -101,6 +101,43 @@
     const openProjectBtn = document.getElementById('openProjectBtn');
     const importFile = document.getElementById('importFile');
 
+    // Set default project name based on user's system information
+    function getDefaultProjectName() {
+        // Try to get username from various sources
+        let username = '';
+        
+        // Try to get from localStorage if we've stored it before
+        username = localStorage.getItem('panelWizard_username');
+        
+        // If no stored username, create a simple friendly identifier
+        if (!username) {
+            // Create a user-friendly date format
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                               'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const month = monthNames[now.getMonth()];
+            const year = now.getFullYear();
+            
+            username = `${day}${month}${year}`;
+        }
+        
+        // Clean the username to ensure it's valid for a project name
+        username = username.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+        
+        // Store the username for future use
+        localStorage.setItem('panelWizard_username', username);
+        
+        return `${username}_project`;
+    }
+
+    // Set default project name when the page loads
+    const projectNameInput = document.getElementById('projectName');
+    if (projectNameInput) {
+        projectNameInput.value = getDefaultProjectName();
+        console.log('Default project name set:', projectNameInput.value);
+    }
+
     if (newProjectForm) {
         newProjectForm.addEventListener('submit', handleNewProject);
         console.log('Project form initialized');
@@ -215,8 +252,8 @@
         const rules = {
             minLength: 3,
             maxLength: 50,
-            // Allows letters, numbers, spaces, hyphens, and apostrophes
-            pattern: /^[a-zA-Z0-9\s\-']+$/,
+            // Allows letters, numbers, spaces, hyphens, apostrophes, and underscores
+            pattern: /^[a-zA-Z0-9\s\-'_]+$/,
         };
         
         const errors = [];
@@ -1257,6 +1294,12 @@
                 </div>
             </div>
         `;
+
+        // Set default project name in the reset form
+        const projectNameInput = document.getElementById('projectName');
+        if (projectNameInput) {
+            projectNameInput.value = getDefaultProjectName();
+        }
 
         // Reattach event listeners
         document.getElementById('newProjectForm').addEventListener('submit', handleNewProject);
