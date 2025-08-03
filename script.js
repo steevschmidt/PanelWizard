@@ -80,9 +80,25 @@
 
     // Reset button functionality
     const resetButton = document.getElementById('reset-button');
+    
+    // Function to update reset button visibility based on step 1 completion
+    function updateResetButtonVisibility() {
+        const step1 = stepManager.steps[1];
+        if (step1 && step1.isComplete) {
+            resetButton.style.display = 'block';
+        } else {
+            resetButton.style.display = 'none';
+        }
+    }
+    
+    // Initially hide the reset button
+    resetButton.style.display = 'none';
+    
     resetButton.addEventListener('click', () => {
         if (confirm('This will clear all saved data and reload the page. Make sure you have saved your project file before proceeding. Clear all?')) {
             localStorage.clear();
+            // Hide the reset button immediately after clearing data
+            resetButton.style.display = 'none';
             location.reload();
         }
     });
@@ -527,7 +543,7 @@
         const confirmDelete = confirm(`Are you sure you want to delete the project "${projectName}"? Make sure you have downloaded a copy if you want to save it.`);
         
         if (confirmDelete) {
-            let proSects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
+            let projects = JSON.parse(localStorage.getItem('panelWizard_projects') || '[]');
             projects = projects.filter(p => p.name !== projectName);
             localStorage.setItem('panelWizard_projects', JSON.stringify(projects));
             
@@ -1004,6 +1020,11 @@
 
             // Force UI update
             this.updateNavigation();
+            
+            // Update reset button visibility when step 1 completion status changes
+            if (typeof updateResetButtonVisibility === 'function') {
+                updateResetButtonVisibility();
+            }
             
             // Log the current state for debugging
             console.log(`Step ${step.id} state:`, {
