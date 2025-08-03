@@ -937,7 +937,21 @@
             
             if (maxCapacity !== null && !isNaN(maxCapacity)) {
                 summarySection.style.display = 'block';
-                summaryText.textContent = `You have ${maxCapacity} amps of remaining capacity on your ${panelSize} amp panel.`;
+                
+                // Base message
+                let message = `You have ${maxCapacity} amps of remaining capacity on your ${panelSize} amp panel.<br>`;
+                
+                // Add contextual message based on capacity
+                if (maxCapacity < 10) {
+                    message += "You may need to upsize your panel.<br>";
+                } else if (maxCapacity > 50) {
+                    message += "You should have plenty of capacity to electrify your home with your existing panel!<br>";
+                } else {
+                    message += "You should be able to electrify using your existing panel if you are careful.<br>";
+                }
+                message += "Please continue to learn more.";
+                
+                summaryText.innerHTML = message;
             } else {
                 summarySection.style.display = 'none';
             }
