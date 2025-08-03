@@ -851,7 +851,7 @@ button {
 .tooltip {
     visibility: hidden;
     position: absolute;
-    left: calc(100% - 300px);  /* Pull tooltip left to avoid clipping */
+    left: 100%;  /* Position to the right of the icon */
     top: 50%;
     transform: translateY(-50%);
     background-color: var(--text-color);
