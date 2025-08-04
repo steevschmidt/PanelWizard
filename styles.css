@@ -105,59 +105,7 @@ p {
     margin-bottom: var(--spacing-md);
 }
 
-/* ==========================================================================
-   Navigation
-   ========================================================================== */
 
-.nav-menu {
-    position: fixed;
-    z-index: 100;
-    background-color: var(--background-primary);
-    box-shadow: 2px 0 10px var(--shadow-color);
-}
-
-.nav-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.nav-list li {
-    margin-bottom: var(--spacing-xs);
-}
-
-.nav-list a {
-    display: block;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    color: var(--text-primary);
-    text-decoration: none;
-    border-radius: var(--border-radius-sm);
-    transition: background-color var(--transition-speed);
-}
-
-.nav-list a:hover {
-    background-color: rgba(255, 127, 0, 0.1);
-}
-
-.nav-list a.active {
-    font-weight: bold;
-    color: var(--highlight-color);
-}
-
-.nav-list a.completed {
-    font-weight: bold;
-    opacity: 0.8;
-}
-
-/* Dropdown Styles */
-.nav-list .dropdown {
-    margin: var(--spacing-xs) 0;
-    padding-left: var(--spacing-md);
-}
-
-.nav-list .dropdown li a {
-    padding-left: var(--spacing-md);
-}
 
 /* ==========================================================================
    Forms
@@ -246,18 +194,21 @@ button {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    position: relative; /* Ensure proper positioning */
 }
 
 .step-content.active {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+    position: relative; /* Ensure proper positioning */
 }
 
 .step-content.completed {
     opacity: 0.8;
     visibility: visible;
     pointer-events: auto;
+    position: relative; /* Ensure proper positioning */
 }
 
 .content-box {
@@ -332,16 +283,18 @@ button {
 @media (max-width: 768px) {
     .container {
         padding: var(--spacing-md);
+        padding-top: 160px; /* Reserve space for navigation controls and step titles */
+        margin-left: 0 !important; /* Reset desktop margin */
+        width: 100% !important; /* Use full width on mobile */
+        max-width: 100% !important; /* Prevent overflow */
     }
 
     h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
+    h2 { font-size: 2rem; }
     h3 { font-size: 1.2rem; }
     h4 { font-size: 1.1rem; }
 
-    .nav-list {
-        flex-direction: column;
-    }
+
 
     .project-options {
         grid-template-columns: 1fr;
@@ -349,10 +302,19 @@ button {
 
     .step-content {
         padding: var(--spacing-md);
+        margin-top: 0; /* No additional spacing needed */
     }
 
     .content-box {
         padding: var(--spacing-lg);
+    }
+
+    /* Ensure main content area has proper spacing */
+    main {
+        margin-top: 0; /* No additional spacing needed */
+        width: 100% !important; /* Use full width on mobile */
+        max-width: 100% !important; /* Prevent overflow */
+        position: relative; /* Ensure proper positioning context */
     }
 }
 
@@ -419,150 +381,81 @@ button {
     z-index: 1000;
 }
 
-/* ==========================================================================
-   Mobile Navigation Toggle Button
-   ========================================================================== */
 
-.nav-toggle {
-    display: none;
-    background: none;
-    border: none;
-    padding: 1rem;
-    cursor: pointer;
-    z-index: 1001;
-}
-
-.nav-toggle span {
-    display: block;
-    width: 25px;
-    height: 2px;
-    background-color: var(--text-color);
-    margin: 5px 0;
-    transition: 0.3s;
-}
 
 /* ==========================================================================
    Mobile Navigation Styles
    ========================================================================== */
 
 @media (max-width: 768px) {
-    .nav-toggle {
-        display: block;
+    .container {
+        padding: var(--spacing-md);
+        padding-top: 80px; /* Space for theme toggle and reset button */
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Position controls at the top */
+    .theme-toggle {
+        top: 15px;
+        right: 15px;
+        z-index: 1001;
+    }
+
+    .reset-button {
         position: fixed;
         top: 15px;
-        left: 15px;
+        right: 70px; /* Position to the left of theme toggle */
+        z-index: 1001;
+        background: transparent;
+        border: 2px solid #ff7f00;
+        color: #ff7f00;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        white-space: nowrap;
     }
 
-    .nav-toggle.active span:nth-child(1) {
-        transform: rotate(45deg) translate(5px, 5px);
-    }
-
-    .nav-toggle.active span:nth-child(2) {
-        opacity: 0;
-    }
-
-    .nav-toggle.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(5px, -5px);
-    }
-
-    .nav-menu {
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: auto;
-        padding: 0.5rem;
-    }
-
-    .nav-list {
-        display: none;
-        padding-top: 70px;
+    /* Stack project options vertically on mobile */
+    .project-options {
         flex-direction: column;
+        gap: 1rem;
     }
 
-    .nav-list.active {
-        display: flex;
-        position: fixed;
-        top: 0;
-        left: 0;
+    .project-option {
+        flex: none;
         width: 100%;
-        height: 100vh;
-        background-color: var(--background-color);
-        z-index: 1000;
-        overflow-y: auto;
     }
 
-    .nav-list > li {
-        margin: 0.5rem 0;
+    /* Stack project actions vertically on mobile */
+    .project-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: stretch;
     }
 
-    .nav-list a {
-        padding: 0.5rem 1.5rem;
-        margin: 0;
-        border-bottom: 1px solid rgba(255, 127, 0, 0.1);
+    /* Stack current project content vertically on mobile */
+    .current-project-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
     }
 
-    .has-dropdown .dropdown {
-        padding-left: 2rem;
-    }
-
-    .dropdown li:last-child a {
-        border-bottom: none;
-    }
-
-    .nav-list .dropdown li a {
-        padding: 0.5rem 1.5rem;
-        margin: 0;
+    .project-info {
+        flex: none;
     }
 }
 
 /* ==========================================================================
-   Desktop Navigation Styles
+   Desktop Styles
    ========================================================================== */
 
 @media (min-width: 769px) {
-    .nav-menu {
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: 250px;
-        padding-top: 60px;
-    }
-
-    .nav-list {
-        flex-direction: column;
-        height: calc(100vh - 60px);
-        overflow-y: auto;
-    }
-
-    .nav-list > li {
-        margin: 0.5rem 0;
-    }
-
-    .nav-list a {
-        padding: 1rem 1.5rem;
-        margin: 0.5rem 0;
-    }
-
-    .nav-list .dropdown li a {
-        padding: 0.5rem 1.5rem;
-        margin: 0;
-    }
-
-    .has-dropdown .dropdown {
-        position: static;
-        box-shadow: none;
-        background: none;
-    }
-
-    .nav-list a:hover {
-        color: #ff7f00;
-        background-color: rgba(255, 127, 0, 0.1);
-        border-left: 3px solid #ff7f00;
-    }
-
     .container {
-        margin-left: 250px;
-        width: calc(100% - 250px);
+        margin-left: 0;
+        width: 100%;
     }
 
     .theme-toggle {
@@ -738,33 +631,13 @@ button {
    Navigation Status Styles
    ========================================================================== */
 
-.nav-list a {
-    opacity: 0.5;
-    pointer-events: none;
-    color: var(--text-color);
-    transition: opacity 0.3s ease;
-}
 
-.nav-list a.active {
-    opacity: 1;
-    pointer-events: auto;
-    color: #ff7f00;
-}
-
-.nav-list a.completed {
-    opacity: 0.8;
-    pointer-events: auto;
-}
 
 /* ==========================================================================
    Improve visibility in dark mode
    ========================================================================== */
 
-@media (prefers-color-scheme: dark) {
-    .nav-list a {
-        opacity: 0.7;  /* Increased from 0.5 for better visibility */
-    }
-}
+
 
 /* ==========================================================================
    Next Button Styles

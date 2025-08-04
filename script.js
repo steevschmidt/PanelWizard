@@ -103,14 +103,7 @@
         }
     });
 
-    // Navigation toggle functionality
-    const navToggle = document.querySelector('.nav-toggle');
-    const navList = document.querySelector('.nav-list');
-    
-    navToggle.addEventListener('click', () => {
-        navList.classList.toggle('active');
-        navToggle.classList.toggle('active');
-    });
+
 
     // Project form handling
     const newProjectForm = document.getElementById('newProjectForm');
@@ -178,12 +171,7 @@
         console.log('Step 1 activated');
     }
 
-    // Initialize navigation
-    const step1Link = document.querySelector('.nav-list a[href="#projectInfo"]');
-    if (step1Link) {
-        step1Link.classList.add('active');
-        console.log('Step 1 navigation activated');
-    }
+
 
     // Add event listeners for step 2 checkboxes
     const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
@@ -992,7 +980,6 @@
             });
 
             this.currentStep = stepNumber;
-            this.updateNavigation();
             this.checkStepCompletion();
         },
 
@@ -1032,9 +1019,6 @@
                 }
             }
 
-            // Force UI update
-            this.updateNavigation();
-            
             // Update reset button visibility when step 1 completion status changes
             if (typeof updateResetButtonVisibility === 'function') {
                 updateResetButtonVisibility();
@@ -1072,19 +1056,7 @@
             this.saveProgress();
         },
 
-        updateNavigation() {
-            Object.entries(this.steps).forEach(([number, step]) => {
-                const navLink = document.querySelector(`a[href="#${step.id}"]`);
-                if (!navLink) return;
 
-                navLink.classList.remove('active', 'completed');
-                if (number == this.currentStep) {
-                    navLink.classList.add('active');
-                } else if (step.isComplete) {
-                    navLink.classList.add('completed');
-                }
-            });
-        },
 
         saveProgress() {
             const progress = {
@@ -1193,7 +1165,7 @@
                 
                 // Update step completion status
                 stepManager.steps[1].isComplete = true;
-                stepManager.updateNavigation();
+    
                 
                 // Load saved electrification goals if they exist
                 if (projectData.steps.electrificationGoals && 
