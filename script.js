@@ -491,6 +491,7 @@
             currentEquipment: {},
             loadAnalysis: {},
             gasAnalysis: {},
+            planNewAppliances: {},
             actionPlan: {}
         };
 
@@ -809,10 +810,10 @@
                     description: 'Analyze gas usage and estimate electrification impacts',
                     isOptional: true,
                     nextStep: 6,
-                                    validation: () => {
-                    const skipCheckbox = document.querySelector('#gasAnalysis input[type="checkbox"]');
-                    return skipCheckbox && skipCheckbox.checked;
-                },
+                    validation: () => {
+                        const skipCheckbox = document.querySelector('#gasAnalysis input[type="checkbox"]');
+                        return skipCheckbox && skipCheckbox.checked;
+                    },
                     getResults: () => {
                         const skipCheckbox = document.querySelector('#gasAnalysis input[type="checkbox"]');
                         
@@ -824,8 +825,27 @@
                     }
                 }),
                 6: new Step({
+                    id: 'planNewAppliances',
+                    title: 'Plan for New Appliances',
+                    description: 'Define specific electric appliances for your home',
+                    isOptional: true,
+                    nextStep: 7,
+                    validation: () => {
+                        const skipCheckbox = document.querySelector('#planNewAppliances input[type="checkbox"]');
+                        return skipCheckbox && skipCheckbox.checked;
+                    },
+                    getResults: () => {
+                        const skipCheckbox = document.querySelector('#planNewAppliances input[type="checkbox"]');
+                        return {
+                            planNewAppliances: {
+                                skipState: skipCheckbox ? skipCheckbox.checked : false
+                            }
+                        };
+                    }
+                }),
+                7: new Step({
                     id: 'actionPlan',
-                    title: 'Action Plan',
+                    title: 'Next Steps',
                     description: 'Review and save your electrification plan',
                     isOptional: true,
                     nextStep: null,
@@ -1117,6 +1137,9 @@
                 gasAnalysis: {
                     skipState: false
                 },
+                planNewAppliances: {
+                    skipState: false
+                },
                 actionPlan: {
                     skipState: false
                 }
@@ -1218,7 +1241,7 @@
                 }
 
                 // Load skip states from project data
-                ['loadAnalysis', 'gasAnalysis', 'actionPlan'].forEach(stepId => {
+                ['loadAnalysis', 'gasAnalysis', 'planNewAppliances', 'actionPlan'].forEach(stepId => {
                     const skipCheckbox = document.querySelector(`#${stepId} input[type="checkbox"]`);
                     if (skipCheckbox && projectData.steps[stepId] && projectData.steps[stepId].skipState !== undefined) {
                         skipCheckbox.checked = projectData.steps[stepId].skipState;
