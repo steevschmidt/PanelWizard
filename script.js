@@ -179,12 +179,21 @@
         checkbox.addEventListener('change', () => {
             stepManager.checkStepCompletion();
             handleQuantityFieldVisibility(checkbox);
+            saveFormDataToLocalStorage(); // Save form data immediately
         });
     });
 
     // Initialize quantity field visibility
     checkboxes.forEach(checkbox => {
         handleQuantityFieldVisibility(checkbox);
+    });
+
+    // Add event listeners for quantity fields
+    const quantityFields = document.querySelectorAll('.quantity-field input[type="number"]');
+    quantityFields.forEach(field => {
+        field.addEventListener('input', () => {
+            saveFormDataToLocalStorage(); // Save form data when quantities change
+        });
     });
 
     console.log('Initialization complete');
@@ -199,6 +208,73 @@
                 quantityField.classList.add('show');
             } else {
                 quantityField.classList.remove('show');
+            }
+        }
+    }
+
+    // Function to save form data to localStorage
+    function saveFormDataToLocalStorage() {
+        const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+        const formData = {
+            selectedAppliances: []
+        };
+        
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const appliance = {
+                    type: cb.value,
+                    name: cb.nextElementSibling.textContent.trim(),
+                    quantity: 1 // default quantity
+                };
+                
+                // Get quantity if available
+                const quantityField = document.querySelector(`.quantity-field[data-for="${cb.value}"] input[type="number"]`);
+                if (quantityField) {
+                    appliance.quantity = parseInt(quantityField.value) || 1;
+                }
+                
+                formData.selectedAppliances.push(appliance);
+            }
+        });
+        
+        localStorage.setItem('panelWizard_formData', JSON.stringify(formData));
+    }
+
+    // Function to load form data from localStorage
+    function loadFormDataFromLocalStorage() {
+        const localStorageData = localStorage.getItem('panelWizard_formData');
+        if (localStorageData) {
+            try {
+                const formData = JSON.parse(localStorageData);
+                
+                // Restore checkbox states
+                const checkboxes = document.querySelectorAll('#electrificationForm input[type="checkbox"]');
+                checkboxes.forEach(cb => {
+                    const appliance = formData.selectedAppliances.find(a => a.type === cb.value);
+                    if (appliance) {
+                        cb.checked = true;
+                        
+                        // Restore quantity value if available
+                        const quantityField = document.querySelector(`.quantity-field[data-for="${cb.value}"] input[type="number"]`);
+                        if (quantityField && appliance.quantity) {
+                            quantityField.value = appliance.quantity;
+                        }
+                        
+                        // Update quantity field visibility
+                        handleQuantityFieldVisibility(cb);
+                    } else {
+                        cb.checked = false;
+                        handleQuantityFieldVisibility(cb);
+                    }
+                });
+                
+                // Update step completion status
+                if (stepManager && stepManager.checkStepCompletion) {
+                    stepManager.checkStepCompletion();
+                }
+                
+            } catch (e) {
+                console.error('Error loading form data from localStorage:', e);
             }
         }
     }
@@ -378,6 +454,11 @@
         
         // Update capacity summary if panel size and capacity data are loaded
         stepManager.updateCapacitySummary();
+        
+        // If we're currently on step 6, populate the appliances summary
+        if (stepManager.currentStep === 6) {
+            stepManager.populateAppliancesSummary();
+        }
     }
     
     // Consolidated file saving function
@@ -681,6 +762,7 @@
             this.initializeSteps();
             this.setupEventListeners();
             this.loadProgress();
+            loadFormDataFromLocalStorage(); // Load form data on initialization
         },
 
         defineSteps() {
@@ -763,12 +845,9 @@
                     id: 'loadAnalysis',
                     title: 'Load Analysis',
                     description: 'Calculate maximum power needs',
-                    isOptional: true,
+                    isOptional: false,
                     nextStep: 5,
                     validation: () => {
-                        const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
-                        if (skipCheckbox && skipCheckbox.checked) return true;
-                        
                         const topDownCapacity = document.querySelector('#topDownCapacity');
                         const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
                         
@@ -779,7 +858,6 @@
                     getResults: () => {
                         const topDownCapacity = document.querySelector('#topDownCapacity');
                         const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
-                        const skipCheckbox = document.querySelector('#loadAnalysis input[type="checkbox"]');
                         
                         // Calculate maxCapacity
                         const topDown = topDownCapacity && topDownCapacity.value ? parseInt(topDownCapacity.value) : null;
@@ -790,13 +868,12 @@
                             maxCapacity = Math.max(topDown, bottomUp);
                         } else if (topDown !== null) {
                             maxCapacity = topDown;
-                        } else if (bottomUp !== null) {
+                        } else if (bottomUpCapacity.value) {
                             maxCapacity = bottomUp;
                         }
                         
                         return {
                             loadAnalysis: {
-                                skipState: skipCheckbox ? skipCheckbox.checked : false,
                                 topDownCapacity: topDown,
                                 bottomUpCapacity: bottomUp,
                                 maxCapacity: maxCapacity
@@ -965,10 +1042,90 @@
             }
         },
 
+        populateAppliancesSummary() {
+            const tableBody = document.querySelector('#appliancesTableBody');
+            if (!tableBody) return;
+            
+            // Get the selected appliances from the current project
+            let selectedAppliances = window.currentProject?.steps?.electrificationGoals?.selectedAppliances || [];
+            
+            // If no data in currentProject, try to get from localStorage
+            if (selectedAppliances.length === 0) {
+                const localStorageData = localStorage.getItem('panelWizard_formData');
+                if (localStorageData) {
+                    try {
+                        const formData = JSON.parse(localStorageData);
+                        selectedAppliances = formData.selectedAppliances || [];
+                    } catch (e) {
+                        console.error('Error parsing localStorage data:', e);
+                    }
+                }
+            }
+            
+            if (selectedAppliances.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="3">No appliances selected. Please go back to Step 2 to select your electrification goals.</td></tr>';
+                return;
+            }
+            
+            // Clear existing table content
+            tableBody.innerHTML = '';
+            
+            // Populate table with selected appliances
+            selectedAppliances.forEach(appliance => {
+                const row = document.createElement('tr');
+                
+                // Get the display name for the appliance type
+                const displayName = this.getApplianceDisplayName(appliance.type);
+                
+                // Get the details based on appliance type
+                const details = this.getApplianceDetails(appliance.type, appliance.quantity);
+                
+                row.innerHTML = `
+                    <td>${displayName}</td>
+                    <td>${appliance.quantity}</td>
+                    <td>${details}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        },
+
+        getApplianceDisplayName(type) {
+            const displayNames = {
+                'heating': 'Heating Systems',
+                'waterheater': 'Water Heaters',
+                'cooking': 'Cooking Appliances',
+                'dryer': 'Clothes Dryers',
+                'other': 'Other Gas Appliances',
+                'ev': 'EV Charger',
+                'gasmeter': 'Remove Gas Meter'
+            };
+            return displayNames[type] || type;
+        },
+
+        getApplianceDetails(type, quantity) {
+            switch (type) {
+                case 'heating':
+                    return `Replace with ${quantity} heat pump(s)`;
+                case 'waterheater':
+                    return `Replace ${quantity} natural gas water heater(s) with electric`;
+                case 'cooking':
+                    return `Replace ${quantity} natural gas cooking appliance(s) with electric`;
+                case 'dryer':
+                    return `Replace ${quantity} natural gas dryer(s) with electric`;
+                case 'other':
+                    return `Replace with electric appliances requiring ${quantity} amps`;
+                case 'ev':
+                    return `Add ${quantity} EV charger(s)`;
+                case 'gasmeter':
+                    return 'Remove gas meter to create space for electrical equipment';
+                default:
+                    return 'Electric replacement';
+            }
+        },
+
         activateStep(stepNumber) {
-            console.log('activateStep called with stepNumber:', stepNumber);
             const step = this.steps[stepNumber];
-            console.log('Found step:', step);
             if (!step) return;
 
             // First, deactivate all steps
@@ -1001,6 +1158,11 @@
 
             this.currentStep = stepNumber;
             this.checkStepCompletion();
+            
+            // Special handling for step 6 - populate appliances summary table
+            if (stepNumber === 6) {
+                this.populateAppliancesSummary();
+            }
         },
 
         checkStepCompletion() {
@@ -1011,7 +1173,6 @@
             if (!nextButton) return;
 
             const isValid = step.validateStep();
-            console.log(`Step ${step.id} validation result:`, isValid);
 
             if (isValid) {
                 nextButton.classList.add('active');
@@ -1043,14 +1204,6 @@
             if (typeof updateResetButtonVisibility === 'function') {
                 updateResetButtonVisibility();
             }
-            
-            // Log the current state for debugging
-            console.log(`Step ${step.id} state:`, {
-                isValid,
-                isComplete: step.isComplete,
-                skipState: step.skipState,
-                nextButtonActive: nextButton.classList.contains('active')
-            });
         },
 
         completeStep(stepId) {
@@ -1058,7 +1211,15 @@
             if (!step) return;
 
             step.isComplete = true;
-            step.getResults();  // Save step results when completing
+            
+            // Get and save step results to the current project immediately
+            const results = step.getResults();
+            if (results && window.currentProject) {
+                if (!window.currentProject.steps) {
+                    window.currentProject.steps = {};
+                }
+                Object.assign(window.currentProject.steps, results);
+            }
 
             if (step.nextStep) {
                 this.activateStep(step.nextStep);
@@ -1128,11 +1289,13 @@
                 electrificationGoals: {
                     selectedAppliances: []
                 },
-                currentUsage: {
+                currentEquipment: {
                     panelSize: null
                 },
                 loadAnalysis: {
-                    skipState: false
+                    topDownCapacity: null,
+                    bottomUpCapacity: null,
+                    maxCapacity: null
                 },
                 gasAnalysis: {
                     skipState: false
@@ -1240,8 +1403,8 @@
                     }
                 }
 
-                // Load skip states from project data
-                ['loadAnalysis', 'gasAnalysis', 'planNewAppliances', 'actionPlan'].forEach(stepId => {
+                // Load skip states from project data (excluding loadAnalysis which is now required)
+                ['gasAnalysis', 'planNewAppliances', 'actionPlan'].forEach(stepId => {
                     const skipCheckbox = document.querySelector(`#${stepId} input[type="checkbox"]`);
                     if (skipCheckbox && projectData.steps[stepId] && projectData.steps[stepId].skipState !== undefined) {
                         skipCheckbox.checked = projectData.steps[stepId].skipState;
@@ -1258,6 +1421,11 @@
                 
                 // Update capacity summary if panel size and capacity data are loaded
                 stepManager.updateCapacitySummary();
+                
+                // If we're currently on step 6, populate the appliances summary
+                if (stepManager.currentStep === 6) {
+                    stepManager.populateAppliancesSummary();
+                }
                 
                 alert('Project loaded successfully!');
                 

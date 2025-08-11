@@ -1042,4 +1042,73 @@ a:hover {
     .description {
         font-size: 0.85rem;
     }
+}
+
+/* ==========================================================================
+   Appliances Summary Table
+   ========================================================================== */
+
+.appliances-summary {
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md);
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.appliances-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--spacing-sm);
+    background-color: var(--background-primary);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.appliances-table th {
+    background-color: var(--primary-color);
+    color: white;
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.appliances-table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
+}
+
+.appliances-table tr:last-child td {
+    border-bottom: none;
+}
+
+.appliances-table tr:hover {
+    background-color: var(--background-secondary);
+}
+
+.appliances-table tbody tr:nth-child(even) {
+    background-color: var(--background-secondary);
+}
+
+.appliances-table tbody tr:nth-child(even):hover {
+    background-color: var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .appliances-table {
+        font-size: 0.9rem;
+    }
+    
+    .appliances-table th,
+    .appliances-table td {
+        padding: var(--spacing-sm);
+    }
+    
+    .appliances-table th:last-child,
+    .appliances-table td:last-child {
+        display: none; /* Hide details column on mobile for space */
+    }
 } 
