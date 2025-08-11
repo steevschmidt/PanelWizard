@@ -903,7 +903,8 @@ a:hover {
 
 .quantity-field.show {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     gap: var(--spacing-sm);
 }
 
@@ -934,4 +935,111 @@ a:hover {
 .quantity-field input[type="number"]::-webkit-inner-spin-button,
 .quantity-field input[type="number"]::-webkit-outer-spin-button {
     opacity: 1;
+}
+
+/* BTU input specific styles for better UX */
+.quantity-field input[name="heating_quantity"] {
+    width: 120px;
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    padding: 8px 12px;
+}
+
+.quantity-field input[name="heating_quantity"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+/* Custom step increment styling */
+.quantity-field input[name="heating_quantity"]::-webkit-inner-spin-button {
+    background: var(--background-secondary);
+    border-left: 1px solid var(--border-color);
+    border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+}
+
+.quantity-field input[name="heating_quantity"]::-webkit-outer-spin-button {
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-sm) 0 0 var(--border-radius-sm);
+}
+
+
+
+/* Heating input group layout */
+.heating-input-group {
+    width: 100%;
+}
+
+.heating-input-group label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.unit-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Mobile responsive styles for BTU input */
+@media (max-width: 768px) {
+    .quantity-field {
+        margin-left: 1rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    .quantity-field input[name="heating_quantity"] {
+        width: 80px;
+        font-size: 0.9rem;
+        padding: 6px 8px;
+    }
+    
+
+    
+    .input-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+    
+    .unit-label {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .quantity-field {
+        margin-left: 0.5rem;
+        padding: var(--spacing-xs);
+    }
+    
+    .quantity-field input[name="heating_quantity"] {
+        width: 70px;
+        font-size: 0.85rem;
+        padding: 5px 6px;
+    }
+    
+    .heating-input-group label {
+        font-size: 0.9rem;
+    }
+    
+    .description {
+        font-size: 0.85rem;
+    }
 } 
