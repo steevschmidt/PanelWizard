@@ -196,6 +196,12 @@
         });
     });
 
+    // Add event listener for adding heating systems
+    const addHeatingBtn = document.querySelector('#addHeatingSystem');
+    if (addHeatingBtn) {
+        addHeatingBtn.addEventListener('click', addHeatingSystem);
+    }
+
     console.log('Initialization complete');
 
     // Function to handle quantity field visibility
@@ -227,10 +233,29 @@
                     quantity: 1 // default quantity
                 };
                 
-                // Get quantity if available
-                const quantityField = document.querySelector(`.quantity-field[data-for="${cb.value}"] input[type="number"]`);
-                if (quantityField) {
-                    appliance.quantity = parseInt(quantityField.value) || 1;
+                // Special handling for heating systems
+                if (cb.value === 'heating') {
+                    const heatingSystems = [];
+                    const heatingInputs = document.querySelectorAll('.heating-capacity-input');
+                    
+                    heatingInputs.forEach((input, index) => {
+                        if (input.value) {
+                            heatingSystems.push({
+                                id: index + 1,
+                                capacity: parseInt(input.value) || 30000,
+                                description: `Heating System ${index + 1}`
+                            });
+                        }
+                    });
+                    
+                    appliance.heatingSystems = heatingSystems;
+                    appliance.quantity = heatingSystems.length;
+                } else {
+                    // Get quantity if available for other appliances
+                    const quantityField = document.querySelector(`.quantity-field[data-for="${cb.value}"] input[type="number"]`);
+                    if (quantityField) {
+                        appliance.quantity = parseInt(quantityField.value) || 1;
+                    }
                 }
                 
                 formData.selectedAppliances.push(appliance);
@@ -254,10 +279,15 @@
                     if (appliance) {
                         cb.checked = true;
                         
-                        // Restore quantity value if available
-                        const quantityField = document.querySelector(`.quantity-field[data-for="${cb.value}"] input[type="number"]`);
-                        if (quantityField && appliance.quantity) {
-                            quantityField.value = appliance.quantity;
+                        // Special handling for heating systems
+                        if (cb.value === 'heating' && appliance.heatingSystems) {
+                            restoreHeatingSystems(appliance.heatingSystems);
+                        } else {
+                            // Restore quantity value if available for other appliances
+                            const quantityField = document.querySelector(`.quantity-field[data-for="${cb.value}"] input[type="number"]`);
+                            if (quantityField && appliance.quantity) {
+                                quantityField.value = appliance.quantity;
+                            }
                         }
                         
                         // Update quantity field visibility
@@ -277,6 +307,161 @@
                 console.error('Error loading form data from localStorage:', e);
             }
         }
+    }
+
+    // Function to add a new heating system
+    function addHeatingSystem() {
+        const container = document.querySelector('.heating-systems-container');
+        const existingSystems = container.querySelectorAll('.heating-system-item');
+        const newId = existingSystems.length + 1;
+        
+        if (newId > 5) {
+            alert('You can add up to 5 heating systems total.');
+            return;
+        }
+        
+        const newSystem = document.createElement('div');
+        newSystem.className = 'heating-system-item';
+        newSystem.setAttribute('data-heating-id', newId);
+        
+        newSystem.innerHTML = `
+            <button type="button" class="remove-heating-btn" onclick="removeHeatingSystem(this)">×</button>
+            <div class="heating-input-group">
+                <label><strong>Heating System ${newId}:</strong> Replace an existing gas heating unit with:</label>
+                <div class="input-row">
+                    <input type="number" min="6000" max="120000" value="30000" name="heating_${newId}_capacity" step="6000" placeholder="30000" class="heating-capacity-input">
+                    <span class="unit-label">BTU/h capacity</span>
+                    <span class="tooltip-container"><span class="tooltip">BTUs per hour (Btu/h) is a measure of heating capacity of natural gas heaters and usually appears on the unit. Step increment for this field is 6,000 BTU/h (½ ton units).</span>ⓘ</span>
+                </div>
+                <div class="description">with a new electric heat pump. 
+                    <span class="tooltip-container"><span class="tooltip">A heat pump is a device that transfers heat from one location to another, rather than generating heat directly. It provides both heating and cooling, and is more efficient than a gas heater.</span>ⓘ</span>
+                </div>
+            </div>
+        `;
+        
+        // Insert before the add button section
+        const addButtonSection = container.querySelector('.add-heating-system');
+        container.insertBefore(newSystem, addButtonSection);
+        
+        // Add event listener to the new input
+        const newInput = newSystem.querySelector('input');
+        newInput.addEventListener('input', () => {
+            saveFormDataToLocalStorage();
+        });
+        
+        // Update add button state
+        updateAddHeatingButtonState();
+        
+        // Save form data
+        saveFormDataToLocalStorage();
+    }
+
+    // Function to remove a heating system
+    function removeHeatingSystem(button) {
+        const systemItem = button.closest('.heating-system-item');
+        const container = systemItem.parentNode;
+        
+        // Remove the system
+        systemItem.remove();
+        
+        // Renumber remaining systems
+        const remainingSystems = container.querySelectorAll('.heating-system-item');
+        remainingSystems.forEach((system, index) => {
+            const newId = index + 1;
+            system.setAttribute('data-heating-id', newId);
+            
+            // Update label
+            const label = system.querySelector('label strong');
+            if (label) {
+                label.textContent = `Heating System ${newId}:`;
+            }
+            
+            // Update input name
+            const input = system.querySelector('input');
+            if (input) {
+                input.name = `heating_${newId}_capacity`;
+            }
+        });
+        
+        // Update add button state
+        updateAddHeatingButtonState();
+        
+        // Save form data
+        saveFormDataToLocalStorage();
+    }
+
+    // Function to update add button state
+    function updateAddHeatingButtonState() {
+        const container = document.querySelector('.heating-systems-container');
+        const existingSystems = container.querySelectorAll('.heating-system-item');
+        const addButton = document.querySelector('#addHeatingSystem');
+        
+        if (existingSystems.length >= 5) {
+            addButton.disabled = true;
+            addButton.textContent = 'Maximum 5 heating systems reached';
+        } else {
+            addButton.disabled = false;
+            addButton.innerHTML = '<span class="plus-icon">+</span> I have another gas heating unit';
+        }
+    }
+
+    // Function to restore heating systems from saved data
+    function restoreHeatingSystems(savedHeatingSystems) {
+        const container = document.querySelector('.heating-systems-container');
+        
+        // Clear existing heating systems
+        container.innerHTML = '';
+
+        // Add new heating systems based on saved data
+        savedHeatingSystems.forEach((system, index) => {
+            const newSystem = document.createElement('div');
+            newSystem.className = 'heating-system-item';
+            newSystem.setAttribute('data-heating-id', system.id);
+
+            newSystem.innerHTML = `
+                <button type="button" class="remove-heating-btn" onclick="removeHeatingSystem(this)">×</button>
+                <div class="heating-input-group">
+                    <label><strong>Heating System ${system.id}:</strong> Replace an existing gas heating unit with:</label>
+                    <div class="input-row">
+                        <input type="number" min="6000" max="120000" value="${system.capacity}" name="heating_${system.id}_capacity" step="6000" placeholder="30000" class="heating-capacity-input">
+                        <span class="unit-label">BTU/h capacity</span>
+                        <span class="tooltip-container"><span class="tooltip">BTUs per hour (Btu/h) is a measure of heating capacity of natural gas heaters and usually appears on the unit. Step increment for this field is 6,000 BTU/h (½ ton units).</span>ⓘ</span>
+                    </div>
+                    <div class="description">with a new electric heat pump. 
+                        <span class="tooltip-container"><span class="tooltip">A heat pump is a device that transfers heat from one location to another, rather than generating heat directly. It provides both heating and cooling, and is more efficient than a gas heater.</span>ⓘ</span>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(newSystem);
+
+            // Add event listener to the new input
+            const newInput = newSystem.querySelector('input');
+            newInput.addEventListener('input', () => {
+                saveFormDataToLocalStorage();
+            });
+        });
+
+        // Re-add the add button section
+        const addButtonSection = document.createElement('div');
+        addButtonSection.className = 'add-heating-system';
+        addButtonSection.innerHTML = `
+            <button type="button" class="add-heating-btn" id="addHeatingSystem">
+                <span class="plus-icon">+</span>
+                I have another gas heating unit
+            </button>
+            <p class="form-help">You can add up to 5 heating systems total</p>
+        `;
+        container.appendChild(addButtonSection);
+
+        // Re-attach event listener to add button
+        const addButton = document.querySelector('#addHeatingSystem');
+        if (addButton) {
+            addButton.addEventListener('click', addHeatingSystem);
+        }
+
+        // Update add button state
+        updateAddHeatingButtonState();
     }
 
     // Project handling functions
@@ -413,10 +598,15 @@
                 if (appliance) {
                     checkbox.checked = true;
                     
-                    // Load quantity value if available
-                    const quantityField = document.querySelector(`.quantity-field[data-for="${checkbox.value}"] input[type="number"]`);
-                    if (quantityField && appliance.quantity) {
-                        quantityField.value = appliance.quantity;
+                    // Special handling for heating systems
+                    if (checkbox.value === 'heating' && appliance.heatingSystems) {
+                        restoreHeatingSystems(appliance.heatingSystems);
+                    } else {
+                        // Load quantity value if available for other appliances
+                        const quantityField = document.querySelector(`.quantity-field[data-for="${checkbox.value}"] input[type="number"]`);
+                        if (quantityField && appliance.quantity) {
+                            quantityField.value = appliance.quantity;
+                        }
                     }
                 } else {
                     checkbox.checked = false;
@@ -803,10 +993,29 @@
                                     quantity: 1 // default quantity
                                 };
                                 
-                                // Get quantity if available
-                                const quantityField = document.querySelector(`.quantity-field[data-for="${cb.value}"] input[type="number"]`);
-                                if (quantityField) {
-                                    appliance.quantity = parseInt(quantityField.value) || 1;
+                                // Special handling for heating systems
+                                if (cb.value === 'heating') {
+                                    const heatingSystems = [];
+                                    const heatingInputs = document.querySelectorAll('.heating-capacity-input');
+                                    
+                                    heatingInputs.forEach((input, index) => {
+                                        if (input.value) {
+                                            heatingSystems.push({
+                                                id: index + 1,
+                                                capacity: parseInt(input.value) || 30000,
+                                                description: `Heating System ${index + 1}`
+                                            });
+                                        }
+                                    });
+                                    
+                                    appliance.heatingSystems = heatingSystems;
+                                    appliance.quantity = heatingSystems.length;
+                                } else {
+                                    // Get quantity if available for other appliances
+                                    const quantityField = document.querySelector(`.quantity-field[data-for="${cb.value}"] input[type="number"]`);
+                                    if (quantityField) {
+                                        appliance.quantity = parseInt(quantityField.value) || 1;
+                                    }
                                 }
                                 
                                 selectedAppliances.push(appliance);
@@ -868,7 +1077,7 @@
                             maxCapacity = Math.max(topDown, bottomUp);
                         } else if (topDown !== null) {
                             maxCapacity = topDown;
-                        } else if (bottomUpCapacity.value) {
+                        } else if (bottomUp !== null) {
                             maxCapacity = bottomUp;
                         }
                         
@@ -1062,6 +1271,15 @@
                 }
             }
             
+            // Debug logging
+            console.log('populateAppliancesSummary - selectedAppliances:', selectedAppliances);
+            selectedAppliances.forEach(appliance => {
+                console.log('Appliance:', appliance);
+                if (appliance.type === 'heating') {
+                    console.log('Heating appliance heatingSystems:', appliance.heatingSystems);
+                }
+            });
+            
             if (selectedAppliances.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="3">No appliances selected. Please go back to Step 2 to select your electrification goals.</td></tr>';
                 return;
@@ -1072,31 +1290,47 @@
             
             // Populate table with selected appliances
             selectedAppliances.forEach(appliance => {
-                const row = document.createElement('tr');
-                
-                // Get the display name for the appliance type
-                const displayName = this.getApplianceDisplayName(appliance.type);
-                
-                // Get the details based on appliance type
-                const details = this.getApplianceDetails(appliance.type, appliance.quantity);
-                
-                row.innerHTML = `
-                    <td>${displayName}</td>
-                    <td>${appliance.quantity}</td>
-                    <td>${details}</td>
-                `;
-                
-                tableBody.appendChild(row);
+                if (appliance.type === 'heating' && appliance.heatingSystems) {
+                    // Handle multiple heating systems
+                    appliance.heatingSystems.forEach(system => {
+                        const row = document.createElement('tr');
+                        
+                        row.innerHTML = `
+                            <td>${this.getApplianceDisplayName(appliance.type)} ${system.id}</td>
+                            <td>1</td>
+                            <td>Replace with ${system.capacity.toLocaleString()} BTU/h heat pump</td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    // Handle other appliances normally
+                    const row = document.createElement('tr');
+                    
+                    // Get the display name for the appliance type
+                    const displayName = this.getApplianceDisplayName(appliance.type);
+                    
+                    // Get the details based on appliance type
+                    const details = this.getApplianceDetails(appliance.type, appliance.quantity);
+                    
+                    row.innerHTML = `
+                        <td>${displayName}</td>
+                        <td>${appliance.quantity}</td>
+                        <td>${details}</td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                }
             });
         },
 
         getApplianceDisplayName(type) {
             const displayNames = {
-                'heating': 'Heating Systems',
-                'waterheater': 'Water Heaters',
-                'cooking': 'Cooking Appliances',
-                'dryer': 'Clothes Dryers',
-                'other': 'Other Gas Appliances',
+                'heating': 'Heating System',
+                'waterheater': 'Water Heater',
+                'cooking': 'Cooking Appliance',
+                'dryer': 'Clothes Dryer',
+                'other': 'Other Gas Appliance(s)',
                 'ev': 'EV Charger',
                 'gasmeter': 'Remove Gas Meter'
             };
@@ -1364,10 +1598,15 @@
                         if (appliance) {
                             checkbox.checked = true;
                             
-                            // Load quantity value if available
-                            const quantityField = document.querySelector(`.quantity-field[data-for="${checkbox.value}"] input[type="number"]`);
-                            if (quantityField && appliance.quantity) {
-                                quantityField.value = appliance.quantity;
+                            // Special handling for heating systems
+                            if (checkbox.value === 'heating' && appliance.heatingSystems) {
+                                restoreHeatingSystems(appliance.heatingSystems);
+                            } else {
+                                // Load quantity value if available for other appliances
+                                const quantityField = document.querySelector(`.quantity-field[data-for="${checkbox.value}"] input[type="number"]`);
+                                if (quantityField && appliance.quantity) {
+                                    quantityField.value = appliance.quantity;
+                                }
                             }
                         } else {
                             checkbox.checked = false;
@@ -1503,4 +1742,10 @@
         document.getElementById('newProjectForm').addEventListener('submit', handleNewProject);
         document.getElementById('importFile').addEventListener('change', handleFileImport);
     }
+
+    // Make functions available globally for onclick handlers
+    window.addHeatingSystem = addHeatingSystem;
+    window.removeHeatingSystem = removeHeatingSystem;
+    window.updateAddHeatingButtonState = updateAddHeatingButtonState;
+    window.restoreHeatingSystems = restoreHeatingSystems;
 })(); 

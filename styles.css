@@ -997,6 +997,85 @@ a:hover {
     line-height: 1.4;
 }
 
+/* Multiple heating systems styling */
+.heating-systems-container {
+    width: 100%;
+}
+
+.heating-system-item {
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.heating-system-item:not(:first-child) {
+    border-left: 4px solid var(--primary-color);
+}
+
+.heating-system-item .remove-heating-btn {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background: var(--error-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.heating-system-item .remove-heating-btn:hover {
+    background: #d32f2f;
+}
+
+.add-heating-system {
+    margin-top: var(--spacing-md);
+    text-align: center;
+}
+
+.add-heating-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: background-color var(--transition-speed);
+}
+
+.add-heating-btn:hover {
+    background: #388e3c;
+}
+
+.add-heating-btn:disabled {
+    background: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+.plus-icon {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Heating capacity input styling */
+.heating-capacity-input {
+    width: 120px !important;
+    min-width: 120px;
+}
+
 /* Mobile responsive styles for BTU input */
 @media (max-width: 768px) {
     .quantity-field {
@@ -1010,6 +1089,10 @@ a:hover {
         padding: 6px 8px;
     }
     
+    .heating-capacity-input {
+        width: 100px !important;
+        min-width: 100px;
+    }
 
     
     .input-row {

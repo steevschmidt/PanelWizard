@@ -85,15 +85,26 @@
                                         We'll need to know the capacity of the existing gas heating unit(s); BTUs per hour (Btu/h) is a measure of heating capacity of natural gas heaters and usually appears on the unit.</span>ⓘ</span></span>
                                 </label>
                                 <div class="quantity-field" data-for="heating">
-                                    <div class="heating-input-group">
-                                        <label>Replace an existing gas heating unit with:</label>
-                                        <div class="input-row">
-                                            <input type="number" min="6000" max="120000" value="30000" name="heating_quantity" step="6000" placeholder="30000">
-                                            <span class="unit-label">BTU/h capacity</span>
-                                            <span class="tooltip-container"><span class="tooltip">BTUs per hour (Btu/h) is a measure of heating capacity of natural gas heaters and usually appears on the unit. Step increment for this field is 6,000 BTU/h (½ ton units).</span>ⓘ</span>
+                                    <div class="heating-systems-container">
+                                        <div class="heating-system-item" data-heating-id="1">
+                                            <div class="heating-input-group">
+                                                <label><strong>Heating System 1:</strong> Replace an existing gas heating unit with:</label>
+                                                <div class="input-row">
+                                                    <input type="number" min="6000" max="120000" value="30000" name="heating_1_capacity" step="6000" placeholder="30000" class="heating-capacity-input">
+                                                    <span class="unit-label">BTU/h capacity</span>
+                                                    <span class="tooltip-container"><span class="tooltip">BTUs per hour (Btu/h) is a measure of heating capacity of natural gas heaters and usually appears on the unit. Step increment for this field is 6,000 BTU/h (½ ton units).</span>ⓘ</span>
+                                                </div>
+                                                <div class="description">with a new electric heat pump. 
+                                                    <span class="tooltip-container"><span class="tooltip">A heat pump is a device that transfers heat from one location to another, rather than generating heat directly. It provides both heating and cooling, and is more efficient than a gas heater.</span>ⓘ</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="description">with a new electric heat pump. 
-                                            <span class="tooltip-container"><span class="tooltip">A heat pump is a device that transfers heat from one location to another, rather than generating heat directly. It provides both heating and cooling, and is more efficient than a gas heater.</span>ⓘ</span>
+                                        
+                                        <div class="add-heating-system">
+                                            <button type="button" class="add-heating-btn" id="addHeatingSystem">
+                                                <span class="plus-icon">+</span>
+                                                I have another gas heating unit
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
