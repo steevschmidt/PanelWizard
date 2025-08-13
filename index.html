@@ -317,6 +317,34 @@
                         </table>
                     </div>
                     
+                    <h3>Lowest-Amperage Appliance Options from Database</h3>
+                    <p>Based on your electrification goals, here are the lowest-amperage electric appliances available in our database that would work with your panel capacity:</p>
+                    
+                    <div id="csvAppliancesTable" class="csv-appliances-table">
+                        <table class="appliances-table">
+                            <thead>
+                                <tr>
+                                    <th>Appliance Type</th>
+                                    <th>Manufacturer</th>
+                                    <th>Model</th>
+                                    <th>Panel Amps (240V)</th>
+                                    <th>Cost Range</th>
+                                    <th>Energy Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody id="csvAppliancesTableBody">
+                                <!-- CSV data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                        
+                        <div class="csv-summary">
+                            <h4>Panel Load Summary</h4>
+                            <p><strong>Total Panel Load:</strong> <span id="totalCsvPanelLoad">0</span> amps</p>
+                            <p><strong>Available Capacity:</strong> <span id="availableCapacity">0</span> amps</p>
+                            <p><strong>Remaining Capacity:</strong> <span id="remainingCsvCapacity">0</span> amps</p>
+                        </div>
+                    </div>
+                    
                     <h3>Define Your New Electric Appliances</h3>
                     <p>Now that we know your panel capacity and electrification goals, let's plan what specific electric appliances you'll need to replace your gas appliances.</p>
                     <p>This step will help you identify the exact models and specifications of the electric appliances that will work with your existing panel capacity.</p>

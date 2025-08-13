@@ -1362,6 +1362,71 @@ a:hover {
     color: var(--text-primary);
 }
 
+/* CSV Appliances Table Styles */
+.csv-appliances-table {
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md);
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.csv-appliances-table h3 {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--primary-color);
+}
+
+.csv-appliances-table .appliances-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--spacing-md);
+}
+
+.csv-appliances-table .appliances-table th,
+.csv-appliances-table .appliances-table td {
+    padding: var(--spacing-sm);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.csv-appliances-table .appliances-table th {
+    background-color: var(--background-primary);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.csv-appliances-table .appliances-table td {
+    background-color: var(--background-primary);
+    color: var(--text-secondary);
+}
+
+.csv-appliances-table .appliances-table tr:hover td {
+    background-color: var(--background-secondary);
+}
+
+.csv-summary {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: var(--background-primary);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.csv-summary h4 {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--primary-color);
+}
+
+.csv-summary p {
+    margin: var(--spacing-sm) 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.csv-summary p strong {
+    color: var(--text-primary);
+}
+
 /* Mobile responsiveness for product grid */
 @media (max-width: 768px) {
     .product-grid {
@@ -1375,6 +1440,15 @@ a:hover {
     
     .recommendation-category {
         padding: var(--spacing-sm);
+    }
+    
+    .csv-appliances-table .appliances-table {
+        font-size: 0.9rem;
+    }
+    
+    .csv-appliances-table .appliances-table th,
+    .csv-appliances-table .appliances-table td {
+        padding: var(--spacing-xs);
     }
 }
 

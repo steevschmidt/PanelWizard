@@ -1113,203 +1113,126 @@
     }
 
     // ==========================================================================
-    // Appliance Database CSV Loader
+    // Simple CSV Loader
     // ==========================================================================
 
-    class ApplianceDatabaseLoader {
-        constructor() {
-            this.database = {};
-            this.loadingPromises = new Map();
-            this.isInitialized = false;
-        }
+    const applianceDatabase = {
+        database: {},
+        isInitialized: false,
 
         async initialize() {
             if (this.isInitialized) return;
             
-            console.log('Initializing appliance database...');
+            console.log('Loading appliance database...');
+            console.log(`Protocol: ${window.location.protocol}, Hostname: ${window.location.hostname}`);
             
             try {
                 // Load all appliance categories
-                await Promise.all([
-                    this.loadCategory('heat-pumps'),
-                    this.loadCategory('water-heaters'),
-                    this.loadCategory('cooking-appliances'),
-                    this.loadCategory('clothes-dryers'),
-                    this.loadCategory('ev-chargers'),
-                    this.loadCategory('other-appliances')
-                ]);
+                const categories = ['heat-pumps', 'water-heaters', 'cooking-appliances', 'clothes-dryers', 'ev-chargers', 'other-appliances'];
+                
+                for (const category of categories) {
+                    this.database[category] = await this.loadCSV(category);
+                    console.log(`Loaded ${category}: ${this.database[category].length} products`);
+                }
                 
                 this.isInitialized = true;
-                console.log('Appliance database initialized successfully:', this.database);
+                console.log('Appliance database loaded successfully');
             } catch (error) {
-                console.error('Error initializing appliance database:', error);
-                throw error;
+                console.error('Error loading appliance database:', error);
             }
-        }
+        },
 
-        async loadCategory(categoryName) {
-            if (this.loadingPromises.has(categoryName)) {
-                return this.loadingPromises.get(categoryName);
-            }
-
-            const loadPromise = this.loadCSVFile(categoryName);
-            this.loadingPromises.set(categoryName, loadPromise);
-            
+        async loadCSV(categoryName) {
             try {
-                const data = await loadPromise;
-                this.database[categoryName] = data;
-                return data;
-            } finally {
-                this.loadingPromises.delete(categoryName);
-            }
-        }
-
-        async loadCSVFile(categoryName) {
-            try {
-                const response = await fetch(`data/appliances/${categoryName}.csv`);
-                if (!response.ok) {
-                    throw new Error(`Failed to load ${categoryName}.csv: ${response.status} ${response.statusText}`);
-                }
+                // Use local CSV files for development, production URLs for deployment
+                const isLocal = window.location.protocol === 'file:' || 
+                               window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1';
+                
+                const csvPath = isLocal
+                    ? `data/appliances/${categoryName}.csv`
+                    : `https://wizard.hea.com/data/appliances/${categoryName}.csv`;
+                
+                console.log(`Loading CSV from: ${csvPath} (${isLocal ? 'local' : 'production'})`);
+                
+                const response = await fetch(csvPath);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const csvText = await response.text();
                 return this.parseCSV(csvText);
             } catch (error) {
-                console.warn(`Warning: Could not load ${categoryName}.csv:`, error.message);
-                // Return empty array if file can't be loaded
+                console.warn(`Could not load ${categoryName}.csv:`, error.message);
+                
+                // Provide helpful guidance for local development
+                if (window.location.protocol === 'file:') {
+                    console.log('Tip: To use local CSV files, serve this application from a local web server:');
+                    console.log('  python -m http.server 8000');
+                    console.log('  npx serve .');
+                }
+                
                 return [];
             }
-        }
+        },
 
         parseCSV(csvText) {
-            try {
-                if (!csvText || typeof csvText !== 'string') {
-                    console.warn('Invalid CSV text provided');
-                    return [];
-                }
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+            
+            const headers = lines[0].split(',').map(h => h.trim());
+            
+            return lines.slice(1).map(line => {
+                const values = line.split(',').map(v => v.trim());
+                const product = {};
                 
-                const lines = csvText.trim().split('\n');
-                if (lines.length < 2) {
-                    console.warn('CSV file has insufficient data');
-                    return [];
-                }
-                
-                const headers = lines[0].split(',').map(h => h.trim());
-                
-                return lines.slice(1).map((line, index) => {
-                    try {
-                        const values = line.split(',').map(v => v.trim());
-                        const product = {};
-                        
-                        headers.forEach((header, headerIndex) => {
-                            let value = values[headerIndex] || '';
-                            
-                            // Convert numeric values
-                            if (header.includes('cost_') || header.includes('amps') || 
-                                header.includes('voltage') || header.includes('btu') ||
-                                header.includes('gal') || header.includes('kw') ||
-                                header.includes('cu_ft') || header.includes('seer') ||
-                                header.includes('hspf') || header.includes('uef') ||
-                                header.includes('cef')) {
-                                value = parseFloat(value) || 0;
-                            }
-                            
-                            // Convert boolean values
-                            if (header.includes('tankless') || header.includes('induction') ||
-                                header.includes('heat_pump') || header.includes('smart_features')) {
-                                value = value.toLowerCase() === 'true';
-                            }
-                            
-                            product[header] = value;
-                        });
-                        
-                        return product;
-                    } catch (lineError) {
-                        console.warn(`Warning: Error parsing CSV line ${index + 1}:`, lineError.message);
-                        return null;
+                headers.forEach((header, index) => {
+                    let value = values[index] || '';
+                    
+                    // Convert numeric values
+                    if (header.includes('cost_') || header.includes('amps') || 
+                        header.includes('voltage') || header.includes('btu') ||
+                        header.includes('gal') || header.includes('kw') ||
+                        header.includes('cu_ft') || header.includes('seer') ||
+                        header.includes('hspf') || header.includes('uef') ||
+                        header.includes('cef')) {
+                        value = parseFloat(value) || 0;
                     }
-                }).filter(product => product !== null); // Remove any failed products
-            } catch (error) {
-                console.warn('Warning: Error parsing CSV:', error.message);
-                return [];
-            }
-        }
+                    
+                    // Convert boolean values
+                    if (header.includes('tankless') || header.includes('induction') ||
+                        header.includes('heat_pump') || header.includes('smart_features')) {
+                        value = value.toLowerCase() === 'true';
+                    }
+                    
+                    product[header] = value;
+                });
+                
+                return product;
+            });
+        },
 
         getCategory(categoryName) {
             return this.database[categoryName] || [];
-        }
-
-        getAllProducts() {
-            const allProducts = [];
-            Object.keys(this.database).forEach(category => {
-                this.database[category].forEach(product => {
-                    allProducts.push({
-                        ...product,
-                        category: category
-                    });
-                });
-            });
-            return allProducts;
-        }
-
-        searchProducts(query, category = null) {
-            const searchTerm = query.toLowerCase();
-            const results = [];
-            
-            const categories = category ? [category] : Object.keys(this.database);
-            
-            categories.forEach(cat => {
-                if (this.database[cat]) {
-                    this.database[cat].forEach(product => {
-                        if (product.name.toLowerCase().includes(searchTerm) ||
-                            product.manufacturer.toLowerCase().includes(searchTerm) ||
-                            product.model_number.toLowerCase().includes(searchTerm)) {
-                            results.push({
-                                ...product,
-                                category: cat
-                            });
-                        }
-                    });
-                }
-            });
-            
-            return results;
-        }
+        },
 
         getProductsByCategory(categoryName) {
             return this.database[categoryName] || [];
-        }
+        },
 
         getProductById(id, category = null) {
             if (category) {
                 return this.database[category]?.find(p => p.id === id);
             }
             
-            // Search all categories
             for (const cat of Object.keys(this.database)) {
                 const product = this.database[cat]?.find(p => p.id === id);
                 if (product) return product;
             }
-            
             return null;
         }
-    }
+    };
 
-    // Create global appliance database instance
-    try {
-        window.applianceDatabase = new ApplianceDatabaseLoader();
-    } catch (error) {
-        console.error('Error initializing appliance database:', error);
-        // Create fallback instance
-        window.applianceDatabase = {
-            isInitialized: false,
-            initialize: async () => { console.warn('Appliance database not available'); return false; },
-            getCategory: () => [],
-            getAllProducts: () => [],
-            searchProducts: () => [],
-            getProductsByCategory: () => [],
-            getProductById: () => null
-        };
-    }
+    // Make it globally available
+    window.applianceDatabase = applianceDatabase;
 
     // ==========================================================================
     // Load Calculator for Panel Capacity
@@ -1467,6 +1390,77 @@
             return true;
         } catch (error) {
             console.error('CSV loading test failed:', error);
+            return false;
+        }
+    };
+
+    // Function to test CSV table population (can be called from browser console)
+    window.testCSVTable = async function() {
+        console.log('Testing CSV table population...');
+        try {
+            if (!window.applianceDatabase) {
+                console.error('Appliance database not initialized');
+                return false;
+            }
+            
+            if (!window.applianceDatabase.isInitialized) {
+                await window.applianceDatabase.initialize();
+            }
+            
+            // Check if we're on step 6
+            const step6 = document.getElementById('planNewAppliances');
+            if (!step6) {
+                console.log('Step 6 not found, creating test step');
+                // Create a test step for testing purposes
+                const testStep = {
+                    populateCsvAppliancesTable: async function() {
+                        console.log('Testing CSV table population...');
+                        // This will be called by the Step class method
+                    }
+                };
+                
+                // Test the CSV table population logic
+                const goals = window.currentProject?.steps?.electrificationGoals || {};
+                const availableCapacity = window.currentProject?.steps?.loadAnalysis?.maxCapacity || 100; // Default for testing
+                
+                console.log('Test goals:', goals);
+                console.log('Test available capacity:', availableCapacity);
+                
+                if (goals.selectedAppliances && goals.selectedAppliances.length > 0) {
+                    console.log('Found selected appliances:', goals.selectedAppliances);
+                    
+                    // Test getting products for each category
+                    const applianceMap = {
+                        'heating': 'heat-pumps',
+                        'waterheater': 'water-heaters',
+                        'cooking': 'cooking-appliances',
+                        'dryer': 'clothes-dryers',
+                        'ev': 'ev-chargers',
+                        'other': 'other-appliances'
+                    };
+                    
+                    goals.selectedAppliances.forEach(appliance => {
+                        const category = applianceMap[appliance.type];
+                        if (category) {
+                            const products = window.applianceDatabase.getProductsByCategory(category);
+                            console.log(`${appliance.type} -> ${category}: ${products.length} products found`);
+                            if (products.length > 0) {
+                                const sortedProducts = products.sort((a, b) => (a.panel_amps_240v || 0) - (b.panel_amps_240v || 0));
+                                const lowestAmpProduct = sortedProducts[0];
+                                console.log(`Lowest amp product for ${category}:`, lowestAmpProduct);
+                            }
+                        }
+                    });
+                } else {
+                    console.log('No selected appliances found in current project');
+                }
+                
+                return true;
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('CSV table test failed:', error);
             return false;
         }
     };
@@ -1678,6 +1672,188 @@
                 'other-appliances': 'Other Appliances'
             };
             return displayNames[category] || category;
+        }
+
+        async populateCsvAppliancesTable() {
+            try {
+                console.log('Starting CSV appliances table population...');
+                
+                // Get user's electrification goals from Step 2
+                const goals = window.currentProject?.steps?.electrificationGoals || {};
+                const availableCapacity = window.currentProject?.steps?.loadAnalysis?.maxCapacity || 0;
+                
+                console.log('Goals found:', goals);
+                console.log('Available capacity:', availableCapacity);
+                
+                if (!goals.selectedAppliances || goals.selectedAppliances.length === 0) {
+                    console.log('No electrification goals found for CSV table');
+                    // Show a message in the table instead of returning
+                    this.showNoGoalsMessage();
+                    return;
+                }
+                
+                if (availableCapacity === 0) {
+                    console.log('No available capacity information found for CSV table');
+                    // Show a message in the table instead of returning
+                    this.showNoCapacityMessage();
+                    return;
+                }
+                
+                console.log('Populating CSV appliances table for:', goals.selectedAppliances);
+                console.log('Available capacity:', availableCapacity);
+                
+                // Initialize appliance database if not already done
+                if (!window.applianceDatabase || !window.applianceDatabase.isInitialized) {
+                    try {
+                        await window.applianceDatabase.initialize();
+                        console.log('Appliance database initialized for CSV table');
+                    } catch (error) {
+                        console.error('Failed to initialize appliance database for CSV table:', error);
+                        return;
+                    }
+                }
+                
+                // Get the lowest-amperage appliance for each selected type
+                const selectedAppliances = goals.selectedAppliances;
+                const csvTableBody = document.getElementById('csvAppliancesTableBody');
+                const totalPanelLoadSpan = document.getElementById('totalCsvPanelLoad');
+                const availableCapacitySpan = document.getElementById('availableCapacity');
+                const remainingCapacitySpan = document.getElementById('remainingCsvCapacity');
+                
+                if (!csvTableBody || !totalPanelLoadSpan || !availableCapacitySpan || !remainingCapacitySpan) {
+                    console.warn('CSV table elements not found');
+                    return;
+                }
+                
+                // Clear existing table content
+                csvTableBody.innerHTML = '';
+                
+                let totalPanelLoad = 0;
+                const applianceMap = {
+                    'heating': 'heat-pumps',
+                    'waterheater': 'water-heaters',
+                    'cooking': 'cooking-appliances',
+                    'dryer': 'clothes-dryers',
+                    'ev': 'ev-chargers',
+                    'other': 'other-appliances'
+                };
+                
+                // Process each selected appliance type
+                for (const appliance of selectedAppliances) {
+                    const category = applianceMap[appliance.type];
+                    if (!category) {
+                        console.warn('Unknown appliance type:', appliance.type);
+                        continue;
+                    }
+                    
+                    const products = window.applianceDatabase.getProductsByCategory(category);
+                    if (products.length === 0) {
+                        console.warn('No products found for category:', category);
+                        continue;
+                    }
+                    
+                    // Sort by panel amps (lowest first) and get the lowest-amperage product
+                    const sortedProducts = products.sort((a, b) => (a.panel_amps_240v || 0) - (b.panel_amps_240v || 0));
+                    const lowestAmpProduct = sortedProducts[0];
+                    
+                    if (lowestAmpProduct) {
+                        // Calculate total amps for this appliance type (quantity * amps)
+                        const applianceAmps = (lowestAmpProduct.panel_amps_240v || 0) * appliance.quantity;
+                        totalPanelLoad += applianceAmps;
+                        
+                        // Create table row
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${this.getCategoryDisplayName(category)} (${appliance.quantity}x)</td>
+                            <td>${lowestAmpProduct.manufacturer || 'N/A'}</td>
+                            <td>${lowestAmpProduct.model_number || lowestAmpProduct.name || 'N/A'}</td>
+                            <td>${applianceAmps} amps</td>
+                            <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
+                            <td>${this.getEnergyRating(lowestAmpProduct)}</td>
+                        `;
+                        csvTableBody.appendChild(row);
+                        
+                        console.log(`Added ${category} appliance: ${lowestAmpProduct.name}, ${applianceAmps} amps`);
+                    }
+                }
+                
+                // Update summary information
+                totalPanelLoadSpan.textContent = totalPanelLoad;
+                availableCapacitySpan.textContent = availableCapacity;
+                const remainingCapacity = availableCapacity - totalPanelLoad;
+                remainingCapacitySpan.textContent = remainingCapacity;
+                
+                // Visual feedback for capacity
+                if (remainingCapacity < 0) {
+                    remainingCapacitySpan.style.color = 'var(--error-color)';
+                    remainingCapacitySpan.textContent = `${remainingCapacity} (OVER CAPACITY!)`;
+                } else if (remainingCapacity < 10) {
+                    remainingCapacitySpan.style.color = 'var(--warning-color)';
+                } else {
+                    remainingCapacitySpan.style.color = 'var(--success-color)';
+                }
+                
+                console.log('CSV appliances table populated successfully');
+                console.log('Total panel load:', totalPanelLoad, 'amps');
+                console.log('Remaining capacity:', remainingCapacity, 'amps');
+                
+            } catch (error) {
+                console.error('Error populating CSV appliances table:', error);
+            }
+        }
+
+        getEnergyRating(product) {
+            const ratings = [];
+            
+            if (product.seer) ratings.push(`SEER: ${product.seer}`);
+            if (product.hspf) ratings.push(`HSPF: ${product.hspf}`);
+            if (product.uef) ratings.push(`UEF: ${product.uef}`);
+            if (product.cef) ratings.push(`CEF: ${product.cef}`);
+            if (product.energy_star_rated) ratings.push('Energy Star');
+            
+            return ratings.length > 0 ? ratings.join(', ') : 'N/A';
+        }
+
+        showNoGoalsMessage() {
+            const csvTableBody = document.getElementById('csvAppliancesTableBody');
+            if (csvTableBody) {
+                csvTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                            No electrification goals selected. Please go back to Step 2 to select your electrification goals.
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            // Clear summary information
+            this.clearCsvSummary();
+        }
+
+        showNoCapacityMessage() {
+            const csvTableBody = document.getElementById('csvAppliancesTableBody');
+            if (csvTableBody) {
+                csvTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                            No panel capacity information available. Please complete Step 4 to calculate your available capacity.
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            // Clear summary information
+            this.clearCsvSummary();
+        }
+
+        clearCsvSummary() {
+            const totalPanelLoadSpan = document.getElementById('totalCsvPanelLoad');
+            const availableCapacitySpan = document.getElementById('availableCapacity');
+            const remainingCapacitySpan = document.getElementById('remainingCsvCapacity');
+            
+            if (totalPanelLoadSpan) totalPanelLoadSpan.textContent = '0';
+            if (availableCapacitySpan) availableCapacitySpan.textContent = '0';
+            if (remainingCapacitySpan) remainingCapacitySpan.textContent = '0';
         }
     }
 
@@ -2263,6 +2439,11 @@
             // Special handling for step 6 - populate appliances summary table
             if (stepNumber === 6) {
                 this.populateAppliancesSummary();
+                // Also populate the CSV appliances table
+                const step6 = this.steps[6];
+                if (step6 && step6.populateCsvAppliancesTable) {
+                    step6.populateCsvAppliancesTable();
+                }
             }
         },
 
@@ -2547,6 +2728,11 @@
                 // If we're currently on step 6, populate the appliances summary
                 if (typeof stepManager !== 'undefined' && stepManager && stepManager.currentStep === 6 && stepManager.populateAppliancesSummary) {
                     stepManager.populateAppliancesSummary();
+                    // Also populate the CSV appliances table
+                    const step6 = stepManager.steps[6];
+                    if (step6 && step6.populateCsvAppliancesTable) {
+                        step6.populateCsvAppliancesTable();
+                    }
                 }
                 
                 alert('Project loaded successfully!');
@@ -2645,6 +2831,16 @@
     } catch (error) {
         console.warn('Warning: Could not make functions globally available:', error.message);
     }
+
+    // Simple helper function for development
+    window.showLocalSetupInstructions = function() {
+        console.log('=== LOCAL DEVELOPMENT SETUP ===');
+        console.log('To use local CSV files, serve from a local web server:');
+        console.log('  python -m http.server 8000');
+        console.log('  npx serve .');
+        console.log('  VS Code Live Server extension');
+        console.log('==========================================');
+    };
     
     console.log('PanelWizard initialization complete');
 })(); 
