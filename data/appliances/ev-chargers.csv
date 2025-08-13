@@ -1,0 +1,11 @@
+id,name,charging_speed_kw,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,installation_type,installation_notes,manufacturer,model_number,smart_features
+ev_001,Tesla Wall Connector,11.5,48,240,dedicated,48,400,600,hardwired,Requires 60A circuit (48A continuous),Tesla,WC-G2,true
+ev_002,ChargePoint Home Flex,9.6,40,240,dedicated,40,500,700,hardwired,Requires 50A circuit (40A continuous),ChargePoint,CPH50,true
+ev_003,Enel X JuiceBox,7.7,32,240,dedicated,32,300,500,hardwired,Requires 40A circuit (32A continuous),Enel X,JB40,true
+ev_004,Wallbox Pulsar Plus,7.4,32,240,dedicated,32,350,550,hardwired,Requires 40A circuit (32A continuous),Wallbox,Pulsar Plus,true
+ev_005,Schneider Electric EVlink,7.2,30,240,dedicated,30,400,600,hardwired,Requires 40A circuit (30A continuous),Schneider Electric,EV230WS,false
+ev_006,ABB Terra,7.4,32,240,dedicated,32,450,650,hardwired,Requires 40A circuit (32A continuous),ABB,Terra 184,true
+ev_007,Siemens VersiCharge,7.2,30,240,dedicated,30,350,550,hardwired,Requires 40A circuit (30A continuous),Siemens,VC30GRYU,false
+ev_008,GE WattStation,7.2,30,240,dedicated,30,400,600,hardwired,Requires 40A circuit (30A continuous),GE,GE-WS-30,false
+ev_009,Leviton EVB40,7.2,30,240,dedicated,30,300,500,hardwired,Requires 40A circuit (30A continuous),Leviton,EVB40,false
+ev_010,Blink HQ-150,7.2,30,240,dedicated,30,250,450,hardwired,Requires 40A circuit (30A continuous),Blink,HQ-150,false

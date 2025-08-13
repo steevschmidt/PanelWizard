@@ -1,0 +1,11 @@
+id,name,capacity_gal,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,efficiency_uef,installation_notes,manufacturer,model_number,tankless
+wh_001,Rheem 50-Gal Heat Pump Water Heater,50,15,240,dedicated,15,1200,1800,3.7,Requires 15A dedicated circuit,Rheem,ProTerra,false
+wh_002,AO Smith 80-Gal Heat Pump Water Heater,80,20,240,dedicated,20,1500,2200,3.5,Requires 20A dedicated circuit,AO Smith,Voltex,false
+wh_003,Bradford White 40-Gal Heat Pump Water Heater,40,12,240,dedicated,12,1000,1500,3.8,Requires 15A dedicated circuit,Bradford White,RE2H50S,false
+wh_004,Stiebel Eltron Tankless Water Heater,0,28,240,dedicated,28,800,1200,0.98,Requires 30A dedicated circuit,Stiebel Eltron,Tempra 36 Plus,true
+wh_005,Rinnai Tankless Water Heater,0,32,240,dedicated,32,900,1400,0.96,Requires 40A dedicated circuit,Rinnai,RUC98iN,true
+wh_006,GE 65-Gal Heat Pump Water Heater,65,18,240,dedicated,18,1300,1900,3.6,Requires 20A dedicated circuit,GE,GeoSpring,false
+wh_007,Rheem 80-Gal Heat Pump Water Heater,80,20,240,dedicated,20,1500,2200,3.5,Requires 20A dedicated circuit,Rheem,ProTerra,false
+wh_008,AO Smith 40-Gal Heat Pump Water Heater,40,12,240,dedicated,12,1000,1500,3.8,Requires 15A dedicated circuit,AO Smith,Voltex,false
+wh_009,Bradford White 75-Gal Heat Pump Water Heater,75,18,240,dedicated,18,1400,2000,3.6,Requires 20A dedicated circuit,Bradford White,RE2H75S,false
+wh_010,Stiebel Eltron Tankless Water Heater,0,24,240,dedicated,24,700,1100,0.97,Requires 25A dedicated circuit,Stiebel Eltron,Tempra 24 Plus,true

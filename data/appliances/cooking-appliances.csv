@@ -1,0 +1,11 @@
+id,name,type,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,installation_notes,manufacturer,model_number,induction
+ca_001,GE Profile Induction Range,Range,40,240,dedicated,40,1200,1800,Requires 40A dedicated circuit,GE,PHB720,true
+ca_002,Bosch 800 Series Induction Cooktop,Cooktop,30,240,dedicated,30,800,1200,Requires 30A dedicated circuit,Bosch,HIIP055U,true
+ca_003,KitchenAid Convection Wall Oven,Oven,20,240,dedicated,20,600,900,Requires 20A dedicated circuit,KitchenAid,KOCE500E,false
+ca_004,Frigidaire Gallery Induction Range,Range,35,240,dedicated,35,900,1400,Requires 35A dedicated circuit,Frigidaire,FGIH3047V,true
+ca_005,Whirlpool Induction Cooktop,Cooktop,25,240,dedicated,25,600,900,Requires 25A dedicated circuit,Whirlpool,WFC3C48,true
+ca_006,GE Profile Convection Wall Oven,Oven,22,240,dedicated,22,700,1100,Requires 25A dedicated circuit,GE,JT3000SFSS,false
+ca_007,Samsung Induction Range,Range,38,240,dedicated,38,1000,1500,Requires 40A dedicated circuit,Samsung,NE58K9430WS,true
+ca_008,KitchenAid Induction Cooktop,Cooktop,28,240,dedicated,28,700,1000,Requires 30A dedicated circuit,KitchenAid,KICU509X,true
+ca_009,Maytag Convection Wall Oven,Oven,18,240,dedicated,18,500,800,Requires 20A dedicated circuit,Maytag,MCO115H,false
+ca_010,LG Induction Range,Range,36,240,dedicated,36,1100,1600,Requires 35A dedicated circuit,LG,LRE3193ST,true
