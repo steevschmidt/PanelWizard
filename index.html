@@ -7,7 +7,8 @@
     <meta property="og:description" content="Help homeowners understand how to electrify their home using their existing electrical panel">
     <meta property="og:image" content="https://www.builditgreen.org/wp-content/uploads/2021/06/BIG_CEC.jpg">
     <meta property="og:url" content="https://wizard.hea.com">
-    <title>PanelWizard</title>
+    <title>PanelWizard - Home Electrification Planning Tool</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -58,6 +59,7 @@
                                     <div class="import-section">
                                         <input type="file" id="importFile" accept=".json">
                                         <p class="form-help">Select a PanelWizard project file (.json)</p>
+                                        <button type="button" id="openProjectBtn" class="secondary-button">Open Project</button>
                                     </div>
                                 </div>
                             </div>
@@ -339,7 +341,7 @@
                         
                         <div class="csv-summary">
                             <h4>Panel Load Summary</h4>
-                            <p><strong>Total Panel Load:</strong> <span id="totalCsvPanelLoad">0</span> amps</p>
+                            <p><strong>Total New Panel Load:</strong> <span id="totalCsvPanelLoad">0</span> amps</p>
                             <p><strong>Available Capacity:</strong> <span id="availableCapacity">0</span> amps</p>
                             <p><strong>Remaining Capacity:</strong> <span id="remainingCsvCapacity">0</span> amps</p>
                         </div>

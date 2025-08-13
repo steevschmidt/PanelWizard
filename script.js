@@ -94,6 +94,34 @@
 
     console.log('Script loading...');
 
+    // ==========================================================================
+    // Centralized Display Names Configuration
+    // ==========================================================================
+    
+    // Single source of truth for all display name mappings
+    const DISPLAY_NAMES = {
+        // Category display names (for CSV files and product categories)
+        categories: {
+            'heat-pumps': 'Heat Pumps',
+            'water-heaters': 'Water Heaters',
+            'cooking-appliances': 'Cooking Appliances',
+            'clothes-dryers': 'Clothes Dryers',
+            'ev-chargers': 'EV Chargers',
+            'other-appliances': 'Other Appliances'
+        },
+        
+        // Appliance type display names (for form inputs and user interface)
+        applianceTypes: {
+            'heating': 'Heating System',
+            'waterheater': 'Water Heater',
+            'cooking': 'Cooking Appliance',
+            'dryer': 'Clothes Dryer',
+            'other': 'Other Gas Appliance',
+            'ev': 'EV Charger',
+            'gasmeter': 'Remove Gas Meter'
+        }
+    };
+
     // Theme handling
     const themeToggle = document.getElementById('theme-toggle');
     const themeToggleIcon = themeToggle ? themeToggle.querySelector('.theme-toggle-icon') : null;
@@ -1663,15 +1691,7 @@
         }
 
         getCategoryDisplayName(category) {
-            const displayNames = {
-                'heat-pumps': 'Heat Pumps',
-                'water-heaters': 'Water Heaters',
-                'cooking-appliances': 'Cooking Appliances',
-                'clothes-dryers': 'Clothes Dryers',
-                'ev-chargers': 'EV Chargers',
-                'other-appliances': 'Other Appliances'
-            };
-            return displayNames[category] || category;
+            return DISPLAY_NAMES.categories[category] || category;
         }
 
         async populateCsvAppliancesTable() {
@@ -1794,7 +1814,7 @@
                 }
                 
                 console.log('CSV appliances table populated successfully');
-                console.log('Total panel load:', totalPanelLoad, 'amps');
+                console.log('Total new panel load:', totalPanelLoad, 'amps');
                 console.log('Remaining capacity:', remainingCapacity, 'amps');
                 
             } catch (error) {
@@ -1956,15 +1976,7 @@
 
     // Helper function to get category display name
     function getCategoryDisplayName(category) {
-        const displayNames = {
-            'heat-pumps': 'Heat Pumps',
-            'water-heaters': 'Water Heaters',
-            'cooking-appliances': 'Cooking Appliances',
-            'clothes-dryers': 'Clothes Dryers',
-            'ev-chargers': 'EV Chargers',
-            'other-appliances': 'Other Appliances'
-        };
-        return displayNames[category] || category;
+        return DISPLAY_NAMES.categories[category] || category;
     }
 
     // ==========================================================================
@@ -2368,16 +2380,7 @@
         },
 
         getApplianceDisplayName(type) {
-            const displayNames = {
-                'heating': 'Heating System',
-                'waterheater': 'Water Heater',
-                'cooking': 'Cooking Appliance',
-                'dryer': 'Clothes Dryer',
-                'other': 'Other Gas Appliance',
-                'ev': 'EV Charger',
-                'gasmeter': 'Remove Gas Meter'
-            };
-            return displayNames[type] || type;
+            return DISPLAY_NAMES.applianceTypes[type] || type;
         },
 
         getApplianceDetails(type, quantity) {
