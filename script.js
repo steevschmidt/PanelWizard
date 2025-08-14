@@ -923,6 +923,11 @@
                 panelAmps.value = project.steps.currentEquipment.panelSize;
             }
         }
+        
+        // Update panel.hea.com URL after loading panel size
+        if (stepManager && typeof stepManager.updatePanelHeaUrl === 'function') {
+            stepManager.updatePanelHeaUrl();
+        }
 
         // Load capacity data from step 4 if it exists
         if (project.steps.loadAnalysis) {
@@ -1777,23 +1782,25 @@
                     const lowestAmpProduct = sortedProducts[0];
                     
                     if (lowestAmpProduct) {
-                        // Calculate total amps for this appliance type (quantity * amps)
-                        const applianceAmps = (lowestAmpProduct.panel_amps_240v || 0) * appliance.quantity;
-                        totalPanelLoad += applianceAmps;
+                        // Create one row per individual appliance
+                        for (let i = 0; i < appliance.quantity; i++) {
+                            const applianceAmps = lowestAmpProduct.panel_amps_240v || 0;
+                            totalPanelLoad += applianceAmps;
+                            
+                            // Create table row for each individual appliance
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${this.getCategoryDisplayName(category)}</td>
+                                <td>${lowestAmpProduct.manufacturer || 'N/A'}</td>
+                                <td>${lowestAmpProduct.model_number || lowestAmpProduct.name || 'N/A'}</td>
+                                <td>${applianceAmps} amps</td>
+                                <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
+                                <td>${this.getEnergyRating(lowestAmpProduct)}</td>
+                            `;
+                            csvTableBody.appendChild(row);
+                        }
                         
-                        // Create table row
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${this.getCategoryDisplayName(category)} (${appliance.quantity}x)</td>
-                            <td>${lowestAmpProduct.manufacturer || 'N/A'}</td>
-                            <td>${lowestAmpProduct.model_number || lowestAmpProduct.name || 'N/A'}</td>
-                            <td>${applianceAmps} amps</td>
-                            <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
-                            <td>${this.getEnergyRating(lowestAmpProduct)}</td>
-                        `;
-                        csvTableBody.appendChild(row);
-                        
-                        console.log(`Added ${category} appliance: ${lowestAmpProduct.name}, ${applianceAmps} amps`);
+                        console.log(`Added ${appliance.quantity} ${category} appliance(s): ${lowestAmpProduct.name}, ${appliance.quantity * (lowestAmpProduct.panel_amps_240v || 0)} total amps`);
                     }
                 }
                 
@@ -2232,7 +2239,10 @@
             // Panel size input listener
             const panelAmps = document.querySelector('#panelAmps');
             if (panelAmps) {
-                panelAmps.addEventListener('input', () => this.checkStepCompletion());
+                panelAmps.addEventListener('input', () => {
+                    this.checkStepCompletion();
+                    this.updatePanelHeaUrl();
+                });
             }
 
             // Step 4 capacity input listeners
@@ -2262,6 +2272,40 @@
                     if (stepNumber) this.activateStep(stepNumber);
                 });
             });
+        },
+
+        updatePanelHeaUrl() {
+            const panelAmps = document.querySelector('#panelAmps');
+            const panelHeaLink = document.querySelector('#step4-1 a[href*="panel.hea.com"]');
+            
+            if (!panelHeaLink) {
+                console.log('Panel.hea.com link not found in step 4.1');
+                return;
+            }
+            
+            if (panelAmps && panelAmps.value && !isNaN(parseInt(panelAmps.value))) {
+                const panelSize = parseInt(panelAmps.value);
+                const panelVoltage = 240; // Fixed at 240 volts
+                
+                // Construct the URL with parameters
+                const baseUrl = 'https://panel.hea.com/';
+                const urlParams = new URLSearchParams({
+                    panelSize: panelSize,
+                    panelVoltage: panelVoltage
+                });
+                
+                const fullUrl = baseUrl + '?' + urlParams.toString();
+                panelHeaLink.href = fullUrl;
+                
+                // Add a visual indicator that the URL has been updated
+                panelHeaLink.title = `Panel Size: ${panelSize} amps, Voltage: ${panelVoltage}V`;
+                
+                console.log('Updated panel.hea.com URL:', fullUrl);
+            } else {
+                // If no panel size is set, use the base URL without parameters
+                panelHeaLink.href = 'https://panel.hea.com/';
+                console.log('No panel size set, using base panel.hea.com URL');
+            }
         },
 
         updateCapacitySummary() {
@@ -2448,6 +2492,11 @@
                     step6.populateCsvAppliancesTable();
                 }
             }
+            
+            // Special handling for step 4 - update panel.hea.com URL
+            if (stepNumber === 4) {
+                this.updatePanelHeaUrl();
+            }
         },
 
         checkStepCompletion() {
@@ -2555,6 +2604,14 @@
     // Initialize StepManager after it's defined
     try {
         StepManager.init();
+        
+        // Update panel.hea.com URL after initialization if panel size is already set
+        if (stepManager && typeof stepManager.updatePanelHeaUrl === 'function') {
+            // Use setTimeout to ensure DOM is fully ready
+            setTimeout(() => {
+                stepManager.updatePanelHeaUrl();
+            }, 100);
+        }
     } catch (error) {
         console.error('Error initializing StepManager:', error);
     }
