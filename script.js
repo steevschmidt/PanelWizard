@@ -1782,23 +1782,39 @@
                     const lowestAmpProduct = sortedProducts[0];
                     
                     if (lowestAmpProduct) {
-                        // Create one row per individual appliance
-                        for (let i = 0; i < appliance.quantity; i++) {
-                            const applianceAmps = lowestAmpProduct.panel_amps_240v || 0;
-                            totalPanelLoad += applianceAmps;
-                            
-                            // Create table row for each individual appliance
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${this.getCategoryDisplayName(category)}</td>
-                                <td>${lowestAmpProduct.manufacturer || 'N/A'}</td>
-                                <td>${lowestAmpProduct.model_number || lowestAmpProduct.name || 'N/A'}</td>
-                                <td>${applianceAmps} amps</td>
-                                <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
-                                <td>${this.getEnergyRating(lowestAmpProduct)}</td>
-                            `;
-                            csvTableBody.appendChild(row);
+                                            // Create one row per individual appliance
+                    for (let i = 0; i < appliance.quantity; i++) {
+                        const applianceAmps = lowestAmpProduct.panel_amps_240v || 0;
+                        totalPanelLoad += applianceAmps;
+                        
+                        // Create table row for each individual appliance
+                        const row = document.createElement('tr');
+                        
+                        // Get the display name with numbering for individual appliances
+                        let displayName;
+                        if (appliance.type === 'heating' && appliance.heatingSystems) {
+                            // For heating systems, use the numbered designation from the heating system
+                            const heatingSystem = appliance.heatingSystems[i];
+                            if (heatingSystem) {
+                                displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${heatingSystem.id}`;
+                            } else {
+                                displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${i + 1}`;
+                            }
+                        } else {
+                            // For other appliances, use the numbered designation
+                            displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${i + 1}`;
                         }
+                        
+                        row.innerHTML = `
+                            <td>${displayName}</td>
+                            <td>${lowestAmpProduct.manufacturer || 'N/A'}</td>
+                            <td>${lowestAmpProduct.model_number || lowestAmpProduct.name || 'N/A'}</td>
+                            <td>${applianceAmps} amps</td>
+                            <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
+                            <td><button class="details-btn" onclick="showProductDetails('${lowestAmpProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
+                        `;
+                        csvTableBody.appendChild(row);
+                    }
                         
                         console.log(`Added ${appliance.quantity} ${category} appliance(s): ${lowestAmpProduct.name}, ${appliance.quantity * (lowestAmpProduct.panel_amps_240v || 0)} total amps`);
                     }
@@ -1846,7 +1862,7 @@
             if (csvTableBody) {
                 csvTableBody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary); font-style: italic;">
                             No electrification goals selected. Please go back to Step 2 to select your electrification goals.
                         </td>
                     </tr>
@@ -1862,7 +1878,7 @@
             if (csvTableBody) {
                 csvTableBody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary); font-style: italic;">
                             No panel capacity information available. Please complete Step 4 to calculate your available capacity.
                         </td>
                     </tr>
@@ -1887,6 +1903,265 @@
     // ==========================================================================
     // Global Product Selection Functions
     // ==========================================================================
+
+    // Global function to show product details in a popup
+    window.showProductDetails = function(productId, category, applianceType) {
+        if (!window.applianceDatabase) {
+            console.error('Appliance database not available');
+            return;
+        }
+        
+        const product = window.applianceDatabase.getProductById(productId, category);
+        if (!product) {
+            // If no specific product ID, try to get a representative product from the category
+            const products = window.applianceDatabase.getProductsByCategory(category);
+            if (products.length > 0) {
+                // Get the first product as a template for the category
+                const templateProduct = products[0];
+                showProductDetailsPopup(templateProduct, category, applianceType, true);
+            } else {
+                console.error('No products found for category:', category);
+            }
+            return;
+        }
+        
+        showProductDetailsPopup(product, category, applianceType, false);
+    };
+
+    // Function to show the product details popup
+    function showProductDetailsPopup(product, category, applianceType, isTemplate) {
+        // Remove any existing popup
+        const existingPopup = document.querySelector('.product-details-popup');
+        if (existingPopup) {
+            existingPopup.remove();
+        }
+        
+        // Create popup container
+        const popup = document.createElement('div');
+        popup.className = 'product-details-popup';
+        popup.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            box-sizing: border-box;
+        `;
+        
+        // Create popup content
+        const popupContent = document.createElement('div');
+        popupContent.className = 'popup-content';
+        popupContent.style.cssText = `
+            background: var(--background-color, #fff);
+            color: var(--text-color, #333);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        `;
+        
+        // Create close button
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '✕';
+        closeBtn.style.cssText = `
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color, #333);
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        `;
+        closeBtn.onmouseover = () => closeBtn.style.backgroundColor = 'var(--background-secondary, #f0f0f0)';
+        closeBtn.onmouseout = () => closeBtn.style.backgroundColor = 'transparent';
+        closeBtn.onclick = () => popup.remove();
+        
+        // Create title
+        const title = document.createElement('h3');
+        title.textContent = isTemplate ? 
+            `${DISPLAY_NAMES.categories[category] || category} - Product Information` :
+            `${product.name || product.model_number || 'Product Details'}`;
+        title.style.cssText = `
+            margin: 0 0 20px 0;
+            color: var(--text-color, #333);
+            font-size: 1.4em;
+        `;
+        
+        // Create content sections
+        const content = document.createElement('div');
+        content.style.cssText = `
+            display: grid;
+            gap: 16px;
+        `;
+        
+        // Add product details
+        const detailsSection = createDetailsSection(product, category, applianceType);
+        content.appendChild(detailsSection);
+        
+        // Add CSV data section
+        const csvSection = createCsvDataSection(product, category);
+        content.appendChild(csvSection);
+        
+        // Assemble popup
+        popupContent.appendChild(closeBtn);
+        popupContent.appendChild(title);
+        popupContent.appendChild(content);
+        popup.appendChild(popupContent);
+        
+        // Add to page
+        document.body.appendChild(popup);
+        
+        // Close on background click
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                popup.remove();
+            }
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', function closeOnEscape(e) {
+            if (e.key === 'Escape') {
+                popup.remove();
+                document.removeEventListener('keydown', closeOnEscape);
+            }
+        });
+    }
+
+    // Helper function to create the details section
+    function createDetailsSection(product, category, applianceType) {
+        const section = document.createElement('div');
+        section.style.cssText = `
+            background: var(--background-secondary, #f8f9fa);
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color, #007bff);
+        `;
+        
+        const title = document.createElement('h4');
+        title.textContent = 'Product Details';
+        title.style.cssText = `
+            margin: 0 0 12px 0;
+            color: var(--text-color, #333);
+        `;
+        
+        const details = document.createElement('div');
+        details.style.cssText = `
+            display: grid;
+            gap: 8px;
+            font-size: 0.9em;
+        `;
+        
+        // Add key product information
+        const keyInfo = [
+            { label: 'Manufacturer', value: product.manufacturer || 'N/A' },
+            { label: 'Model', value: product.model_number || product.name || 'N/A' },
+            { label: 'Panel Amps (240V)', value: `${product.panel_amps_240v || 0} amps` },
+            { label: 'Cost Range', value: `$${(product.cost_min || 0).toLocaleString()} - $${(product.cost_max || 0).toLocaleString()}` }
+        ];
+        
+        keyInfo.forEach(item => {
+            if (item.value !== 'N/A') {
+                const row = document.createElement('div');
+                row.style.cssText = `
+                    display: grid;
+                    grid-template-columns: 1fr 2fr;
+                    gap: 12px;
+                    align-items: center;
+                `;
+                
+                const label = document.createElement('strong');
+                label.textContent = item.label + ':';
+                label.style.color = 'var(--text-secondary, #666)';
+                
+                const value = document.createElement('span');
+                value.textContent = item.value;
+                
+                row.appendChild(label);
+                row.appendChild(value);
+                details.appendChild(row);
+            }
+        });
+        
+        section.appendChild(title);
+        section.appendChild(details);
+        return section;
+    }
+
+    // Helper function to create the CSV data section
+    function createCsvDataSection(product, category) {
+        const section = document.createElement('div');
+        section.style.cssText = `
+            background: var(--background-secondary, #f8f9fa);
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color, #007bff);
+        `;
+        
+        const title = document.createElement('h4');
+        title.textContent = 'Full CSV Data';
+        title.style.cssText = `
+            margin: 0 0 12px 0;
+            color: var(--text-color, #333);
+        `;
+        
+        const csvData = document.createElement('div');
+        csvData.style.cssText = `
+            display: grid;
+            gap: 8px;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+        `;
+        
+        // Get all available CSV columns and data
+        const csvColumns = [
+            'name', 'manufacturer', 'model_number', 'panel_amps_240v', 'cost_min', 'cost_max',
+            'seer', 'hspf', 'uef', 'cef', 'energy_star_rated', 'notes', 'installation_notes',
+            'warranty', 'efficiency_rating', 'capacity', 'dimensions', 'weight'
+        ];
+        
+        csvColumns.forEach(column => {
+            if (product[column] !== undefined && product[column] !== null && product[column] !== '') {
+                const row = document.createElement('div');
+                row.style.cssText = `
+                    display: grid;
+                    grid-template-columns: 1fr 2fr;
+                    gap: 12px;
+                    align-items: center;
+                    padding: 4px 0;
+                    border-bottom: 1px solid var(--border-color, #e0e0e0);
+                `;
+                
+                const label = document.createElement('strong');
+                label.textContent = column.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ':';
+                label.style.color = 'var(--text-secondary, #666)';
+                
+                const value = document.createElement('span');
+                value.textContent = product[column];
+                
+                row.appendChild(label);
+                row.appendChild(value);
+                csvData.appendChild(row);
+            }
+        });
+        
+        section.appendChild(title);
+        section.appendChild(csvData);
+        return section;
+    }
 
     // Global function to select a product
     window.selectProduct = function(productId, category) {
