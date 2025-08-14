@@ -1175,6 +1175,13 @@
             }
         },
 
+        async refresh() {
+            console.log('Refreshing appliance database...');
+            this.isInitialized = false;
+            this.database = {};
+            await this.initialize();
+        },
+
         async loadCSV(categoryName) {
             try {
                 // Use local CSV files for development, production URLs for deployment
@@ -1226,7 +1233,7 @@
                         header.includes('gal') || header.includes('kw') ||
                         header.includes('cu_ft') || header.includes('seer') ||
                         header.includes('hspf') || header.includes('uef') ||
-                        header.includes('cef')) {
+                        header.includes('cef') || header.includes('load_calc_cf')) {
                         value = parseFloat(value) || 0;
                     }
                     
@@ -1248,6 +1255,13 @@
         },
 
         getProductsByCategory(categoryName) {
+            // Debug: Log the first product to see available columns
+            if (this.database[categoryName] && this.database[categoryName].length > 0) {
+                const firstProduct = this.database[categoryName][0];
+                console.log(`First product in ${categoryName}:`, firstProduct);
+                console.log(`Available columns in ${categoryName}:`, Object.keys(firstProduct));
+            }
+            
             return this.database[categoryName] || [];
         },
 
@@ -2161,6 +2175,10 @@
         // Get all available columns dynamically from the product object
         const allColumns = Object.keys(product);
         
+        // Debug: Log available columns to console
+        console.log('Available columns for product:', allColumns);
+        console.log('Product object:', product);
+        
         // Define column display names for better readability
         const columnDisplayNames = {
             'id': 'ID',
@@ -2189,6 +2207,7 @@
             'heat_pump': 'Heat Pump',
             'induction': 'Induction',
             'special_notes': 'Special Notes',
+            'load_calc_cf': 'Load Calc CF (220.83)',
             'notes': 'Notes'
         };
         
@@ -2197,7 +2216,7 @@
             'name', 'manufacturer', 'model_number', 'type', 'capacity_btu', 'capacity_gal', 
             'capacity_cu_ft', 'charging_speed_kw', 'electrical_load_amps', 'voltage', 
             'panel_amps_240v', 'cost_min', 'cost_max', 'efficiency_seer', 'efficiency_hspf', 
-            'efficiency_uef', 'efficiency_cef', 'heat_pump', 'induction'
+            'efficiency_uef', 'efficiency_cef', 'heat_pump', 'induction', 'load_calc_cf'
         ];
         
         const sortedColumns = [
@@ -3261,6 +3280,13 @@
         window.removeHeatingSystem = removeHeatingSystem;
         window.updateAddHeatingButtonState = updateAddHeatingButtonState;
         window.restoreHeatingSystems = restoreHeatingSystems;
+        window.refreshApplianceDatabase = function() {
+            if (window.applianceDatabase) {
+                return window.applianceDatabase.refresh();
+            } else {
+                console.error('Appliance database not available');
+            }
+        };
     } catch (error) {
         console.warn('Warning: Could not make functions globally available:', error.message);
     }
