@@ -1777,46 +1777,78 @@
                         continue;
                     }
                     
-                    // Sort by panel amps (lowest first) and get the lowest-amperage product
-                    const sortedProducts = products.sort((a, b) => (a.panel_amps_240v || 0) - (b.panel_amps_240v || 0));
-                    const lowestAmpProduct = sortedProducts[0];
-                    
-                    if (lowestAmpProduct) {
-                                            // Create one row per individual appliance
-                    for (let i = 0; i < appliance.quantity; i++) {
-                        const applianceAmps = lowestAmpProduct.panel_amps_240v || 0;
-                        totalPanelLoad += applianceAmps;
-                        
-                        // Create table row for each individual appliance
-                        const row = document.createElement('tr');
-                        
-                        // Get the display name with numbering for individual appliances
-                        let displayName;
-                        if (appliance.type === 'heating' && appliance.heatingSystems) {
-                            // For heating systems, use the numbered designation from the heating system
+                    // For heating systems, select appropriate products based on capacity requirements
+                    if (appliance.type === 'heating' && appliance.heatingSystems) {
+                        // Create one row per individual heating system with capacity-appropriate products
+                        for (let i = 0; i < appliance.quantity; i++) {
                             const heatingSystem = appliance.heatingSystems[i];
-                            if (heatingSystem) {
-                                displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${heatingSystem.id}`;
-                            } else {
-                                displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${i + 1}`;
+                            if (!heatingSystem) continue;
+                            
+                            // Find the lowest amperage product that meets or exceeds the required capacity
+                            const requiredCapacity = heatingSystem.capacity;
+                            const suitableProducts = products.filter(product => 
+                                (product.capacity_btu || 0) >= requiredCapacity
+                            );
+                            
+                            if (suitableProducts.length === 0) {
+                                console.warn(`No products found for heating system ${heatingSystem.id} with capacity >= ${requiredCapacity} BTU`);
+                                continue;
                             }
-                        } else {
-                            // For other appliances, use the numbered designation
-                            displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${i + 1}`;
+                            
+                            // Sort by panel amps (lowest first) and get the lowest-amperage suitable product
+                            const sortedSuitableProducts = suitableProducts.sort((a, b) => (a.panel_amps_240v || 0) - (b.panel_amps_240v || 0));
+                            const selectedProduct = sortedSuitableProducts[0];
+                            
+                            const applianceAmps = selectedProduct.panel_amps_240v || 0;
+                            totalPanelLoad += applianceAmps;
+                            
+                            // Create table row for this heating system
+                            const row = document.createElement('tr');
+                            const displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${heatingSystem.id}`;
+                            
+                            row.innerHTML = `
+                                <td>${displayName}</td>
+                                <td>${selectedProduct.manufacturer || 'N/A'}</td>
+                                <td>${selectedProduct.model_number || selectedProduct.name || 'N/A'}</td>
+                                <td>${applianceAmps} amps</td>
+                                <td>$${(selectedProduct.cost_min || 0).toLocaleString()} - $${(selectedProduct.cost_max || 0).toLocaleString()}</td>
+                                <td><button class="details-btn" onclick="showProductDetails('${selectedProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
+                            `;
+                            csvTableBody.appendChild(row);
+                            
+                            console.log(`Added heating system ${heatingSystem.id}: ${selectedProduct.name} (${selectedProduct.capacity_btu} BTU >= ${requiredCapacity} BTU required), ${applianceAmps} amps`);
                         }
+                    } else {
+                        // For non-heating appliances, use the original logic
+                        // Sort by panel amps (lowest first) and get the lowest-amperage product
+                        const sortedProducts = products.sort((a, b) => (a.panel_amps_240v || 0) - (b.panel_amps_240v || 0));
+                        const lowestAmpProduct = sortedProducts[0];
                         
-                        row.innerHTML = `
-                            <td>${displayName}</td>
-                            <td>${lowestAmpProduct.manufacturer || 'N/A'}</td>
-                            <td>${lowestAmpProduct.model_number || lowestAmpProduct.name || 'N/A'}</td>
-                            <td>${applianceAmps} amps</td>
-                            <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
-                            <td><button class="details-btn" onclick="showProductDetails('${lowestAmpProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
-                        `;
-                        csvTableBody.appendChild(row);
-                    }
-                        
-                        console.log(`Added ${appliance.quantity} ${category} appliance(s): ${lowestAmpProduct.name}, ${appliance.quantity * (lowestAmpProduct.panel_amps_240v || 0)} total amps`);
+                        if (lowestAmpProduct) {
+                            // Create one row per individual appliance
+                            for (let i = 0; i < appliance.quantity; i++) {
+                                const applianceAmps = lowestAmpProduct.panel_amps_240v || 0;
+                                totalPanelLoad += applianceAmps;
+                                
+                                // Create table row for each individual appliance
+                                const row = document.createElement('tr');
+                                
+                                // Get the display name with numbering for individual appliances
+                                const displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${i + 1}`;
+                                
+                                row.innerHTML = `
+                                    <td>${displayName}</td>
+                                    <td>${lowestAmpProduct.manufacturer || 'N/A'}</td>
+                                    <td>${lowestAmpProduct.model_number || lowestAmpProduct.name || 'N/A'}</td>
+                                    <td>${applianceAmps} amps</td>
+                                    <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
+                                    <td><button class="details-btn" onclick="showProductDetails('${lowestAmpProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
+                                `;
+                                csvTableBody.appendChild(row);
+                            }
+                            
+                            console.log(`Added ${appliance.quantity} ${category} appliance(s): ${lowestAmpProduct.name}, ${appliance.quantity * (lowestAmpProduct.panel_amps_240v || 0)} total amps`);
+                        }
                     }
                 }
                 
@@ -2126,14 +2158,54 @@
             overflow-y: auto;
         `;
         
-        // Get all available CSV columns and data
-        const csvColumns = [
-            'name', 'manufacturer', 'model_number', 'panel_amps_240v', 'cost_min', 'cost_max',
-            'seer', 'hspf', 'uef', 'cef', 'energy_star_rated', 'notes', 'installation_notes',
-            'warranty', 'efficiency_rating', 'capacity', 'dimensions', 'weight'
+        // Get all available columns dynamically from the product object
+        const allColumns = Object.keys(product);
+        
+        // Define column display names for better readability
+        const columnDisplayNames = {
+            'id': 'ID',
+            'name': 'Name',
+            'manufacturer': 'Manufacturer',
+            'model_number': 'Model Number',
+            'type': 'Type',
+            'capacity_btu': 'Capacity (BTU/h)',
+            'capacity_gal': 'Capacity (Gallons)',
+            'capacity_cu_ft': 'Capacity (cu ft)',
+            'charging_speed_kw': 'Charging Speed (kW)',
+            'electrical_load_amps': 'Electrical Load (Amps)',
+            'voltage': 'Voltage',
+            'circuit_type': 'Circuit Type',
+            'panel_amps_240v': 'Panel Amps (240V)',
+            'cost_min': 'Cost (Min)',
+            'cost_max': 'Cost (Max)',
+            'efficiency_seer': 'Efficiency (SEER)',
+            'efficiency_hspf': 'Efficiency (HSPF)',
+            'efficiency_uef': 'Efficiency (UEF)',
+            'efficiency_cef': 'Efficiency (CEF)',
+            'installation_notes': 'Installation Notes',
+            'installation_type': 'Installation Type',
+            'smart_features': 'Smart Features',
+            'tankless': 'Tankless',
+            'heat_pump': 'Heat Pump',
+            'induction': 'Induction',
+            'special_notes': 'Special Notes',
+            'notes': 'Notes'
+        };
+        
+        // Sort columns to show most important ones first
+        const priorityColumns = [
+            'name', 'manufacturer', 'model_number', 'type', 'capacity_btu', 'capacity_gal', 
+            'capacity_cu_ft', 'charging_speed_kw', 'electrical_load_amps', 'voltage', 
+            'panel_amps_240v', 'cost_min', 'cost_max', 'efficiency_seer', 'efficiency_hspf', 
+            'efficiency_uef', 'efficiency_cef', 'heat_pump', 'induction'
         ];
         
-        csvColumns.forEach(column => {
+        const sortedColumns = [
+            ...priorityColumns.filter(col => allColumns.includes(col)),
+            ...allColumns.filter(col => !priorityColumns.includes(col))
+        ];
+        
+        sortedColumns.forEach(column => {
             if (product[column] !== undefined && product[column] !== null && product[column] !== '') {
                 const row = document.createElement('div');
                 row.style.cssText = `
@@ -2146,11 +2218,37 @@
                 `;
                 
                 const label = document.createElement('strong');
-                label.textContent = column.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ':';
+                // Use custom display name if available, otherwise format the column name
+                const displayName = columnDisplayNames[column] || 
+                    column.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                label.textContent = displayName + ':';
                 label.style.color = 'var(--text-secondary, #666)';
                 
                 const value = document.createElement('span');
-                value.textContent = product[column];
+                // Format the value based on column type
+                let displayValue = product[column];
+                if (column === 'cost_min' || column === 'cost_max') {
+                    displayValue = `$${Number(product[column]).toLocaleString()}`;
+                } else if (column === 'tankless' || column === 'smart_features' || 
+                           column === 'heat_pump' || column === 'induction') {
+                    displayValue = product[column] === 'true' ? 'Yes' : 'No';
+                } else if (column === 'capacity_btu') {
+                    displayValue = `${Number(product[column]).toLocaleString()} BTU/h`;
+                } else if (column === 'capacity_gal') {
+                    displayValue = `${product[column]} gallons`;
+                } else if (column === 'capacity_cu_ft') {
+                    displayValue = `${product[column]} cu ft`;
+                } else if (column === 'charging_speed_kw') {
+                    displayValue = `${product[column]} kW`;
+                } else if (column === 'electrical_load_amps') {
+                    displayValue = `${product[column]} amps`;
+                } else if (column === 'panel_amps_240v') {
+                    displayValue = `${product[column]} amps`;
+                } else if (column === 'voltage') {
+                    displayValue = `${product[column]}V`;
+                }
+                
+                value.textContent = displayValue;
                 
                 row.appendChild(label);
                 row.appendChild(value);
