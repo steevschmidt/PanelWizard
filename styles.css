@@ -1190,14 +1190,6 @@ a:hover {
    Appliances Summary Table
    ========================================================================== */
 
-.appliances-summary {
-    margin: var(--spacing-lg) 0;
-    padding: var(--spacing-md);
-    background-color: var(--background-secondary);
-    border-radius: var(--border-radius-md);
-    border: 1px solid var(--border-color);
-}
-
 .appliances-table {
     width: 100%;
     border-collapse: collapse;

@@ -948,11 +948,6 @@
         
         // Update capacity summary if panel size and capacity data are loaded
         stepManager.updateCapacitySummary();
-        
-        // If we're currently on step 6, populate the appliances summary
-        if (stepManager.currentStep === 6) {
-            stepManager.populateAppliancesSummary();
-        }
     }
     
     // Consolidated file saving function
@@ -2650,77 +2645,6 @@
             }
         },
 
-        populateAppliancesSummary() {
-            const tableBody = document.querySelector('#appliancesTableBody');
-            if (!tableBody) return;
-            
-            // Get the selected appliances from the current project
-            let selectedAppliances = window.currentProject?.steps?.electrificationGoals?.selectedAppliances || [];
-            
-            // If no data in currentProject, try to get from localStorage
-            if (selectedAppliances.length === 0) {
-                const localStorageData = localStorage.getItem('panelWizard_formData');
-                if (localStorageData) {
-                    try {
-                        const formData = JSON.parse(localStorageData);
-                        selectedAppliances = formData.selectedAppliances || [];
-                    } catch (e) {
-                        console.error('Error parsing localStorage data:', e);
-                    }
-                }
-            }
-            
-            // Debug logging
-            console.log('populateAppliancesSummary - selectedAppliances:', selectedAppliances);
-            selectedAppliances.forEach(appliance => {
-                console.log('Appliance:', appliance);
-                if (appliance.type === 'heating') {
-                    console.log('Heating appliance heatingSystems:', appliance.heatingSystems);
-                }
-            });
-            
-            if (selectedAppliances.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="2">No appliances selected. Please go back to Step 2 to select your electrification goals.</td></tr>';
-                return;
-            }
-            
-            // Clear existing table content
-            tableBody.innerHTML = '';
-            
-            // Populate table with selected appliances
-            selectedAppliances.forEach(appliance => {
-                if (appliance.type === 'heating' && appliance.heatingSystems) {
-                    // Handle multiple heating systems
-                    appliance.heatingSystems.forEach(system => {
-                        const row = document.createElement('tr');
-                        
-                        row.innerHTML = `
-                            <td>${this.getApplianceDisplayName(appliance.type)} ${system.id}</td>
-                            <td>Replace with ${system.capacity.toLocaleString()} BTU/h heat pump</td>
-                        `;
-                        
-                        tableBody.appendChild(row);
-                    });
-                } else {
-                    // Handle other appliances normally
-                    const row = document.createElement('tr');
-                    
-                    // Get the display name for the appliance type
-                    const displayName = this.getApplianceDisplayName(appliance.type);
-                    
-                    // Get the details based on appliance type
-                    const details = this.getApplianceDetails(appliance.type, appliance.quantity);
-                    
-                    row.innerHTML = `
-                        <td>${displayName}</td>
-                        <td>${details}</td>
-                    `;
-                    
-                    tableBody.appendChild(row);
-                }
-            });
-        },
-
         getApplianceDisplayName(type) {
             return DISPLAY_NAMES.applianceTypes[type] || type;
         },
@@ -2783,8 +2707,6 @@
             
             // Special handling for step 6 - populate appliances summary table
             if (stepNumber === 6) {
-                this.populateAppliancesSummary();
-                // Also populate the CSV appliances table
                 const step6 = this.steps[6];
                 if (step6 && step6.populateCsvAppliancesTable) {
                     step6.populateCsvAppliancesTable();
@@ -3084,9 +3006,7 @@
                 }
                 
                 // If we're currently on step 6, populate the appliances summary
-                if (typeof stepManager !== 'undefined' && stepManager && stepManager.currentStep === 6 && stepManager.populateAppliancesSummary) {
-                    stepManager.populateAppliancesSummary();
-                    // Also populate the CSV appliances table
+                if (typeof stepManager !== 'undefined' && stepManager && stepManager.currentStep === 6) {
                     const step6 = stepManager.steps[6];
                     if (step6 && step6.populateCsvAppliancesTable) {
                         step6.populateCsvAppliancesTable();
