@@ -1078,7 +1078,7 @@ a:hover {
     position: absolute;
     top: var(--spacing-sm);
     right: var(--spacing-sm);
-    background: var(--error-color);
+    background: var(--warning-color);
     color: white;
     border: none;
     border-radius: 50%;
@@ -1093,7 +1093,7 @@ a:hover {
 }
 
 .heating-system-item .remove-heating-btn:hover {
-    background: #d32f2f;
+    background: #ff7f00;
 }
 
 .add-heating-system {
