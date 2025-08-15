@@ -3287,6 +3287,8 @@
                 console.error('Appliance database not available');
             }
         };
+        
+
     } catch (error) {
         console.warn('Warning: Could not make functions globally available:', error.message);
     }
@@ -3300,6 +3302,8 @@
         console.log('  VS Code Live Server extension');
         console.log('==========================================');
     };
+    
+
     
     console.log('PanelWizard initialization complete');
 })(); 

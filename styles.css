@@ -2,6 +2,22 @@
    Base Styles and Variables
    ========================================================================== */
 
+
+
+/* Working nested list selector */
+#actionPlan ul li ul {
+    padding-left: 2rem !important;
+    margin-left: 0 !important;
+    text-indent: 0 !important;
+}
+
+/* Style for nested list items */
+#actionPlan ul li ul li {
+    margin-bottom: 0.25rem !important;
+    font-size: 0.95em !important;
+    color: var(--text-secondary, #666) !important;
+}
+
 :root {
     /* Color Variables */
     --primary-color: #4CAF50;
@@ -711,6 +727,49 @@ button {
 
 .checkbox-label span {
     line-height: 1.4;
+}
+
+/* ==========================================================================
+   Nested List Styles
+   ========================================================================== */
+
+/* Style for nested lists in step 7 and other content areas */
+.content-box ul li ul {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    padding-left: 2rem !important;
+    margin-left: 0 !important;
+}
+
+.content-box ul li ul li {
+    margin-bottom: 0.25rem !important;
+    font-size: 0.95em !important;
+    color: var(--text-secondary, #666) !important;
+}
+
+/* Additional indentation for deeper nesting if needed */
+.content-box ul li ul ul {
+    padding-left: 2.5rem !important;
+}
+
+.content-box ul li ul ul li {
+    font-size: 0.9em !important;
+    color: var(--text-muted, #888) !important;
+}
+
+/* Force indentation with more specific selectors */
+/* Clean, single rule for nested list indentation */
+#actionPlan .content-box ul li ul {
+    padding-left: 2rem !important;
+    margin-left: 0 !important;
+    text-indent: 0 !important;
+}
+
+/* Style for nested list items */
+#actionPlan .content-box ul li ul li {
+    margin-bottom: 0.25rem !important;
+    font-size: 0.95em !important;
+    color: var(--text-secondary, #666) !important;
 }
 
 /* ==========================================================================
@@ -1537,4 +1596,5 @@ a:hover {
         padding: 4px 6px;
         font-size: 0.75rem;
     }
-} 
+}
+
