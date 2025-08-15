@@ -1275,6 +1275,48 @@ a:hover {
     background-color: var(--border-color);
 }
 
+/* Product Selector Dropdown Styles */
+.product-selector {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--background-primary);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.product-selector:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+.product-selector:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.product-selector option {
+    padding: var(--spacing-sm);
+    background-color: var(--background-primary);
+    color: var(--text-color);
+}
+
+/* Dark theme overrides for dropdowns */
+[data-theme="dark"] .product-selector {
+    background-color: var(--background-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .product-selector option {
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+}
+
 @media (max-width: 768px) {
     .appliances-table {
         font-size: 0.9rem;

@@ -1845,12 +1845,21 @@
                             
                             row.innerHTML = `
                                 <td>${displayName}</td>
-                                <td>${selectedProduct.name || 'N/A'}</td>
+                                <td></td>
                                 <td>${applianceAmps} amps</td>
                                 <td>${selectedProduct.load_calc_cf || 'N/A'}</td>
                                 <td>$${(selectedProduct.cost_min || 0).toLocaleString()} - $${(selectedProduct.cost_max || 0).toLocaleString()}</td>
                                 <td><button class="details-btn" onclick="showProductDetails('${selectedProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
                             `;
+                            
+                            // Add the dropdown to the second cell
+                            const dropdown = this.createProductDropdown(
+                                suitableProducts, 
+                                selectedProduct.id, 
+                                `${appliance.type}_${heatingSystem.id}`,
+                                category
+                            );
+                            row.cells[1].appendChild(dropdown);
                             csvTableBody.appendChild(row);
                             
                             console.log(`Added heating system ${heatingSystem.id}: ${selectedProduct.name} (${selectedProduct.capacity_btu} BTU >= ${requiredCapacity} BTU required), ${applianceAmps} amps`);
@@ -1873,19 +1882,28 @@
                                 // Get the display name with numbering for individual appliances
                                 const displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${i + 1}`;
                                 
-                                // Quick debug: Check if load_calc_cf exists and what it contains
-                                console.log('CF Debug - Product keys:', Object.keys(lowestAmpProduct));
-                                console.log('CF Debug - load_calc_cf value:', lowestAmpProduct.load_calc_cf);
-                                console.log('CF Debug - Raw product:', lowestAmpProduct);
-                                
                                 row.innerHTML = `
                                     <td>${displayName}</td>
-                                    <td>${lowestAmpProduct.name || 'N/A'}</td>
+                                    <td></td>
                                     <td>${applianceAmps} amps</td>
                                     <td>${lowestAmpProduct.load_calc_cf || 'N/A'}</td>
                                     <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
                                     <td><button class="details-btn" onclick="showProductDetails('${lowestAmpProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
                                 `;
+                                
+                                // Add the dropdown to the second cell
+                                const dropdown = this.createProductDropdown(
+                                    products, 
+                                    lowestAmpProduct.id, 
+                                    `${appliance.type}_${i + 1}`,
+                                    category
+                                );
+                                row.cells[1].appendChild(dropdown);
+                                
+                                // Quick debug: Check if load_calc_cf exists and what it contains
+                                console.log('CF Debug - Product keys:', Object.keys(lowestAmpProduct));
+                                console.log('CF Debug - load_calc_cf value:', lowestAmpProduct.load_calc_cf);
+                                console.log('CF Debug - Raw product:', lowestAmpProduct);
                                 csvTableBody.appendChild(row);
                             }
                             
@@ -1964,7 +1982,9 @@
                 }
                 
                 // Update calculation results display
-                this.updateCalculationResultsDisplay();
+                if (window.applianceDatabase && window.applianceDatabase.updateCalculationResultsDisplay) {
+                    window.applianceDatabase.updateCalculationResultsDisplay();
+                }
                 
                 console.log('CSV appliances table populated successfully');
                 
@@ -2033,7 +2053,266 @@
             if (remainingCapacitySpan2) remainingCapacitySpan2.style.color = '';
             
             // Also update the calculation results display
-            this.updateCalculationResultsDisplay();
+            if (window.applianceDatabase && window.applianceDatabase.updateCalculationResultsDisplay) {
+                window.applianceDatabase.updateCalculationResultsDisplay();
+            }
+        }
+
+        // Create a dropdown for product selection
+        createProductDropdown(products, selectedProductId, applianceKey, category) {
+            const dropdown = document.createElement('select');
+            dropdown.className = 'product-selector';
+            dropdown.setAttribute('data-appliance-key', applianceKey);
+            dropdown.setAttribute('data-category', category);
+            
+            // Add event listener for product changes - bind to the Step instance
+            const stepInstance = this;
+            dropdown.addEventListener('change', function(event) {
+                stepInstance.handleProductSelectionChange(event, applianceKey);
+            });
+            
+            // Create options for each product
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = `${product.name} (${product.panel_amps_240v || 0} amps)`;
+                option.selected = product.id === selectedProductId;
+                dropdown.appendChild(option);
+            });
+            
+            return dropdown; // Return the DOM element directly
+        }
+
+        // Handle product selection changes
+        handleProductSelectionChange(event, applianceKey) {
+            const selectedProductId = event.target.value;
+            const category = event.target.getAttribute('data-category');
+            
+            console.log(`Product selection changed for ${applianceKey}: ${selectedProductId} in category ${category}`);
+            
+            // Store the selection in the project data
+            if (!window.currentProject) {
+                window.currentProject = {};
+            }
+            if (!window.currentProject.steps) {
+                window.currentProject.steps = {};
+            }
+            if (!window.currentProject.steps.applianceSelections) {
+                window.currentProject.steps.applianceSelections = {};
+            }
+            
+            window.currentProject.steps.applianceSelections[applianceKey] = {
+                productId: selectedProductId,
+                category: category,
+                timestamp: Date.now()
+            };
+            
+            // Save to localStorage
+            this.saveProjectToLocalStorage();
+            
+            // Recalculate and update the table
+            console.log('Calling updateTableWithNewSelections...');
+            this.updateTableWithNewSelections();
+        }
+
+        // Update table with new product selections
+        updateTableWithNewSelections() {
+            console.log('Updating table with new product selections...');
+            
+            // Get current selections
+            const selections = window.currentProject?.steps?.applianceSelections || {};
+            console.log('Current selections:', selections);
+            
+            // Update each row's data based on selections
+            const rows = document.querySelectorAll('#csvAppliancesTableBody tr');
+            console.log(`Found ${rows.length} rows to update`);
+            
+            rows.forEach((row, index) => {
+                const productSelector = row.querySelector('.product-selector');
+                if (productSelector) {
+                    const applianceKey = productSelector.getAttribute('data-appliance-key');
+                    const category = productSelector.getAttribute('data-category');
+                    const selection = selections[applianceKey];
+                    
+                    console.log(`Row ${index}: applianceKey=${applianceKey}, category=${category}, selection=`, selection);
+                    
+                    if (selection) {
+                        const product = window.applianceDatabase.getProductById(selection.productId, category);
+                        if (product) {
+                            console.log(`Found product:`, product);
+                            
+                            // Update the amps column
+                            const ampsCell = row.cells[2];
+                            if (ampsCell) {
+                                ampsCell.textContent = `${product.panel_amps_240v || 0} amps`;
+                                console.log(`Updated amps cell to: ${product.panel_amps_240v || 0} amps`);
+                            }
+                            
+                            // Update the capacity factor column
+                            const cfCell = row.cells[3];
+                            if (cfCell) {
+                                cfCell.textContent = product.load_calc_cf || 'N/A';
+                                console.log(`Updated CF cell to: ${product.load_calc_cf || 'N/A'}`);
+                            }
+                            
+                            // Update the cost column
+                            const costCell = row.cells[4];
+                            if (costCell) {
+                                costCell.textContent = `$${(product.cost_min || 0).toLocaleString()} - $${(product.cost_max || 0).toLocaleString()}`;
+                                console.log(`Updated cost cell to: $${(product.cost_min || 0).toLocaleString()} - $${(product.cost_max || 0).toLocaleString()}`);
+                            }
+                            
+                            // Update the details button
+                            const detailsBtn = row.querySelector('.details-btn');
+                            if (detailsBtn) {
+                                detailsBtn.onclick = () => showProductDetails(product.id, category, applianceKey.split('_')[0]);
+                            }
+                        } else {
+                            console.warn(`Product not found for ID: ${selection.productId} in category: ${category}`);
+                        }
+                    } else {
+                        console.log(`No selection found for applianceKey: ${applianceKey}`);
+                    }
+                } else {
+                    console.log(`Row ${index}: No product selector found`);
+                }
+            });
+            
+            // Recalculate totals and update display
+            console.log('Calling recalculateAndUpdateDisplay...');
+            this.recalculateAndUpdateDisplay();
+        }
+
+        // Recalculate totals and update display
+        recalculateAndUpdateDisplay() {
+            console.log('Recalculating totals with new selections...');
+            
+            // Get current selections
+            const selections = window.currentProject?.steps?.applianceSelections || {};
+            
+            let totalPanelLoad = 0;
+            const rows = document.querySelectorAll('#csvAppliancesTableBody tr');
+            
+            rows.forEach(row => {
+                const productSelector = row.querySelector('.product-selector');
+                if (productSelector) {
+                    const category = productSelector.getAttribute('data-category');
+                    const selectedProductId = productSelector.value;
+                    const product = window.applianceDatabase.getProductById(selectedProductId, category);
+                    
+                    if (product) {
+                        totalPanelLoad += product.panel_amps_240v || 0;
+                        console.log(`Top-Down calculation: ${product.name} - ${product.panel_amps_240v || 0} amps (no CF applied)`);
+                    }
+                }
+            });
+            
+            // Round the total load to 1 decimal place
+            totalPanelLoad = Math.round(totalPanelLoad * 10) / 10;
+            console.log(`Top-Down total panel load: ${totalPanelLoad} amps`);
+            
+            // Update the total panel load display
+            const totalPanelLoadSpan = document.getElementById('totalCsvPanelLoad');
+            if (totalPanelLoadSpan) {
+                totalPanelLoadSpan.textContent = totalPanelLoad;
+            }
+            
+            // Update remaining capacity calculations
+            this.updateRemainingCapacity(totalPanelLoad);
+        }
+
+        // Update remaining capacity calculations
+        updateRemainingCapacity(totalPanelLoad) {
+            const topDownInput = document.getElementById('topDownCapacity');
+            const bottomUpInput = document.getElementById('bottomUpCapacity');
+            const topDownCapacity = topDownInput && topDownInput.value ? parseInt(topDownInput.value) : null;
+            const bottomUpCapacity = bottomUpInput && bottomUpInput.value ? parseInt(bottomUpInput.value) : null;
+            
+            // Update Top-Down remaining capacity (NEC 220.87)
+            // Uses raw panel amps without CF
+            if (topDownCapacity && topDownCapacity > 0) {
+                const topDownRemaining = Math.round((topDownCapacity - totalPanelLoad) * 10) / 10;
+                const remainingCapacitySpan = document.getElementById('remainingCsvCapacity');
+                
+                if (remainingCapacitySpan) {
+                    remainingCapacitySpan.textContent = topDownRemaining;
+                    
+                    if (topDownRemaining < 0) {
+                        remainingCapacitySpan.textContent = `${topDownRemaining} (OVER CAPACITY!)`;
+                        remainingCapacitySpan.style.color = 'var(--error-color)';
+                    } else if (topDownRemaining < 10) {
+                        remainingCapacitySpan.style.color = 'var(--warning-color)';
+                    } else {
+                        remainingCapacitySpan.style.color = 'var(--success-color)';
+                    }
+                }
+            }
+            
+            // Update Bottom-Up remaining capacity (NEC 220.83)
+            // Applies CF to each appliance's panel amps
+            if (bottomUpCapacity && bottomUpCapacity > 0) {
+                // Calculate the CF-adjusted total load
+                let bottomUpTotalLoad = 0;
+                const rows = document.querySelectorAll('#csvAppliancesTableBody tr');
+                
+                rows.forEach(row => {
+                    const productSelector = row.querySelector('.product-selector');
+                    if (productSelector) {
+                        const category = productSelector.getAttribute('data-category');
+                        const selectedProductId = productSelector.value;
+                        const product = window.applianceDatabase.getProductById(selectedProductId, category);
+                        
+                        if (product) {
+                            const panelAmps = product.panel_amps_240v || 0;
+                            const capacityFactor = product.load_calc_cf || 1.0;
+                            const cfAdjustedLoad = panelAmps * capacityFactor;
+                            bottomUpTotalLoad += cfAdjustedLoad;
+                            
+                            console.log(`Bottom-Up calculation: ${product.name} - ${panelAmps} amps × ${capacityFactor} CF = ${cfAdjustedLoad} adjusted amps`);
+                        }
+                    }
+                });
+                
+                // Round the total load to 1 decimal place
+                bottomUpTotalLoad = Math.round(bottomUpTotalLoad * 10) / 10;
+                
+                // Update the Bottom-Up total panel load display
+                const totalPanelLoadSpan2 = document.getElementById('totalCsvPanelLoad2');
+                if (totalPanelLoadSpan2) {
+                    totalPanelLoadSpan2.textContent = bottomUpTotalLoad;
+                }
+                
+                // Calculate remaining capacity
+                const bottomUpRemaining = Math.round((bottomUpCapacity - bottomUpTotalLoad) * 10) / 10;
+                const remainingCapacitySpan2 = document.getElementById('remainingCsvCapacity2');
+                
+                if (remainingCapacitySpan2) {
+                    remainingCapacitySpan2.textContent = bottomUpRemaining;
+                    
+                    if (bottomUpRemaining < 0) {
+                        remainingCapacitySpan2.textContent = `${bottomUpRemaining} (OVER CAPACITY!)`;
+                        remainingCapacitySpan2.style.color = 'var(--error-color)';
+                    } else if (bottomUpRemaining < 10) {
+                        remainingCapacitySpan2.style.color = 'var(--warning-color)';
+                    } else {
+                        remainingCapacitySpan2.style.color = 'var(--success-color)';
+                    }
+                }
+                
+                console.log(`Bottom-Up calculation complete: ${bottomUpTotalLoad} total CF-adjusted amps, ${bottomUpRemaining} remaining capacity`);
+            }
+        }
+
+        // Save project to localStorage
+        saveProjectToLocalStorage() {
+            try {
+                if (window.currentProject) {
+                    localStorage.setItem('panelWizardProject', JSON.stringify(window.currentProject));
+                    console.log('Project saved to localStorage');
+                }
+            } catch (error) {
+                console.error('Error saving project to localStorage:', error);
+            }
         }
     }
 
