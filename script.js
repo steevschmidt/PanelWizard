@@ -1220,7 +1220,12 @@
             
             const headers = lines[0].split(',').map(h => h.trim());
             
-            return lines.slice(1).map(line => {
+            // Debug: Check what headers we're actually parsing
+            console.log('CSV Headers being parsed:', headers);
+            console.log('CSV Headers count:', headers.length);
+            console.log('CSV First line:', lines[0]);
+            
+            const result = lines.slice(1).map(line => {
                 const values = line.split(',').map(v => v.trim());
                 const product = {};
                 
@@ -1248,6 +1253,8 @@
                 
                 return product;
             });
+            
+            return result;
         },
 
         getCategory(categoryName) {
@@ -1260,6 +1267,7 @@
                 const firstProduct = this.database[categoryName][0];
                 console.log(`First product in ${categoryName}:`, firstProduct);
                 console.log(`Available columns in ${categoryName}:`, Object.keys(firstProduct));
+                console.log(`Headers found for ${categoryName}:`, Object.keys(firstProduct));
             }
             
             return this.database[categoryName] || [];
@@ -1820,11 +1828,17 @@
                             const row = document.createElement('tr');
                             const displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${heatingSystem.id}`;
                             
+                            // Quick debug: Check if load_calc_cf exists and what it contains
+                            console.log('CF Debug - Product keys:', Object.keys(selectedProduct));
+                            console.log('CF Debug - load_calc_cf value:', selectedProduct.load_calc_cf);
+                            console.log('CF Debug - Raw product:', selectedProduct);
+                            
                             row.innerHTML = `
                                 <td>${displayName}</td>
                                 <td>${selectedProduct.manufacturer || 'N/A'}</td>
                                 <td>${selectedProduct.model_number || selectedProduct.name || 'N/A'}</td>
                                 <td>${applianceAmps} amps</td>
+                                <td>${selectedProduct.load_calc_cf || 'N/A'}</td>
                                 <td>$${(selectedProduct.cost_min || 0).toLocaleString()} - $${(selectedProduct.cost_max || 0).toLocaleString()}</td>
                                 <td><button class="details-btn" onclick="showProductDetails('${selectedProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
                             `;
@@ -1850,11 +1864,17 @@
                                 // Get the display name with numbering for individual appliances
                                 const displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${i + 1}`;
                                 
+                                // Quick debug: Check if load_calc_cf exists and what it contains
+                                console.log('CF Debug - Product keys:', Object.keys(lowestAmpProduct));
+                                console.log('CF Debug - load_calc_cf value:', lowestAmpProduct.load_calc_cf);
+                                console.log('CF Debug - Raw product:', lowestAmpProduct);
+                                
                                 row.innerHTML = `
                                     <td>${displayName}</td>
                                     <td>${lowestAmpProduct.manufacturer || 'N/A'}</td>
                                     <td>${lowestAmpProduct.model_number || lowestAmpProduct.name || 'N/A'}</td>
                                     <td>${applianceAmps} amps</td>
+                                    <td>${lowestAmpProduct.load_calc_cf || 'N/A'}</td>
                                     <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
                                     <td><button class="details-btn" onclick="showProductDetails('${lowestAmpProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
                                 `;
@@ -1908,7 +1928,7 @@
             if (csvTableBody) {
                 csvTableBody.innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                        <td colspan="7" style="text-align: center; color: var(--text-secondary); font-style: italic;">
                             No electrification goals selected. Please go back to Step 2 to select your electrification goals.
                         </td>
                     </tr>
@@ -1924,7 +1944,7 @@
             if (csvTableBody) {
                 csvTableBody.innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                        <td colspan="7" style="text-align: center; color: var(--text-secondary); font-style: italic;">
                             No panel capacity information available. Please complete Step 4 to calculate your available capacity.
                         </td>
                     </tr>
@@ -2207,7 +2227,7 @@
             'heat_pump': 'Heat Pump',
             'induction': 'Induction',
             'special_notes': 'Special Notes',
-            'load_calc_cf': 'Load Calc CF (220.83)',
+            'load_calc_cf': 'Capacity Factor (220.83)',
             'notes': 'Notes'
         };
         
