@@ -9,3 +9,5 @@ wh_007,Rheem 80-Gal Heat Pump Water Heater,80,20,240,dedicated,20,1500,2200,3.5,
 wh_008,AO Smith 40-Gal Heat Pump Water Heater,40,12,240,dedicated,12,1000,1500,3.8,Requires 15A dedicated circuit,AO Smith,Voltex,FALSE,0.4
 wh_009,Bradford White 75-Gal Heat Pump Water Heater,75,18,240,dedicated,18,1400,2000,3.6,Requires 20A dedicated circuit,Bradford White,RE2H75S,FALSE,0.4
 wh_010,Stiebel Eltron Tankless Water Heater,0,24,240,dedicated,24,700,1100,0.97,Requires 25A dedicated circuit,Stiebel Eltron,Tempra 24 Plus,TRUE,0.4
+wh_011,Rheem 50-Gal Heat Pump Water Heater,50,15,120,shared,7.5,1500,3500,3.6,Standard outlet,Rheem,PROPH50-T0-RH120-MSO,FALSE,0.4
+wh_012,GE GeoSpring,50,15,120,shared,7.5,2000,4000,3.1,Standard outlet,GE Appliances,PROPH50-T0-RH120-MSO,FALSE,0.4

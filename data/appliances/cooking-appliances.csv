@@ -9,3 +9,5 @@ ca_007,Samsung Induction Range,Range,38,240,dedicated,38,1000,1500,Requires 40A 
 ca_008,KitchenAid Induction Cooktop,Cooktop,28,240,dedicated,28,700,1000,Requires 30A dedicated circuit,KitchenAid,KICU509X,TRUE,0.4
 ca_009,Maytag Convection Wall Oven,Oven,18,240,dedicated,18,500,800,Requires 20A dedicated circuit,Maytag,MCO115H,FALSE,0.4
 ca_010,LG Induction Range,Range,36,240,dedicated,36,1100,1600,Requires 35A dedicated circuit,LG,LRE3193ST,TRUE,0.4
+ca_011,Duxtop Two Burner Hob,Portable,15,120,shared,7.5,200,300,Uses normal outlet,Duxtop,9620LS,TRUE,0.4
+ca_012,Breville Control Freak,Portable,15,120,shared,7.6,1400,1500,Uses normal outlet,Breville,CMC850BSS,TRUE,0.4

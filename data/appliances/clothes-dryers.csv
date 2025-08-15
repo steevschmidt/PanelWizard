@@ -9,3 +9,4 @@ cd_007,Bosch Heat Pump Dryer,7,15,240,dedicated,15,1000,1600,8.6,Requires 15A de
 cd_008,Frigidaire Heat Pump Dryer,7.5,15,240,dedicated,15,950,1500,8.5,Requires 15A dedicated circuit,Frigidaire,FFRE4120SW,TRUE,0.4
 cd_009,KitchenAid Heat Pump Dryer,7,15,240,dedicated,15,1100,1700,8.8,Requires 15A dedicated circuit,KitchenAid,KEDE5040WW,TRUE,0.4
 cd_010,GE Heat Pump Dryer,7.8,15,240,dedicated,15,1000,1600,8.6,Requires 15A dedicated circuit,GE,GFQ14ESSNWW,TRUE,0.4
+cd_011,LG Combo Washer Dryer,5,12,120,shared,0,2000,2500,2.9,Zero panel amps if replacing an existing washer,LG,WM6998H_A,TRUE,0.4
