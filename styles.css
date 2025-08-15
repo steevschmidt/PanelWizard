@@ -73,6 +73,50 @@
    Reset and Base Styles
    ========================================================================== */
 
+/* Validation Error Styles */
+.validation-error {
+    color: var(--error-color, #f44336);
+    font-size: 0.9em;
+    margin-top: 5px;
+    padding: 5px 0;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-speed);
+}
+
+.validation-error.show {
+    display: block;
+}
+
+.validation-error.hide {
+    display: none;
+}
+
+/* Input error state */
+input.large-input.error {
+    border-color: var(--error-color, #f44336);
+    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
+}
+
+/* Input focus state for error inputs */
+input.large-input.error:focus {
+    border-color: var(--error-color, #f44336);
+    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.3);
+}
+
+/* Disabled input styles */
+input.large-input:disabled {
+    background-color: var(--background-secondary, #f5f5f5);
+    color: var(--text-secondary, #666);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Disabled input placeholder */
+input.large-input:disabled::placeholder {
+    color: var(--text-secondary, #666);
+    opacity: 0.8;
+}
+
 * {
     margin: 0;
     padding: 0;

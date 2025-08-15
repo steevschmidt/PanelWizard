@@ -1845,8 +1845,7 @@
                             
                             row.innerHTML = `
                                 <td>${displayName}</td>
-                                <td>${selectedProduct.manufacturer || 'N/A'}</td>
-                                <td>${selectedProduct.model_number || selectedProduct.name || 'N/A'}</td>
+                                <td>${selectedProduct.name || 'N/A'}</td>
                                 <td>${applianceAmps} amps</td>
                                 <td>${selectedProduct.load_calc_cf || 'N/A'}</td>
                                 <td>$${(selectedProduct.cost_min || 0).toLocaleString()} - $${(selectedProduct.cost_max || 0).toLocaleString()}</td>
@@ -1881,8 +1880,7 @@
                                 
                                 row.innerHTML = `
                                     <td>${displayName}</td>
-                                    <td>${lowestAmpProduct.manufacturer || 'N/A'}</td>
-                                    <td>${lowestAmpProduct.model_number || lowestAmpProduct.name || 'N/A'}</td>
+                                    <td>${lowestAmpProduct.name || 'N/A'}</td>
                                     <td>${applianceAmps} amps</td>
                                     <td>${lowestAmpProduct.load_calc_cf || 'N/A'}</td>
                                     <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
@@ -1992,7 +1990,7 @@
             if (csvTableBody) {
                 csvTableBody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                        <td colspan="6" style="text-align: center; color: var(--text-secondary); font-style: italic;">
                             No electrification goals selected. Please go back to Step 2 to select your electrification goals.
                         </td>
                     </tr>
@@ -2008,7 +2006,7 @@
             if (csvTableBody) {
                 csvTableBody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                        <td colspan="6" style="text-align: center; color: var(--text-secondary); font-style: italic;">
                             No panel capacity information available. Please complete Step 4 to calculate your available capacity.
                         </td>
                     </tr>
@@ -2592,10 +2590,39 @@
                     validation: () => {
                         const topDownCapacity = document.querySelector('#topDownCapacity');
                         const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+                        const panelAmps = document.querySelector('#panelAmps');
+                        
+                        // Check if panel size is set
+                        if (!panelAmps || !panelAmps.value) {
+                            return false;
+                        }
+                        
+                        const panelSize = parseInt(panelAmps.value);
                         
                         // At least one method should be filled out
-                        return (topDownCapacity && topDownCapacity.value) || 
-                               (bottomUpCapacity && bottomUpCapacity.value);
+                        const hasTopDown = topDownCapacity && topDownCapacity.value;
+                        const hasBottomUp = bottomUpCapacity && bottomUpCapacity.value;
+                        
+                        if (!hasTopDown && !hasBottomUp) {
+                            return false;
+                        }
+                        
+                        // Validate that capacity values don't exceed panel size
+                        if (hasTopDown) {
+                            const topDownValue = parseInt(topDownCapacity.value);
+                            if (isNaN(topDownValue) || topDownValue < 0 || topDownValue > panelSize) {
+                                return false;
+                            }
+                        }
+                        
+                        if (hasBottomUp) {
+                            const bottomUpValue = parseInt(bottomUpCapacity.value);
+                            if (isNaN(bottomUpValue) || bottomUpValue < 0 || bottomUpValue > panelSize) {
+                                return false;
+                            }
+                        }
+                        
+                        return true;
                     },
                     getResults: () => {
                         const topDownCapacity = document.querySelector('#topDownCapacity');
@@ -2720,6 +2747,9 @@
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', () => this.checkStepCompletion());
             });
+            
+            // Initialize capacity input states
+            this.updateCapacityInputStates();
 
             // Panel size input listener
             const panelAmps = document.querySelector('#panelAmps');
@@ -2727,6 +2757,10 @@
                 panelAmps.addEventListener('input', () => {
                     this.checkStepCompletion();
                     this.updatePanelHeaUrl();
+                    // Re-validate capacity inputs when panel size changes
+                    this.revalidateCapacityInputs();
+                    // Update capacity input states
+                    this.updateCapacityInputStates();
                 });
             }
 
@@ -2735,6 +2769,7 @@
             const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
             if (topDownCapacity) {
                 topDownCapacity.addEventListener('input', () => {
+                    this.validateCapacityInput(topDownCapacity, 'topDownCapacityError');
                     this.checkStepCompletion();
                     this.updateCapacitySummary();
                     // Also update the calculation results display in step 6
@@ -2745,6 +2780,7 @@
             }
             if (bottomUpCapacity) {
                 bottomUpCapacity.addEventListener('input', () => {
+                    this.validateCapacityInput(bottomUpCapacity, 'bottomUpCapacityError');
                     this.checkStepCompletion();
                     this.updateCapacitySummary();
                     // Also update the calculation results display in step 6
@@ -2798,6 +2834,104 @@
                 // If no panel size is set, use the base URL without parameters
                 panelHeaLink.href = 'https://panel.hea.com/';
                 console.log('No panel size set, using base panel.hea.com URL');
+            }
+        },
+
+        validateCapacityInput(inputElement, errorElementId) {
+            const panelAmps = document.querySelector('#panelAmps');
+            const errorElement = document.getElementById(errorElementId);
+            
+            if (!panelAmps || !panelAmps.value || !errorElement) {
+                return;
+            }
+            
+            const panelSize = parseInt(panelAmps.value);
+            const capacityValue = parseInt(inputElement.value);
+            
+            if (isNaN(capacityValue) || capacityValue < 0) {
+                // Clear any existing error
+                errorElement.style.display = 'none';
+                errorElement.textContent = '';
+                inputElement.classList.remove('error');
+                return;
+            }
+            
+            if (capacityValue > panelSize) {
+                // Show error
+                errorElement.textContent = `Available capacity cannot exceed your panel size of ${panelSize} amps. Please enter a value of ${panelSize} amps or less.`;
+                errorElement.style.display = 'block';
+                inputElement.classList.add('error');
+            } else if (capacityValue === 0 && panelSize > 50) {
+                // Warning for very low capacity on large panels
+                errorElement.textContent = `Warning: You've entered 0 available capacity, but your panel is ${panelSize} amps. This suggests your panel may be severely overloaded. Please verify this value.`;
+                errorElement.style.display = 'block';
+                errorElement.style.color = 'var(--warning-color, #ff9800)';
+                inputElement.classList.remove('error');
+            } else {
+                // Clear error
+                errorElement.style.display = 'none';
+                errorElement.textContent = '';
+                errorElement.style.color = 'var(--error-color, #f44336)';
+                inputElement.classList.remove('error');
+            }
+        },
+
+        revalidateCapacityInputs() {
+            const topDownCapacity = document.querySelector('#topDownCapacity');
+            const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+            
+            if (topDownCapacity && topDownCapacity.value) {
+                this.validateCapacityInput(topDownCapacity, 'topDownCapacityError');
+            }
+            if (bottomUpCapacity && bottomUpCapacity.value) {
+                this.validateCapacityInput(bottomUpCapacity, 'bottomUpCapacityError');
+            }
+        },
+
+        updateCapacityInputStates() {
+            const panelAmps = document.querySelector('#panelAmps');
+            const topDownCapacity = document.querySelector('#topDownCapacity');
+            const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+            
+            const hasPanelSize = panelAmps && panelAmps.value && !isNaN(parseInt(panelAmps.value));
+            
+            if (topDownCapacity) {
+                topDownCapacity.disabled = !hasPanelSize;
+                topDownCapacity.placeholder = hasPanelSize ? 'e.g., 40' : 'Complete Step 3 first';
+            }
+            
+            if (bottomUpCapacity) {
+                bottomUpCapacity.disabled = !hasPanelSize;
+                bottomUpCapacity.placeholder = hasPanelSize ? 'e.g., 35' : 'Complete Step 3 first';
+            }
+            
+            // Clear any existing errors when panel size is not set
+            if (!hasPanelSize) {
+                this.clearCapacityErrors();
+            }
+        },
+
+        clearCapacityErrors() {
+            const topDownError = document.getElementById('topDownCapacityError');
+            const bottomUpError = document.getElementById('bottomUpCapacityError');
+            const topDownInput = document.querySelector('#topDownCapacity');
+            const bottomUpInput = document.querySelector('#bottomUpCapacity');
+            
+            if (topDownError) {
+                topDownError.style.display = 'none';
+                topDownError.textContent = '';
+                topDownError.style.color = 'var(--error-color, #f44336)';
+            }
+            if (bottomUpError) {
+                bottomUpError.style.display = 'none';
+                bottomUpError.textContent = '';
+                bottomUpError.style.color = 'var(--error-color, #f44336)';
+            }
+            if (topDownInput) {
+                topDownInput.classList.remove('error');
+            }
+            if (bottomUpInput) {
+                bottomUpInput.classList.remove('error');
             }
         },
 
