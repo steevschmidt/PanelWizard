@@ -517,6 +517,11 @@
                         stepManager.checkStepCompletion();
                     }
                     
+                    // Update calculation results display if we're on step 6
+                    if (window.applianceDatabase && window.applianceDatabase.updateCalculationResultsDisplay) {
+                        window.applianceDatabase.updateCalculationResultsDisplay();
+                    }
+                    
                 } catch (e) {
                     console.warn('Warning: Error parsing form data from localStorage:', e.message);
                 }
@@ -1273,6 +1278,130 @@
                 if (product) return product;
             }
             return null;
+        },
+
+        updateCalculationResultsDisplay() {
+            // Get the calculation result display elements
+            const topDownDisplay = document.getElementById('topDownCapacityDisplay');
+            const bottomUpDisplay = document.getElementById('bottomUpCapacityDisplay');
+            const topDownResult = document.getElementById('topDownResult');
+            const bottomUpResult = document.getElementById('bottomUpResult');
+            
+            if (!topDownDisplay || !bottomUpDisplay || !topDownResult || !bottomUpResult) {
+                return;
+            }
+            
+            // Get the capacity values from the input fields on the page
+            const topDownInput = document.getElementById('topDownCapacity');
+            const bottomUpInput = document.getElementById('bottomUpCapacity');
+            
+            if (!topDownInput || !bottomUpInput) {
+                return;
+            }
+            
+            const topDownCapacity = topDownInput.value ? parseInt(topDownInput.value) : null;
+            const bottomUpCapacity = bottomUpInput.value ? parseInt(bottomUpInput.value) : null;
+            
+            // Update Top-Down display
+            if (topDownCapacity && topDownCapacity > 0) {
+                topDownDisplay.textContent = Math.round(topDownCapacity * 10) / 10;
+                topDownResult.style.display = 'block';
+            } else {
+                topDownResult.style.display = 'none';
+            }
+            
+            // Update Bottom-Up display
+            if (bottomUpCapacity && bottomUpCapacity > 0) {
+                bottomUpDisplay.textContent = Math.round(bottomUpCapacity * 10) / 10;
+                bottomUpResult.style.display = 'block';
+            } else {
+                bottomUpResult.style.display = 'none';
+            }
+            
+            // Always show at least one calculation method if we have any data
+            const calculationResults = document.querySelector('.calculation-results');
+            if (calculationResults) {
+                if ((!topDownCapacity || topDownCapacity <= 0) && (!bottomUpCapacity || bottomUpCapacity <= 0)) {
+                    calculationResults.style.display = 'none';
+                } else {
+                    calculationResults.style.display = 'block';
+                }
+            }
+        },
+
+        calculateBottomUpLoad(selectedAppliances) {
+            let totalLoad = 0;
+            
+            if (!selectedAppliances || selectedAppliances.length === 0) {
+                return 0;
+            }
+            
+            // Map appliance types to CSV categories
+            const applianceMap = {
+                'heating': 'heat-pumps',
+                'waterheater': 'water-heaters',
+                'cooking': 'cooking-appliances',
+                'dryer': 'clothes-dryers',
+                'ev': 'ev-chargers',
+                'other': 'other-appliances'
+            };
+            
+            // Process each selected appliance type
+            for (const appliance of selectedAppliances) {
+                const category = applianceMap[appliance.type];
+                if (!category) {
+                    continue;
+                }
+                
+                const products = this.getProductsByCategory(category);
+                
+                if (products.length === 0) {
+                    continue;
+                }
+                
+                // For heating systems, handle multiple systems
+                if (appliance.type === 'heating' && appliance.heatingSystems) {
+                    for (let i = 0; i < appliance.quantity; i++) {
+                        const heatingSystem = appliance.heatingSystems[i];
+                        if (!heatingSystem) continue;
+                        
+                        // Find the lowest amperage product that meets capacity requirements
+                        const requiredCapacity = heatingSystem.capacity;
+                        const suitableProducts = products.filter(product => 
+                            (product.capacity_btu || 0) >= requiredCapacity
+                        );
+                        
+                        if (suitableProducts.length === 0) continue;
+                        
+                        // Sort by panel amps and get the lowest-amperage suitable product
+                        const sortedSuitableProducts = suitableProducts.sort((a, b) => (a.panel_amps_240v || 0) - (b.panel_amps_240v || 0));
+                        const selectedProduct = sortedSuitableProducts[0];
+                        
+                        // Apply CF to the panel amps for Bottom-Up calculation
+                        const rawAmps = selectedProduct.panel_amps_240v || 0;
+                        const cf = selectedProduct.load_calc_cf || 1.0; // Default to 1.0 if no CF
+                        const adjustedAmps = rawAmps * cf;
+                        
+                        totalLoad += adjustedAmps;
+                    }
+                } else {
+                    // For non-heating appliances
+                    const sortedProducts = products.sort((a, b) => (a.panel_amps_240v || 0) - (b.panel_amps_240v || 0));
+                    const lowestAmpProduct = sortedProducts[0];
+                    
+                    if (lowestAmpProduct) {
+                        // Apply CF to the panel amps for Bottom-Up calculation
+                        const rawAmps = lowestAmpProduct.panel_amps_240v || 0;
+                        const cf = lowestAmpProduct.load_calc_cf || 1.0; // Default to 1.0 if no CF
+                        const adjustedAmps = rawAmps * cf;
+                        
+                        // Apply quantity
+                        totalLoad += adjustedAmps * appliance.quantity;
+                    }
+                }
+            }
+            
+            return totalLoad;
         }
     };
 
@@ -1650,10 +1779,9 @@
                 const selectedAppliances = goals.selectedAppliances;
                 const csvTableBody = document.getElementById('csvAppliancesTableBody');
                 const totalPanelLoadSpan = document.getElementById('totalCsvPanelLoad');
-                const availableCapacitySpan = document.getElementById('availableCapacity');
                 const remainingCapacitySpan = document.getElementById('remainingCsvCapacity');
                 
-                if (!csvTableBody || !totalPanelLoadSpan || !availableCapacitySpan || !remainingCapacitySpan) {
+                if (!csvTableBody || !totalPanelLoadSpan || !remainingCapacitySpan) {
                     console.warn('CSV table elements not found');
                     return;
                 }
@@ -1680,6 +1808,7 @@
                     }
                     
                     const products = window.applianceDatabase.getProductsByCategory(category);
+                    
                     if (products.length === 0) {
                         console.warn('No products found for category:', category);
                         continue;
@@ -1767,25 +1896,79 @@
                     }
                 }
                 
-                // Update summary information
-                totalPanelLoadSpan.textContent = totalPanelLoad;
-                availableCapacitySpan.textContent = availableCapacity;
-                const remainingCapacity = availableCapacity - totalPanelLoad;
-                remainingCapacitySpan.textContent = remainingCapacity;
+                // Update summary information for both panels
+                // Round the total panel load to 1 decimal place
+                const roundedTotalPanelLoad = Math.round(totalPanelLoad * 10) / 10;
+                totalPanelLoadSpan.textContent = roundedTotalPanelLoad;
                 
-                // Visual feedback for capacity
-                if (remainingCapacity < 0) {
-                    remainingCapacitySpan.style.color = 'var(--error-color)';
-                    remainingCapacitySpan.textContent = `${remainingCapacity} (OVER CAPACITY!)`;
-                } else if (remainingCapacity < 10) {
-                    remainingCapacitySpan.style.color = 'var(--warning-color)';
-                } else {
-                    remainingCapacitySpan.style.color = 'var(--success-color)';
+                // Get the individual capacity values for each approach
+                const topDownInput = document.getElementById('topDownCapacity');
+                const bottomUpInput = document.getElementById('bottomUpCapacity');
+                const topDownCapacity = topDownInput && topDownInput.value ? parseInt(topDownInput.value) : null;
+                const bottomUpCapacity = bottomUpInput && bottomUpInput.value ? parseInt(bottomUpInput.value) : null;
+                
+                // Calculate remaining capacity for Top-Down approach (NEC 220.87)
+                // Uses raw panel amps without CF
+                let topDownRemaining = null;
+                if (topDownCapacity && topDownCapacity > 0) {
+                    topDownRemaining = Math.round((topDownCapacity - totalPanelLoad) * 10) / 10;
                 }
                 
+                // Calculate remaining capacity for Bottom-Up approach (NEC 220.83)
+                // Applies CF to each appliance's panel amps
+                let bottomUpRemaining = null;
+                let bottomUpTotalLoad = 0;
+                
+                if (bottomUpCapacity && bottomUpCapacity > 0) {
+                    // Recalculate total load with CF applied for Bottom-Up approach
+                    bottomUpTotalLoad = window.applianceDatabase.calculateBottomUpLoad(selectedAppliances);
+                    // Round the total load to 1 decimal place
+                    bottomUpTotalLoad = Math.round(bottomUpTotalLoad * 10) / 10;
+                    bottomUpRemaining = Math.round((bottomUpCapacity - bottomUpTotalLoad) * 10) / 10;
+                }
+                
+                // Update Top-Down panel
+                if (remainingCapacitySpan && topDownRemaining !== null) {
+                    remainingCapacitySpan.textContent = topDownRemaining;
+                    
+                    // Visual feedback for Top-Down capacity
+                    if (topDownRemaining < 0) {
+                        remainingCapacitySpan.textContent = `${topDownRemaining} (OVER CAPACITY!)`;
+                        remainingCapacitySpan.style.color = 'var(--error-color)';
+                    } else if (topDownRemaining < 10) {
+                        remainingCapacitySpan.style.color = 'var(--warning-color)';
+                    } else {
+                        remainingCapacitySpan.style.color = 'var(--success-color)';
+                    }
+                }
+                
+                // Update Bottom-Up panel
+                const totalPanelLoadSpan2 = document.getElementById('totalCsvPanelLoad2');
+                const remainingCapacitySpan2 = document.getElementById('remainingCsvCapacity2');
+                if (totalPanelLoadSpan2 && bottomUpTotalLoad > 0) {
+                    totalPanelLoadSpan2.textContent = bottomUpTotalLoad;
+                } else if (totalPanelLoadSpan2) {
+                    totalPanelLoadSpan2.textContent = roundedTotalPanelLoad; // Fallback to rounded raw load if no CF calculation
+                }
+                
+                if (remainingCapacitySpan2 && bottomUpRemaining !== null) {
+                    remainingCapacitySpan2.textContent = bottomUpRemaining;
+                    
+                    // Visual feedback for Bottom-Up capacity
+                    if (bottomUpRemaining < 0) {
+                        remainingCapacitySpan2.textContent = `${bottomUpRemaining} (OVER CAPACITY!)`;
+                        remainingCapacitySpan2.style.color = 'var(--error-color)';
+                    } else if (bottomUpRemaining < 10) {
+                        remainingCapacitySpan2.style.color = 'var(--warning-color)';
+                    } else {
+                        remainingCapacitySpan2.style.color = 'var(--success-color)';
+                    }
+                }
+                
+                // Update calculation results display
+                this.updateCalculationResultsDisplay();
+                
                 console.log('CSV appliances table populated successfully');
-                console.log('Total new panel load:', totalPanelLoad, 'amps');
-                console.log('Remaining capacity:', remainingCapacity, 'amps');
                 
             } catch (error) {
                 console.error('Error populating CSV appliances table:', error);
@@ -1838,12 +2021,21 @@
 
         clearCsvSummary() {
             const totalPanelLoadSpan = document.getElementById('totalCsvPanelLoad');
-            const availableCapacitySpan = document.getElementById('availableCapacity');
             const remainingCapacitySpan = document.getElementById('remainingCsvCapacity');
+            const totalPanelLoadSpan2 = document.getElementById('totalCsvPanelLoad2');
+            const remainingCapacitySpan2 = document.getElementById('remainingCsvCapacity2');
             
-            if (totalPanelLoadSpan) totalPanelLoadSpan.textContent = '0';
-            if (availableCapacitySpan) availableCapacitySpan.textContent = '0';
-            if (remainingCapacitySpan) remainingCapacitySpan.textContent = '0';
+            if (totalPanelLoadSpan) totalPanelLoadSpan.textContent = '0.0';
+            if (remainingCapacitySpan) remainingCapacitySpan.textContent = '0.0';
+            if (totalPanelLoadSpan2) totalPanelLoadSpan2.textContent = '0.0';
+            if (remainingCapacitySpan2) remainingCapacitySpan2.textContent = '0.0';
+            
+            // Reset colors to default
+            if (remainingCapacitySpan) remainingCapacitySpan.style.color = '';
+            if (remainingCapacitySpan2) remainingCapacitySpan2.style.color = '';
+            
+            // Also update the calculation results display
+            this.updateCalculationResultsDisplay();
         }
     }
 
@@ -2545,12 +2737,20 @@
                 topDownCapacity.addEventListener('input', () => {
                     this.checkStepCompletion();
                     this.updateCapacitySummary();
+                    // Also update the calculation results display in step 6
+                    if (window.applianceDatabase && window.applianceDatabase.updateCalculationResultsDisplay) {
+                        window.applianceDatabase.updateCalculationResultsDisplay();
+                    }
                 });
             }
             if (bottomUpCapacity) {
                 bottomUpCapacity.addEventListener('input', () => {
                     this.checkStepCompletion();
                     this.updateCapacitySummary();
+                    // Also update the calculation results display in step 6
+                    if (window.applianceDatabase && window.applianceDatabase.updateCalculationResultsDisplay) {
+                        window.applianceDatabase.updateCalculationResultsDisplay();
+                    }
                 });
             }
 
@@ -2977,6 +3177,11 @@
                     
                     if (projectData.steps.loadAnalysis.bottomUpCapacity && bottomUpCapacity) {
                         bottomUpCapacity.value = projectData.steps.loadAnalysis.bottomUpCapacity;
+                    }
+                    
+                    // Update the calculation results display after loading the capacity values
+                    if (window.applianceDatabase && window.applianceDatabase.updateCalculationResultsDisplay) {
+                        window.applianceDatabase.updateCalculationResultsDisplay();
                     }
                 }
 

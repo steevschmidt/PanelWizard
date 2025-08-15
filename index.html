@@ -326,10 +326,23 @@
                         </table>
                         
                         <div class="csv-summary">
-                            <h4>Panel Load Summary</h4>
-                            <p><strong>Total New Panel Load:</strong> <span id="totalCsvPanelLoad">0</span> amps</p>
-                            <p><strong>Available Capacity:</strong> <span id="availableCapacity">0</span> amps</p>
-                            <p><strong>Remaining Capacity:</strong> <span id="remainingCsvCapacity">0</span> amps</p>
+                            <div class="calculation-results">
+                                <h4>Calculation Methods</h4>
+                                <div class="calculation-methods">
+                                    <div class="calculation-method" id="topDownResult">
+                                        <h6>Top-Down Approach (NEC 220.87)</h6>
+                                        <p><strong>Available Capacity:</strong> <span id="topDownCapacityDisplay">-</span> amps</p>
+                                        <p><strong>Total New Panel Load:</strong> <span id="totalCsvPanelLoad">0</span> amps</p>
+                                        <p><strong>Remaining Capacity:</strong> <span id="remainingCsvCapacity">0</span> amps</p>
+                                    </div>
+                                    <div class="calculation-method" id="bottomUpResult">
+                                        <h6>Bottom-Up Approach (NEC 220.83)</h6>
+                                        <p><strong>Available Capacity:</strong> <span id="bottomUpCapacityDisplay">-</span> amps</p>
+                                        <p><strong>Total New Panel Load (CF-adjusted):</strong> <span id="totalCsvPanelLoad2">0</span> amps</p>
+                                        <p><strong>Remaining Capacity:</strong> <span id="remainingCsvCapacity2">0</span> amps</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <p>Click the "📋 Details" button for any appliance to see comprehensive product information, including all available data from our database.</p>
@@ -350,7 +363,7 @@
                     <h3>Implementation Strategy</h3>
                     <p>Your roadmap to electrification:</p>
                     <ul>
-                        <li>Timeline planning: which of these do you want to do first?
+                        <li>Timeline planning: which of these projects do you want to do first?
                             <ul>
                                 <li>If you're using the bottom-up approach (NEC 220.83), you can do it all at once.</li>
                                 <li>If you're using the top-down approach (NEC 220.87), it helps to break up your project into phases. For example, you might do your heating system first, then your water heater, then your cooking appliances, etc. Between each project you can take 30 days to recalculate your remaining panel capacity.</li>

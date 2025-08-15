@@ -1478,6 +1478,71 @@ a:hover {
     color: var(--text-primary);
 }
 
+/* ==========================================================================
+   Calculation Results Display Styles
+   ========================================================================== */
+
+.calculation-results {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.calculation-results h5 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.calculation-methods {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.calculation-method {
+    flex: 1;
+    min-width: 300px;
+    padding: 1rem;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+/* When only one method is visible, make it take full width */
+.calculation-methods:has(.calculation-method:only-child) .calculation-method {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.calculation-method h6 {
+    margin: 0 0 0.75rem 0;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.calculation-method p {
+    margin: 0;
+    color: var(--text-color);
+}
+
+.calculation-method p strong {
+    color: var(--text-primary);
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .calculation-methods {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .calculation-method {
+        min-width: auto;
+    }
+}
+
 /* Mobile responsiveness for product grid */
 @media (max-width: 768px) {
     .product-grid {
