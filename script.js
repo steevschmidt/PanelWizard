@@ -933,6 +933,11 @@
         if (stepManager && typeof stepManager.updatePanelHeaUrl === 'function') {
             stepManager.updatePanelHeaUrl();
         }
+        
+        // Update capacity input states after loading panel size and capacity data
+        if (stepManager && typeof stepManager.updateCapacityInputStates === 'function') {
+            stepManager.updateCapacityInputStates();
+        }
 
         // Load capacity data from step 4 if it exists
         if (project.steps.loadAnalysis) {
@@ -953,7 +958,28 @@
         
         // Update capacity summary if panel size and capacity data are loaded
         stepManager.updateCapacitySummary();
+        
+        // Load appliance selections if they exist
+        if (project.steps.applianceSelections) {
+            // Store the selections in the current project
+            if (!window.currentProject) {
+                window.currentProject = {};
+            }
+            if (!window.currentProject.steps) {
+                window.currentProject.steps = {};
+            }
+            window.currentProject.steps.applianceSelections = project.steps.applianceSelections;
+            
+            // Apply the selections to the CSV appliances table if it exists
+            setTimeout(() => {
+                if (stepManager && stepManager.steps && stepManager.steps.planNewAppliances) {
+                    stepManager.steps.planNewAppliances.applyLoadedApplianceSelections();
+                }
+            }, 1000); // Small delay to ensure the table is populated
+        }
     }
+    
+
     
     // Consolidated file saving function
     async function saveFile(project, options = {}) {
@@ -1079,6 +1105,44 @@
                 Object.assign(orderedSteps, results);
             }
         });
+
+        // Add appliance selections to the project data
+        // Include both existing selections and current default selections
+        let allApplianceSelections = {};
+        if (stepManager && stepManager.steps && stepManager.steps.planNewAppliances) {
+            allApplianceSelections = stepManager.steps.planNewAppliances.getAllCurrentApplianceSelections();
+        } else {
+            // Fallback: try to get selections directly from currentProject
+            if (window.currentProject?.steps?.applianceSelections) {
+                allApplianceSelections = window.currentProject.steps.applianceSelections;
+            }
+            
+            // Additional fallback: try to get selections from the table directly
+            const tableBody = document.getElementById('csvAppliancesTableBody');
+            if (tableBody) {
+                const rows = tableBody.querySelectorAll('tr');
+                
+                rows.forEach((row, index) => {
+                    const productSelector = row.querySelector('.product-selector');
+                    if (productSelector) {
+                        const applianceKey = productSelector.getAttribute('data-appliance-key');
+                        const category = productSelector.getAttribute('data-category');
+                        const selectedProductId = productSelector.value;
+                        
+                        if (applianceKey && category && selectedProductId) {
+                            allApplianceSelections[applianceKey] = {
+                                productId: selectedProductId,
+                                category: category
+                            };
+                        }
+                    }
+                });
+            }
+        }
+        
+        if (Object.keys(allApplianceSelections).length > 0) {
+            orderedSteps.applianceSelections = allApplianceSelections;
+        }
 
         // Update the project's steps with the ordered data
         window.currentProject.steps = orderedSteps;
@@ -1986,6 +2050,9 @@
                     window.applianceDatabase.updateCalculationResultsDisplay();
                 }
                 
+                // Apply any existing appliance selections after populating the table
+                this.applyExistingApplianceSelections();
+                
                 console.log('CSV appliances table populated successfully');
                 
             } catch (error) {
@@ -2088,8 +2155,6 @@
             const selectedProductId = event.target.value;
             const category = event.target.getAttribute('data-category');
             
-            console.log(`Product selection changed for ${applianceKey}: ${selectedProductId} in category ${category}`);
-            
             // Store the selection in the project data
             if (!window.currentProject) {
                 window.currentProject = {};
@@ -2103,29 +2168,23 @@
             
             window.currentProject.steps.applianceSelections[applianceKey] = {
                 productId: selectedProductId,
-                category: category,
-                timestamp: Date.now()
+                category: category
             };
             
             // Save to localStorage
             this.saveProjectToLocalStorage();
             
             // Recalculate and update the table
-            console.log('Calling updateTableWithNewSelections...');
             this.updateTableWithNewSelections();
         }
 
         // Update table with new product selections
         updateTableWithNewSelections() {
-            console.log('Updating table with new product selections...');
-            
             // Get current selections
             const selections = window.currentProject?.steps?.applianceSelections || {};
-            console.log('Current selections:', selections);
             
             // Update each row's data based on selections
             const rows = document.querySelectorAll('#csvAppliancesTableBody tr');
-            console.log(`Found ${rows.length} rows to update`);
             
             rows.forEach((row, index) => {
                 const productSelector = row.querySelector('.product-selector');
@@ -2134,32 +2193,25 @@
                     const category = productSelector.getAttribute('data-category');
                     const selection = selections[applianceKey];
                     
-                    console.log(`Row ${index}: applianceKey=${applianceKey}, category=${category}, selection=`, selection);
-                    
                     if (selection) {
                         const product = window.applianceDatabase.getProductById(selection.productId, category);
                         if (product) {
-                            console.log(`Found product:`, product);
-                            
                             // Update the amps column
                             const ampsCell = row.cells[2];
                             if (ampsCell) {
                                 ampsCell.textContent = `${product.panel_amps_240v || 0} amps`;
-                                console.log(`Updated amps cell to: ${product.panel_amps_240v || 0} amps`);
                             }
                             
                             // Update the capacity factor column
                             const cfCell = row.cells[3];
                             if (cfCell) {
                                 cfCell.textContent = product.load_calc_cf || 'N/A';
-                                console.log(`Updated CF cell to: ${product.load_calc_cf || 'N/A'}`);
                             }
                             
                             // Update the cost column
                             const costCell = row.cells[4];
                             if (costCell) {
                                 costCell.textContent = `$${(product.cost_min || 0).toLocaleString()} - $${(product.cost_max || 0).toLocaleString()}`;
-                                console.log(`Updated cost cell to: $${(product.cost_min || 0).toLocaleString()} - $${(product.cost_max || 0).toLocaleString()}`);
                             }
                             
                             // Update the details button
@@ -2170,23 +2222,16 @@
                         } else {
                             console.warn(`Product not found for ID: ${selection.productId} in category: ${category}`);
                         }
-                    } else {
-                        console.log(`No selection found for applianceKey: ${applianceKey}`);
                     }
-                } else {
-                    console.log(`Row ${index}: No product selector found`);
                 }
             });
             
             // Recalculate totals and update display
-            console.log('Calling recalculateAndUpdateDisplay...');
             this.recalculateAndUpdateDisplay();
         }
 
         // Recalculate totals and update display
         recalculateAndUpdateDisplay() {
-            console.log('Recalculating totals with new selections...');
-            
             // Get current selections
             const selections = window.currentProject?.steps?.applianceSelections || {};
             
@@ -2202,14 +2247,12 @@
                     
                     if (product) {
                         totalPanelLoad += product.panel_amps_240v || 0;
-                        console.log(`Top-Down calculation: ${product.name} - ${product.panel_amps_240v || 0} amps (no CF applied)`);
                     }
                 }
             });
             
             // Round the total load to 1 decimal place
             totalPanelLoad = Math.round(totalPanelLoad * 10) / 10;
-            console.log(`Top-Down total panel load: ${totalPanelLoad} amps`);
             
             // Update the total panel load display
             const totalPanelLoadSpan = document.getElementById('totalCsvPanelLoad');
@@ -2267,8 +2310,6 @@
                             const capacityFactor = product.load_calc_cf || 1.0;
                             const cfAdjustedLoad = panelAmps * capacityFactor;
                             bottomUpTotalLoad += cfAdjustedLoad;
-                            
-                            console.log(`Bottom-Up calculation: ${product.name} - ${panelAmps} amps × ${capacityFactor} CF = ${cfAdjustedLoad} adjusted amps`);
                         }
                     }
                 });
@@ -2298,8 +2339,6 @@
                         remainingCapacitySpan2.style.color = 'var(--success-color)';
                     }
                 }
-                
-                console.log(`Bottom-Up calculation complete: ${bottomUpTotalLoad} total CF-adjusted amps, ${bottomUpRemaining} remaining capacity`);
             }
         }
 
@@ -2313,6 +2352,163 @@
             } catch (error) {
                 console.error('Error saving project to localStorage:', error);
             }
+        }
+
+        // Apply loaded appliance selections to the table
+        applyLoadedApplianceSelections() {
+            const selections = window.currentProject?.steps?.applianceSelections || {};
+            if (Object.keys(selections).length === 0) {
+                return;
+            }
+            
+            // Clean up any old timestamp data
+            Object.values(selections).forEach(selection => {
+                if (selection.timestamp) {
+                    delete selection.timestamp;
+                }
+            });
+            
+            // Wait for the table to be populated
+            const checkTable = () => {
+                const tableBody = document.getElementById('csvAppliancesTableBody');
+                if (!tableBody || tableBody.children.length === 0) {
+                    setTimeout(checkTable, 500);
+                    return;
+                }
+                
+                // Apply each selection to the corresponding dropdown
+                Object.entries(selections).forEach(([applianceKey, selection]) => {
+                    const row = Array.from(tableBody.children).find(row => {
+                        const selector = row.querySelector('.product-selector');
+                        return selector && selector.getAttribute('data-appliance-key') === applianceKey;
+                    });
+                    
+                    if (row) {
+                        const dropdown = row.querySelector('.product-selector');
+                        if (dropdown) {
+                            // Set the selected value
+                            dropdown.value = selection.productId;
+                            
+                            // Trigger the change event to update the display
+                            const event = new Event('change', { bubbles: true });
+                            dropdown.dispatchEvent(event);
+                        }
+                    } else {
+                        console.warn(`Row not found for appliance key: ${applianceKey}`);
+                    }
+                });
+            };
+            
+            checkTable();
+        }
+
+        // Apply existing appliance selections when table is populated
+        applyExistingApplianceSelections() {
+            const selections = window.currentProject?.steps?.applianceSelections || {};
+            if (Object.keys(selections).length === 0) {
+                return;
+            }
+            
+            // Clean up any old timestamp data
+            Object.values(selections).forEach(selection => {
+                if (selection.timestamp) {
+                    delete selection.timestamp;
+                }
+            });
+            
+            // Apply each selection to the corresponding dropdown
+            Object.entries(selections).forEach(([applianceKey, selection]) => {
+                const row = document.querySelector(`[data-appliance-key="${applianceKey}"]`)?.closest('tr');
+                if (row) {
+                    const dropdown = row.querySelector('.product-selector');
+                    if (dropdown) {
+                        // Set the selected value
+                        dropdown.value = selection.productId;
+                        
+                        // Update the display without triggering the change event
+                        this.updateRowDisplayForSelection(row, selection);
+                    }
+                } else {
+                    console.warn(`Row not found for appliance key: ${applianceKey}`);
+                }
+            });
+            
+            // Recalculate totals with the applied selections
+            this.recalculateAndUpdateDisplay();
+        }
+
+        // Update row display for a specific selection without triggering change event
+        updateRowDisplayForSelection(row, selection) {
+            const category = selection.category;
+            const product = window.applianceDatabase.getProductById(selection.productId, category);
+            
+            if (product) {
+                // Update the amps column
+                const ampsCell = row.cells[2];
+                if (ampsCell) {
+                    ampsCell.textContent = `${product.panel_amps_240v || 0} amps`;
+                }
+                
+                // Update the capacity factor column
+                const cfCell = row.cells[3];
+                if (cfCell) {
+                    cfCell.textContent = product.load_calc_cf || 'N/A';
+                }
+                
+                // Update the cost column
+                const costCell = row.cells[4];
+                if (costCell) {
+                    costCell.textContent = `$${(product.cost_min || 0).toLocaleString()} - $${(product.cost_max || 0).toLocaleString()}`;
+                }
+                
+                // Update the details button
+                const detailsBtn = row.querySelector('.details-btn');
+                if (detailsBtn) {
+                    // Extract appliance type from the row's appliance key
+                    const applianceKey = row.querySelector('.product-selector')?.getAttribute('data-appliance-key');
+                    const applianceType = applianceKey ? applianceKey.split('_')[0] : '';
+                    detailsBtn.onclick = () => showProductDetails(product.id, category, applianceType);
+                }
+            }
+        }
+
+        // Get all current appliance selections including defaults
+        getAllCurrentApplianceSelections() {
+            const allSelections = {};
+            
+            // Get existing selections from the project
+            const existingSelections = window.currentProject?.steps?.applianceSelections || {};
+            Object.assign(allSelections, existingSelections);
+            
+            // Get current selections from the table (including defaults that weren't changed)
+            const tableBody = document.getElementById('csvAppliancesTableBody');
+            
+            if (tableBody) {
+                const rows = tableBody.querySelectorAll('tr');
+                
+                rows.forEach((row, index) => {
+                    const productSelector = row.querySelector('.product-selector');
+                    
+                    if (productSelector) {
+                        const applianceKey = productSelector.getAttribute('data-appliance-key');
+                        const category = productSelector.getAttribute('data-category');
+                        const selectedProductId = productSelector.value;
+                        
+                        if (applianceKey && category && selectedProductId) {
+                            // If this selection doesn't exist yet, add it
+                            if (!allSelections[applianceKey]) {
+                                allSelections[applianceKey] = {
+                                    productId: selectedProductId,
+                                    category: category
+                                    // Removed timestamp as it's not needed
+                                };
+                            }
+                        }
+                    }
+                });
+            }
+            
+            return allSelections;
         }
     }
 
