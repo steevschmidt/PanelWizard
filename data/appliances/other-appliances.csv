@@ -1,7 +1,6 @@
 ﻿id,name,type,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,installation_notes,manufacturer,model_number,special_notes,load_calc_cf
 oa_001,Heat Pump Pool Heater,Pool Heater,25,240,dedicated,25,3000,5000,Requires 30A dedicated circuit,Rheem,HeatPro,Seasonal usage,0.4
 oa_002,Electric Fireplace Insert,Fireplace,15,120,dedicated,7.5,800,1500,Requires 15A dedicated circuit,Dimplex,Opti-Myst,Decorative heating,0.4
-oa_003,Heat Pump Dehumidifier,Dehumidifier,8,120,dedicated,4,300,600,Requires 15A dedicated circuit,Frigidaire,FAD704DWD,Basement use,0.4
-oa_004,Electric BBQ Grill,Outdoor Cooking,20,240,dedicated,20,400,800,Requires 25A dedicated circuit,Weber,Q1400,Outdoor installation,0.4
-oa_005,Electric Kiln,Art Studio,30,240,dedicated,30,800,1500,Requires 40A dedicated circuit,Skutt,KM-818,Studio equipment,0.4
-oa_006,Patio Heater,RK Radiant Heater,15,240,dedicated,15,500,1000,Standard outlet,King Electric,RKX2430-RMTX-BLK,Outdoor installation,0.4
+oa_003,Electric BBQ Grill,Outdoor Cooking,20,240,dedicated,20,400,800,Requires 25A dedicated circuit,Weber,Q1400,Outdoor installation,0.4
+oa_004,Electric Kiln,Art Studio,30,240,dedicated,30,800,1500,Requires 40A dedicated circuit,Skutt,KM-818,Studio equipment,0.4
+oa_005,Patio Heater,RK Radiant Heater,15,240,dedicated,15,500,1000,Standard outlet,King Electric,RKX2430-RMTX-BLK,Outdoor installation,0.4
