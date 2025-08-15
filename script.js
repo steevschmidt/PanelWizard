@@ -1190,7 +1190,7 @@
                                window.location.hostname === '127.0.0.1';
                 
                 const csvPath = isLocal
-                    ? `data/appliances/${categoryName}.csv`
+                    ? `data/appliances/${categoryName}.csv?t=${Date.now()}`
                     : `https://wizard.hea.com/data/appliances/${categoryName}.csv`;
                 
                 console.log(`Loading CSV from: ${csvPath} (${isLocal ? 'local' : 'production'})`);
@@ -1219,11 +1219,6 @@
             if (lines.length < 2) return [];
             
             const headers = lines[0].split(',').map(h => h.trim());
-            
-            // Debug: Check what headers we're actually parsing
-            console.log('CSV Headers being parsed:', headers);
-            console.log('CSV Headers count:', headers.length);
-            console.log('CSV First line:', lines[0]);
             
             const result = lines.slice(1).map(line => {
                 const values = line.split(',').map(v => v.trim());
@@ -1415,110 +1410,6 @@
             estimateLoadForGoal: () => 0
         };
     }
-
-    // ==========================================================================
-    // Test and Debug Functions
-    // ==========================================================================
-
-    // Function to test CSV loading (can be called from browser console)
-    window.testCSVLoading = async function() {
-        console.log('Testing CSV loading...');
-        try {
-            if (!window.applianceDatabase) {
-                console.error('Appliance database not initialized');
-                return false;
-            }
-            
-            await window.applianceDatabase.initialize();
-            console.log('CSV loading test successful!');
-            console.log('Loaded categories:', Object.keys(window.applianceDatabase.database));
-            
-            // Test a few products
-            Object.keys(window.applianceDatabase.database).forEach(category => {
-                const products = window.applianceDatabase.database[category];
-                console.log(`${category}: ${products.length} products loaded`);
-                if (products.length > 0) {
-                    console.log('Sample product:', products[0]);
-                }
-            });
-            
-            return true;
-        } catch (error) {
-            console.error('CSV loading test failed:', error);
-            return false;
-        }
-    };
-
-    // Function to test CSV table population (can be called from browser console)
-    window.testCSVTable = async function() {
-        console.log('Testing CSV table population...');
-        try {
-            if (!window.applianceDatabase) {
-                console.error('Appliance database not initialized');
-                return false;
-            }
-            
-            if (!window.applianceDatabase.isInitialized) {
-                await window.applianceDatabase.initialize();
-            }
-            
-            // Check if we're on step 6
-            const step6 = document.getElementById('planNewAppliances');
-            if (!step6) {
-                console.log('Step 6 not found, creating test step');
-                // Create a test step for testing purposes
-                const testStep = {
-                    populateCsvAppliancesTable: async function() {
-                        console.log('Testing CSV table population...');
-                        // This will be called by the Step class method
-                    }
-                };
-                
-                // Test the CSV table population logic
-                const goals = window.currentProject?.steps?.electrificationGoals || {};
-                const availableCapacity = window.currentProject?.steps?.loadAnalysis?.maxCapacity || 100; // Default for testing
-                
-                console.log('Test goals:', goals);
-                console.log('Test available capacity:', availableCapacity);
-                
-                if (goals.selectedAppliances && goals.selectedAppliances.length > 0) {
-                    console.log('Found selected appliances:', goals.selectedAppliances);
-                    
-                    // Test getting products for each category
-                    const applianceMap = {
-                        'heating': 'heat-pumps',
-                        'waterheater': 'water-heaters',
-                        'cooking': 'cooking-appliances',
-                        'dryer': 'clothes-dryers',
-                        'ev': 'ev-chargers',
-                        'other': 'other-appliances'
-                    };
-                    
-                    goals.selectedAppliances.forEach(appliance => {
-                        const category = applianceMap[appliance.type];
-                        if (category) {
-                            const products = window.applianceDatabase.getProductsByCategory(category);
-                            console.log(`${appliance.type} -> ${category}: ${products.length} products found`);
-                            if (products.length > 0) {
-                                const sortedProducts = products.sort((a, b) => (a.panel_amps_240v || 0) - (b.panel_amps_240v || 0));
-                                const lowestAmpProduct = sortedProducts[0];
-                                console.log(`Lowest amp product for ${category}:`, lowestAmpProduct);
-                            }
-                        }
-                    });
-                } else {
-                    console.log('No selected appliances found in current project');
-                }
-                
-                return true;
-            }
-            
-            return true;
-        } catch (error) {
-            console.error('CSV table test failed:', error);
-            return false;
-        }
-    };
 
     // ==========================================================================
     // Step Class Definition
@@ -1827,11 +1718,6 @@
                             // Create table row for this heating system
                             const row = document.createElement('tr');
                             const displayName = `${DISPLAY_NAMES.applianceTypes[appliance.type] || appliance.type} ${heatingSystem.id}`;
-                            
-                            // Quick debug: Check if load_calc_cf exists and what it contains
-                            console.log('CF Debug - Product keys:', Object.keys(selectedProduct));
-                            console.log('CF Debug - load_calc_cf value:', selectedProduct.load_calc_cf);
-                            console.log('CF Debug - Raw product:', selectedProduct);
                             
                             row.innerHTML = `
                                 <td>${displayName}</td>
@@ -3322,8 +3208,6 @@
         console.log('  VS Code Live Server extension');
         console.log('==========================================');
     };
-    
-
     
     console.log('PanelWizard initialization complete');
 })(); 

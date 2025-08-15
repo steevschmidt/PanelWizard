@@ -4,7 +4,7 @@ hp_002,Lennox 2-Ton Heat Pump,24000,12,240,dedicated,12,1,6000,9000,15,9,Require
 hp_003,Trane 4-Ton Heat Pump,48000,20,240,dedicated,20,1,10000,15000,17,10,Requires 25A dedicated circuit,Trane,XV18
 hp_004,Rheem 1.5-Ton Heat Pump,18000,10,240,dedicated,10,1,4500,7000,14,8.5,Requires 15A dedicated circuit,Rheem,RPLH
 hp_005,Goodman 5-Ton Heat Pump,60000,25,240,dedicated,25,1,12000,18000,16,9,Requires 30A dedicated circuit,Goodman,GSZC16
-hp_006,American Std 2.5-Ton Heat Pump,30000,13,240,dedicated,13,1,7000,11000,16,9.5,Requires 20A dedicated circuit,American Standard,4A7A6
+hp_006,American Standard 2.5-Ton Heat Pump,30000,13,240,dedicated,13,1,7000,11000,16,9.5,Requires 20A dedicated circuit,American Standard,4A7A6
 hp_007,Bryant 3.5-Ton Heat Pump,42000,18,240,dedicated,18,1,9000,14000,17,10,Requires 25A dedicated circuit,Bryant,187BNV
 hp_008,Carrier 1-Ton Heat Pump,12000,8,240,dedicated,8,1,3500,5500,15,9,Requires 15A dedicated circuit,Carrier,25HBC
 hp_009,Lennox 4.5-Ton Heat Pump,54000,22,240,dedicated,22,1,11000,17000,18,10.5,Requires 30A dedicated circuit,Lennox,SL18XP1
