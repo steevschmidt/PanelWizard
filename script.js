@@ -2815,7 +2815,7 @@
                     displayValue = `$${Number(product[column]).toLocaleString()}`;
                 } else if (column === 'tankless' || column === 'smart_features' || 
                            column === 'heat_pump' || column === 'induction') {
-                    displayValue = product[column] === 'true' ? 'Yes' : 'No';
+                    displayValue = product[column] === true ? 'Yes' : 'No';
                 } else if (column === 'capacity_btu') {
                     displayValue = `${Number(product[column]).toLocaleString()} BTU/h`;
                 } else if (column === 'capacity_gal') {
