@@ -2201,7 +2201,7 @@
                                 ampsCell.textContent = `${product.panel_amps_240v || 0} amps`;
                             }
                             
-                            // Update the capacity factor column
+                            // Update the coincidence factor column
                             const cfCell = row.cells[3];
                             if (cfCell) {
                                 cfCell.textContent = product.load_calc_cf || 'N/A';
@@ -2448,7 +2448,7 @@
                     ampsCell.textContent = `${product.panel_amps_240v || 0} amps`;
                 }
                 
-                // Update the capacity factor column
+                // Update the coincidence factor column
                 const cfCell = row.cells[3];
                 if (cfCell) {
                     cfCell.textContent = product.load_calc_cf || 'N/A';
@@ -2772,7 +2772,7 @@
             'heat_pump': 'Heat Pump',
             'induction': 'Induction',
             'special_notes': 'Special Notes',
-            'load_calc_cf': 'Capacity Factor (220.83)',
+            'load_calc_cf': 'Coincidence Factor (220.83)',
             'notes': 'Notes'
         };
         
