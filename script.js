@@ -1160,7 +1160,6 @@
         
         try {
             await saveFile(window.currentProject);
-            alert('Project saved successfully!');
         } catch (error) {
             console.error('Error saving project:', error);
             alert('Error saving project: ' + error.message);
