@@ -478,6 +478,8 @@ button {
         white-space: nowrap;
     }
 
+
+
     /* Stack project options vertically on mobile */
     .project-options {
         flex-direction: column;
@@ -523,6 +525,14 @@ button {
         top: 20px;
         right: auto;
     }
+
+    .reset-button {
+        left: 80px;
+        top: 20px;
+        right: auto;
+    }
+
+
 }
 
 /* ==========================================================================

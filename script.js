@@ -95,6 +95,76 @@
     console.log('Script loading...');
 
     // ==========================================================================
+    // URL Parameter Handling
+    // ==========================================================================
+    
+    // Function to parse URL parameters and set form values
+    function parseURLParameters() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Parse panelSize parameter (integer, in amps)
+            const panelSize = urlParams.get('panelSize');
+            if (panelSize) {
+                const panelSizeInt = parseInt(panelSize);
+                if (!isNaN(panelSizeInt) && panelSizeInt >= 10 && panelSizeInt <= 1000) {
+                    const panelAmpsInput = document.getElementById('panelAmps');
+                    if (panelAmpsInput) {
+                        panelAmpsInput.value = panelSizeInt;
+                        console.log('URL parameter set panelSize to:', panelSizeInt);
+                    }
+                } else {
+                    console.warn('Invalid panelSize parameter:', panelSize, '- must be integer between 10-1000');
+                }
+            }
+            
+            // Parse topDownCapacity parameter (integer, in amps)
+            const topDownCapacity = urlParams.get('topDownCapacity');
+            if (topDownCapacity) {
+                const topDownInt = parseInt(topDownCapacity);
+                if (!isNaN(topDownInt) && topDownInt >= 0) {
+                    const topDownInput = document.getElementById('topDownCapacity');
+                    if (topDownInput) {
+                        topDownInput.value = topDownInt;
+                        console.log('URL parameter set topDownCapacity to:', topDownInt);
+                    }
+                } else {
+                    console.warn('Invalid topDownCapacity parameter:', topDownCapacity, '- must be non-negative integer');
+                }
+            }
+            
+            // Parse bottomUpCapacity parameter (integer, in amps)
+            const bottomUpCapacity = urlParams.get('bottomUpCapacity');
+            if (bottomUpCapacity) {
+                const bottomUpInt = parseInt(bottomUpCapacity);
+                if (!isNaN(bottomUpInt) && bottomUpInt >= 0) {
+                    const bottomUpInput = document.getElementById('bottomUpCapacity');
+                    if (bottomUpInput) {
+                        bottomUpInput.value = bottomUpInt;
+                        console.log('URL parameter set bottomUpCapacity to:', bottomUpInt);
+                    }
+                } else {
+                    console.warn('Invalid bottomUpCapacity parameter:', bottomUpCapacity, '- must be non-negative integer');
+                }
+            }
+            
+            // Log all parsed parameters
+            if (panelSize || topDownCapacity || bottomUpCapacity) {
+                console.log('URL parameters parsed:', {
+                    panelSize: panelSize ? parseInt(panelSize) : null,
+                    topDownCapacity: topDownCapacity ? parseInt(topDownCapacity) : null,
+                    bottomUpCapacity: bottomUpCapacity ? parseInt(bottomUpCapacity) : null
+                });
+            }
+        } catch (error) {
+            console.warn('Warning: Could not parse URL parameters:', error.message);
+        }
+    }
+    
+    // Parse URL parameters when the script loads
+    parseURLParameters();
+
+    // ==========================================================================
     // Centralized Display Names Configuration
     // ==========================================================================
     
@@ -176,7 +246,9 @@
         console.warn('Warning: Reset button element not found');
     }
     
-    // Function to update reset button visibility based on step 1 completion
+
+    
+    // Function to update reset button visibility based on form completion
     function updateResetButtonVisibility() {
         try {
             if (!resetButton) {
@@ -219,6 +291,8 @@
             }
         });
     }
+
+
 
 
 
@@ -3563,9 +3637,9 @@
             }
 
             // Update reset button visibility when step 1 completion status changes
-            if (typeof updateResetButtonVisibility === 'function') {
-                updateResetButtonVisibility();
-            }
+                    if (typeof updateResetButtonVisibility === 'function') {
+            updateResetButtonVisibility();
+        }
         },
 
         completeStep(stepId) {
