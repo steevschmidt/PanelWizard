@@ -1,12 +1,7 @@
 ﻿id,name,capacity_cu_ft,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,efficiency_cef,installation_notes,manufacturer,model_number,heat_pump,load_calc_cf
-cd_001,GE Profile Heat Pump Dryer,7.8,15,240,dedicated,15,1200,1800,8.5,Requires 15A dedicated circuit,GE,GFQ14ESSNWW,TRUE,0.4
-cd_002,LG Heat Pump Dryer,7.4,15,240,dedicated,15,1100,1700,8.8,Requires 15A dedicated circuit,LG,DLEX4000W,TRUE,0.4
-cd_003,Samsung Heat Pump Dryer,7.5,15,240,dedicated,15,1000,1600,8.6,Requires 15A dedicated circuit,Samsung,DV22N6800HW,TRUE,0.4
-cd_004,Whirlpool Heat Pump Dryer,7,15,240,dedicated,15,900,1400,8.4,Requires 15A dedicated circuit,Whirlpool,WED5000DW,TRUE,0.4
-cd_005,Maytag Heat Pump Dryer,7.2,15,240,dedicated,15,950,1500,8.7,Requires 15A dedicated circuit,Maytag,MEDC465HW,TRUE,0.4
-cd_006,Electrolux Heat Pump Dryer,7.8,15,240,dedicated,15,1100,1700,8.9,Requires 15A dedicated circuit,Electrolux,EFME627UTT,TRUE,0.4
-cd_007,Bosch Heat Pump Dryer,7,15,240,dedicated,15,1000,1600,8.6,Requires 15A dedicated circuit,Bosch,WTW87NH1UC,TRUE,0.4
-cd_008,Frigidaire Heat Pump Dryer,7.5,15,240,dedicated,15,950,1500,8.5,Requires 15A dedicated circuit,Frigidaire,FFRE4120SW,TRUE,0.4
-cd_009,KitchenAid Heat Pump Dryer,7,15,240,dedicated,15,1100,1700,8.8,Requires 15A dedicated circuit,KitchenAid,KEDE5040WW,TRUE,0.4
-cd_010,GE Heat Pump Dryer,7.8,15,240,dedicated,15,1000,1600,8.6,Requires 15A dedicated circuit,GE,GFQ14ESSNWW,TRUE,0.4
-cd_011,LG Combo Washer Dryer,5,12,120,shared,0,2000,2500,2.9,Zero panel amps if replacing an existing washer,LG,WM6998H_A,TRUE,0.4
+cd_001,Heat Pump Dryer (ventless),7.8,5,240,dedicated,5,1200,1800,8.5,Requires 15A dedicated circuit,GE,GFQ14ESSNWW,TRUE,0.4
+cd_002,Heat Pump Dryer (ventless),7.8,10,120,dedicated,5,1400,1700,8.8,Requires 15A dedicated circuit,LG,DLHC5502B,TRUE,0.4
+cd_003,Heat Pump Dryer (ventless),7.5,5,240,dedicated,5,1000,1600,8.6,Requires 15A dedicated circuit,Samsung,DV22N6800HW,TRUE,0.4
+cd_011,Combo Washer Dryer (ventless),5,12,120,shared,0,1800,2500,7,Zero panel amps if replacing an existing washer,LG,WM6998H_A,TRUE,0.4
+cd_012,Electric Dryer (ventless),7,11,240,dedicated,11,900,1400,4.3,Requires 15A dedicated circuit,Midea,MLE25H7BWW,FALSE,0.4
+cd_013,Electric Dryer (vented),7,24,240,dedicated,24,800,1200,3.93,Requires 15A dedicated circuit,Samsung,DVE45R6300V,FALSE,0.4

@@ -10,4 +10,4 @@ ev_008,GE WattStation,7.2,30,240,dedicated,30,400,600,hardwired,Requires 40A cir
 ev_009,Leviton EVB40,7.2,30,240,dedicated,30,300,500,hardwired,Requires 40A circuit (30A continuous),Leviton,EVB40,FALSE,1
 ev_010,Blink HQ-150,7.2,30,240,dedicated,30,250,450,hardwired,Requires 40A circuit (30A continuous),Blink,HQ-150,FALSE,1
 ev_011,Emporia Pro Level 2,11.5,48,240,dedicated,0,600,800,hardwired,Pauses charging based on load,Emporia,EMC2-A,TRUE,1
-ev_012,Level 1 Charger,1.8,15,120,shared,7.5,100,200,standard plug,Any outlet,Lectron,J1772,FALSE,1
+ev_012,Level 1 Charger,1.8,15,120,shared,7.5,0,200,standard plug,Any outlet,Lectron,J1772,FALSE,1
