@@ -71,8 +71,8 @@ class PanelWizardPrinter {
             // Create print-friendly content
             const printContent = this.createPrintContent();
             
-            // Open print window
-            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            // Open print window as a new tab (not a popup)
+            const printWindow = window.open('', '_blank');
             printWindow.document.write(printContent);
             printWindow.document.close();
             
