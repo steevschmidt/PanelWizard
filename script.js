@@ -3349,6 +3349,28 @@
                     if (stepNumber) this.activateStep(stepNumber);
                 });
             });
+
+            // Prevent form submission on Enter key for forms without submit handlers
+            // This fixes the issue on iPhone where hitting Enter causes page to reload
+            const formSelectors = [
+                '#panelSizeForm',
+                '#electrificationForm',
+                '#step4-1 .form-group',
+                '#step4-2 .form-group'
+            ];
+
+            formSelectors.forEach(selector => {
+                const form = document.querySelector(selector);
+                if (form) {
+                    form.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        // Blur the active input to dismiss the keyboard on mobile
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+                    });
+                }
+            });
         },
 
         updatePanelHeaUrl() {
