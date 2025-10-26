@@ -73,14 +73,33 @@ class PanelWizardPrinter {
             
             // Open print window as a new tab (not a popup)
             const printWindow = window.open('', '_blank');
+            
+            if (!printWindow) {
+                alert('Popup blocked. Please allow popups for this site and try again.');
+                return;
+            }
+            
+            // Write content to the new window
             printWindow.document.write(printContent);
             printWindow.document.close();
             
-            // Wait for content to load then print
-            printWindow.onload = () => {
-                printWindow.print();
-                // Keep window open for user to review or print again
-            };
+            // Use a longer delay to ensure the new tab is fully ready before printing
+            // This prevents the parent tab from freezing in Chrome
+            setTimeout(() => {
+                try {
+                    if (printWindow && !printWindow.closed) {
+                        printWindow.focus(); // Bring window to front
+                        // Use nested setTimeout to allow browser to complete rendering
+                        setTimeout(() => {
+                            if (printWindow && !printWindow.closed) {
+                                printWindow.print();
+                            }
+                        }, 250);
+                    }
+                } catch (e) {
+                    console.error('Error during print:', e);
+                }
+            }, 1000); // Longer initial delay prevents parent tab freeze
         } catch (error) {
             console.error('Error handling print:', error);
             alert('Error preparing print content. Please try again.');
