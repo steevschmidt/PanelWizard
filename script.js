@@ -139,6 +139,63 @@
         }, 100);
     }
     
+    // Function to mark step 3 (Panel Size) as completed with badge
+    function markStep3Completed() {
+        // Wait for DOM to be ready
+        setTimeout(() => {
+            const step3Section = document.getElementById('currentEquipment');
+            if (step3Section) {
+                // Add a completed badge/indicator
+                const badge = document.createElement('div');
+                badge.classList.add('completed-badge');
+                badge.innerHTML = '✓ Already entered through another tool';
+                
+                // Insert badge at the beginning of the section's content-box
+                const contentBox = step3Section.querySelector('.content-box');
+                if (contentBox) {
+                    contentBox.insertBefore(badge, contentBox.firstChild);
+                    console.log('Step 3 marked as completed with badge');
+                }
+            }
+        }, 100);
+    }
+    
+    // Function to mark step 4.1 (Top-Down Capacity) as completed with badge
+    function markStep41Completed() {
+        // Wait for DOM to be ready
+        setTimeout(() => {
+            const step41Section = document.getElementById('step4-1');
+            if (step41Section) {
+                // Add a completed badge/indicator
+                const badge = document.createElement('div');
+                badge.classList.add('completed-badge');
+                badge.innerHTML = '✓ Already completed via an external Panel Capacity Calculator';
+                
+                // Insert badge at the beginning of the section
+                step41Section.insertBefore(badge, step41Section.firstChild);
+                console.log('Step 4.1 marked as completed with badge');
+            }
+        }, 100);
+    }
+    
+    // Function to mark step 4.2 (Bottom-Up Capacity) as completed with badge
+    function markStep42Completed() {
+        // Wait for DOM to be ready
+        setTimeout(() => {
+            const step42Section = document.getElementById('step4-2');
+            if (step42Section) {
+                // Add a completed badge/indicator
+                const badge = document.createElement('div');
+                badge.classList.add('completed-badge');
+                badge.innerHTML = '✓ Already completed via an external Load Calculator';
+                
+                // Insert badge at the beginning of the section
+                step42Section.insertBefore(badge, step42Section.firstChild);
+                console.log('Step 4.2 marked as completed with badge');
+            }
+        }, 100);
+    }
+    
     // Function to add visual indicator for pre-filled inputs
     function addPrefilledIndicator(inputElement) {
         // Check if indicator already exists
@@ -151,7 +208,7 @@
         const badge = document.createElement('span');
         badge.classList.add('prefilled-badge');
         badge.textContent = 'Pre-filled';
-        badge.title = 'This value was already calculated by another tool and transferred to this tool from a URL parameter';
+        badge.title = 'This value was already calculated by another tool and transferred here using a URL parameter';
         
         // Insert the badge after the input
         inputElement.parentNode.insertBefore(badge, inputElement.nextSibling);
@@ -171,6 +228,7 @@
                     if (panelAmpsInput) {
                         panelAmpsInput.value = panelSizeInt;
                         addPrefilledIndicator(panelAmpsInput);
+                        markStep3Completed();
                         console.log('URL parameter set panelSize to:', panelSizeInt);
                     }
                 } else {
@@ -187,6 +245,7 @@
                     if (topDownInput) {
                         topDownInput.value = topDownInt;
                         addPrefilledIndicator(topDownInput);
+                        markStep41Completed();
                         console.log('URL parameter set topDownCapacity to:', topDownInt);
                     }
                 } else {
@@ -203,6 +262,7 @@
                     if (bottomUpInput) {
                         bottomUpInput.value = bottomUpInt;
                         addPrefilledIndicator(bottomUpInput);
+                        markStep42Completed();
                         console.log('URL parameter set bottomUpCapacity to:', bottomUpInt);
                     }
                 } else {
