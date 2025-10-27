@@ -2796,7 +2796,7 @@
         `;
         
         const title = document.createElement('h4');
-        title.textContent = 'Full CSV Data';
+        title.textContent = 'Complete Product Data';
         title.style.cssText = `
             margin: 0 0 12px 0;
             color: var(--text-color, #333);
