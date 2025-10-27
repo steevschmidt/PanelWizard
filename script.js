@@ -98,6 +98,24 @@
     // URL Parameter Handling
     // ==========================================================================
     
+    // Function to add visual indicator for pre-filled inputs
+    function addPrefilledIndicator(inputElement) {
+        // Check if indicator already exists
+        const existingIndicator = inputElement.nextElementSibling;
+        if (existingIndicator && existingIndicator.classList.contains('prefilled-badge')) {
+            return; // Already has indicator
+        }
+        
+        // Create the badge element
+        const badge = document.createElement('span');
+        badge.classList.add('prefilled-badge');
+        badge.textContent = 'Pre-filled';
+        badge.title = 'This value was loaded from URL parameters';
+        
+        // Insert the badge after the input
+        inputElement.parentNode.insertBefore(badge, inputElement.nextSibling);
+    }
+    
     // Function to parse URL parameters and set form values
     function parseURLParameters() {
         try {
@@ -111,6 +129,7 @@
                     const panelAmpsInput = document.getElementById('panelAmps');
                     if (panelAmpsInput) {
                         panelAmpsInput.value = panelSizeInt;
+                        addPrefilledIndicator(panelAmpsInput);
                         console.log('URL parameter set panelSize to:', panelSizeInt);
                     }
                 } else {
@@ -126,6 +145,7 @@
                     const topDownInput = document.getElementById('topDownCapacity');
                     if (topDownInput) {
                         topDownInput.value = topDownInt;
+                        addPrefilledIndicator(topDownInput);
                         console.log('URL parameter set topDownCapacity to:', topDownInt);
                     }
                 } else {
@@ -141,6 +161,7 @@
                     const bottomUpInput = document.getElementById('bottomUpCapacity');
                     if (bottomUpInput) {
                         bottomUpInput.value = bottomUpInt;
+                        addPrefilledIndicator(bottomUpInput);
                         console.log('URL parameter set bottomUpCapacity to:', bottomUpInt);
                     }
                 } else {

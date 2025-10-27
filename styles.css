@@ -1002,6 +1002,37 @@ a:hover {
     padding: 8px;
 }
 
+/* Pre-filled badge indicator */
+.prefilled-badge {
+    display: inline-block;
+    margin-left: 12px;
+    padding: 4px 12px;
+    background-color: var(--primary-color, #4CAF50);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 12px;
+    vertical-align: middle;
+    cursor: help;
+    animation: slideIn 0.3s ease-out;
+}
+
+[data-theme="dark"] .prefilled-badge {
+    background-color: var(--primary-color, #66BB6A);
+}
+
+@media (max-width: 768px) {
+    .prefilled-badge {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        margin-left: 8px;
+        display: block;
+        margin-top: 8px;
+        margin-left: 0;
+        width: fit-content;
+    }
+}
+
 /* Quantity field styles */
 .quantity-field {
     display: none;
