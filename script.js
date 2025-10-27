@@ -98,6 +98,47 @@
     // URL Parameter Handling
     // ==========================================================================
     
+    // Function to handle referrer-specific logic
+    function handleReferrer(referrer) {
+        switch(referrer.toLowerCase()) {
+            case 'hea':
+                // HEA referrer: mark step 5.2 (PG&E HomeIntel Service) as completed
+                markStep52Completed();
+                break;
+            default:
+                console.log('Unknown referrer:', referrer);
+        }
+    }
+    
+    // Function to mark step 5.2 (PG&E HomeIntel Service) as completed
+    function markStep52Completed() {
+        // Wait for DOM to be ready
+        setTimeout(() => {
+            const step52Section = document.getElementById('step5-2');
+            if (step52Section) {
+                // Add a completed badge/indicator
+                const badge = document.createElement('div');
+                badge.classList.add('completed-badge');
+                badge.innerHTML = '✓ Already completed via HomeIntel';
+                
+                // Insert badge at the beginning of the section
+                step52Section.insertBefore(badge, step52Section.firstChild);
+                
+                // Auto-check the skip checkbox after a delay to allow user to see the badge
+                const skipCheckbox = document.querySelector('#gasAnalysis input[name="skipStep5"]');
+                if (skipCheckbox) {
+                    setTimeout(() => {
+                        skipCheckbox.checked = true;
+                        // Trigger a change event to update step completion
+                        skipCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+                    }, 500);
+                }
+                
+                console.log('Step 5.2 marked as completed for HEA referrer');
+            }
+        }, 100);
+    }
+    
     // Function to add visual indicator for pre-filled inputs
     function addPrefilledIndicator(inputElement) {
         // Check if indicator already exists
@@ -169,12 +210,20 @@
                 }
             }
             
+            // Parse referrer parameter (string, identifies the source/referrer)
+            const referrer = urlParams.get('referrer');
+            if (referrer) {
+                handleReferrer(referrer);
+                console.log('URL parameter set referrer to:', referrer);
+            }
+            
             // Log all parsed parameters
-            if (panelSize || topDownCapacity || bottomUpCapacity) {
+            if (panelSize || topDownCapacity || bottomUpCapacity || referrer) {
                 console.log('URL parameters parsed:', {
                     panelSize: panelSize ? parseInt(panelSize) : null,
                     topDownCapacity: topDownCapacity ? parseInt(topDownCapacity) : null,
-                    bottomUpCapacity: bottomUpCapacity ? parseInt(bottomUpCapacity) : null
+                    bottomUpCapacity: bottomUpCapacity ? parseInt(bottomUpCapacity) : null,
+                    referrer: referrer || null
                 });
                 
                 // Update capacity summary after a brief delay to ensure stepManager is initialized
