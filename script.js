@@ -110,7 +110,7 @@
         const badge = document.createElement('span');
         badge.classList.add('prefilled-badge');
         badge.textContent = 'Pre-filled';
-        badge.title = 'This value was loaded from URL parameters';
+        badge.title = 'This value was already calculated by another tool and transferred to this tool from a URL parameter';
         
         // Insert the badge after the input
         inputElement.parentNode.insertBefore(badge, inputElement.nextSibling);
@@ -176,6 +176,13 @@
                     topDownCapacity: topDownCapacity ? parseInt(topDownCapacity) : null,
                     bottomUpCapacity: bottomUpCapacity ? parseInt(bottomUpCapacity) : null
                 });
+                
+                // Update capacity summary after a brief delay to ensure stepManager is initialized
+                setTimeout(() => {
+                    if (typeof stepManager !== 'undefined' && stepManager && typeof stepManager.updateCapacitySummary === 'function') {
+                        stepManager.updateCapacitySummary();
+                    }
+                }, 100);
             }
         } catch (error) {
             console.warn('Warning: Could not parse URL parameters:', error.message);
