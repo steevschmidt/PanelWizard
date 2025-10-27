@@ -2255,6 +2255,14 @@
                     }
                 }
                 
+                // Show/hide Power Reduction Options based on capacity status
+                const powerReductionOptions = document.getElementById('powerReductionOptions');
+                const isOverCapacity = (topDownRemaining !== null && topDownRemaining < 0) || 
+                                      (bottomUpRemaining !== null && bottomUpRemaining < 0);
+                if (powerReductionOptions) {
+                    powerReductionOptions.style.display = isOverCapacity ? 'block' : 'none';
+                }
+                
                 // Update calculation results display
                 if (window.applianceDatabase && window.applianceDatabase.updateCalculationResultsDisplay) {
                     window.applianceDatabase.updateCalculationResultsDisplay();
@@ -2481,10 +2489,14 @@
             const topDownCapacity = topDownInput && topDownInput.value ? parseInt(topDownInput.value) : null;
             const bottomUpCapacity = bottomUpInput && bottomUpInput.value ? parseInt(bottomUpInput.value) : null;
             
+            // Declare variables to track remaining capacity
+            let topDownRemaining = null;
+            let bottomUpRemaining = null;
+            
             // Update Top-Down remaining capacity (NEC 220.87)
             // Uses raw panel amps without CF
             if (topDownCapacity && topDownCapacity > 0) {
-                const topDownRemaining = Math.round((topDownCapacity - totalPanelLoad) * 10) / 10;
+                topDownRemaining = Math.round((topDownCapacity - totalPanelLoad) * 10) / 10;
                 const remainingCapacitySpan = document.getElementById('remainingCsvCapacity');
                 
                 if (remainingCapacitySpan) {
@@ -2534,7 +2546,7 @@
                 }
                 
                 // Calculate remaining capacity
-                const bottomUpRemaining = Math.round((bottomUpCapacity - bottomUpTotalLoad) * 10) / 10;
+                bottomUpRemaining = Math.round((bottomUpCapacity - bottomUpTotalLoad) * 10) / 10;
                 const remainingCapacitySpan2 = document.getElementById('remainingCsvCapacity2');
                 
                 if (remainingCapacitySpan2) {
@@ -2549,6 +2561,14 @@
                         remainingCapacitySpan2.style.color = 'var(--success-color)';
                     }
                 }
+            }
+            
+            // Show/hide Power Reduction Options based on capacity status
+            const powerReductionOptions = document.getElementById('powerReductionOptions');
+            const isOverCapacity = (topDownRemaining !== null && topDownRemaining < 0) || 
+                                  (bottomUpRemaining !== null && bottomUpRemaining < 0);
+            if (powerReductionOptions) {
+                powerReductionOptions.style.display = isOverCapacity ? 'block' : 'none';
             }
         }
 

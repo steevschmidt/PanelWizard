@@ -1634,6 +1634,51 @@ a:hover {
 }
 
 /* ==========================================================================
+   Power Reduction Options Styles
+   ========================================================================== */
+
+.power-reduction-options {
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border: 2px solid var(--warning-color);
+    animation: slideIn 0.3s ease-out;
+}
+
+.power-reduction-options h3 {
+    margin-top: 0;
+    color: var(--error-color);
+    font-size: 1.3rem;
+}
+
+.power-reduction-options ul {
+    margin: var(--spacing-md) 0;
+    padding-left: var(--spacing-xl);
+}
+
+.power-reduction-options li {
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.power-reduction-options strong {
+    color: var(--primary-color);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
    Calculation Results Display Styles
    ========================================================================== */
 
