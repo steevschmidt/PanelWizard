@@ -119,7 +119,7 @@
                 // Add a completed badge/indicator
                 const badge = document.createElement('div');
                 badge.classList.add('completed-badge');
-                badge.innerHTML = '✓ Already completed via HomeIntel';
+                badge.innerHTML = '✓ Already completed within the HomeIntel analysis.';
                 
                 // Insert badge at the beginning of the section
                 step52Section.insertBefore(badge, step52Section.firstChild);
@@ -148,7 +148,7 @@
                 // Add a completed badge/indicator
                 const badge = document.createElement('div');
                 badge.classList.add('completed-badge');
-                badge.innerHTML = '✓ Already entered through another tool';
+                badge.innerHTML = '✓ Already identified! The result was passed into this tool.';
                 
                 // Insert badge at the beginning of the section's content-box
                 const contentBox = step3Section.querySelector('.content-box');
@@ -169,7 +169,7 @@
                 // Add a completed badge/indicator
                 const badge = document.createElement('div');
                 badge.classList.add('completed-badge');
-                badge.innerHTML = '✓ Already completed via an external Panel Capacity Calculator';
+                badge.innerHTML = '✓ Already completed! The result was passed into this tool.';
                 
                 // Insert badge at the beginning of the section
                 step41Section.insertBefore(badge, step41Section.firstChild);
@@ -187,7 +187,7 @@
                 // Add a completed badge/indicator
                 const badge = document.createElement('div');
                 badge.classList.add('completed-badge');
-                badge.innerHTML = '✓ Already completed via an external Load Calculator';
+                badge.innerHTML = '✓ Already completed! The result was passed into this tool.';
                 
                 // Insert badge at the beginning of the section
                 step42Section.insertBefore(badge, step42Section.firstChild);
