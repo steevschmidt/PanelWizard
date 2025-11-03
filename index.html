@@ -73,7 +73,7 @@
                 <div class="content-box">
                     <h3>Which of these are needed to fully electrify your home?</h3>
                     <p>Let's identify which appliances are needed to fully electrify your home. </p>
-                    <p>To future proof your home, we recommend building a plan that includes ALL of your electrification needs upfront, then you can stage them at your convenience. 
+                    <p>To future proof your home, we recommend building a plan that includes ALL of your possible electrification needs upfront, then you can decide and stage them at your convenience. 
                         There's no need to do them all at once, but since electric capacity is limited it's best to plan for all of them upfront.</p>
                     
                     <form id="electrificationForm" class="checklist-form" autocomplete="off">
@@ -131,7 +131,7 @@
                                 
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="electrification" value="dryer" autocomplete="off">
-                                    <span>Clothes Dryers <span class="tooltip-container"><span class="tooltip">Check the back of your clothes dryer to see if it's connected to a natural gas line.</span>ⓘ</span></span>
+                                    <span>Clothes Dryers <span class="tooltip-container"><span class="tooltip">Check the back of your clothes dryer to see if it's connected to a natural gas line, or if it has a gas dryer label on it that lists BTUs per hour (Btu/h).</span>ⓘ</span></span>
                                 </label>
                                 <div class="quantity-field" data-for="dryer">
                                     <label>Replace <input type="number" min="1" max="5" value="1" name="dryer_quantity"> natural gas clothes dryer(s)</label>
@@ -345,6 +345,7 @@
                     
                     <h3>Table of Appliance Options</h3>
                     <p>Based on your electrification goals, the table below shows an example configuration of low power electric appliances available in our database. Feel free to change the product selections using the dropdown menu(s) in the table.</p>
+                    <p>As you change selections, you will be able to see the Panel Load and Remaining Capacity change in real time, below the table.</p>
                     
                     <div id="csvAppliancesTable" class="csv-appliances-table">
                         <table class="appliances-table">
@@ -366,7 +367,7 @@
                         <!-- Power Reduction Options - shown when over capacity -->
                         <div id="powerReductionOptions" class="power-reduction-options" style="display: none;">
                             <h3>Power Reduction Options</h3>
-                            <p>The appliances you've selected exceed your available panel capacity. Here are some strategies to resolve this:</p>
+                            <p>The appliances you've selected exceed your available panel capacity. Consider selecting lower-power appliance options from the table above. Or, here are some strategies to resolve this:</p>
                             <ul>
                                 <li>
                                     <strong>Circuit Sharing:</strong> Use existing 240V outlets for multiple appliances. You can share circuits between appliances that aren't used simultaneously (e.g., a dryer and an EV charger). 
@@ -385,7 +386,7 @@
                                     Examples include ConnectDER, SPAN Edge, Tesla and others.
                                 </li>
                             </ul>
-                            <p>You may also consider selecting lower-power appliance options from the table above, or consulting with a qualified electrician to explore the best solution for your specific situation.</p>
+                            <p>You may also want to consult with a qualified electrician to explore the best solution for your specific situation.</p>
                         </div>
                         
                         <div class="csv-summary">
