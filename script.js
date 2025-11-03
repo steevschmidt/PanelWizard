@@ -277,13 +277,58 @@
                 console.log('URL parameter set referrer to:', referrer);
             }
             
+            // Parse electrification goal checkbox parameters
+            const electrificationParams = {
+                gasHtr: urlParams.get('gasHtr'),
+                gasWH: urlParams.get('gasWH'),
+                gasCook: urlParams.get('gasCook'),
+                gasDryer: urlParams.get('gasDryer'),
+                gasOther: urlParams.get('gasOther'),
+                addEV: urlParams.get('addEV'),
+                removeMeter: urlParams.get('removeMeter')
+            };
+            
+            // Mapping of URL parameters to checkbox values
+            const paramToCheckboxValue = {
+                gasHtr: 'heating',
+                gasWH: 'waterheater',
+                gasCook: 'cooking',
+                gasDryer: 'dryer',
+                gasOther: 'other',
+                addEV: 'ev',
+                removeMeter: 'gasmeter'
+            };
+            
+            // Set checkboxes based on URL parameters
+            for (const [param, value] of Object.entries(electrificationParams)) {
+                if (value !== null) {
+                    const checkboxValue = paramToCheckboxValue[param];
+                    if (checkboxValue) {
+                        const checkbox = document.querySelector(`input[name="electrification"][value="${checkboxValue}"]`);
+                        if (checkbox) {
+                            // Set checkbox to true for 'yes' or 'true', false for 'no' or 'false'
+                            checkbox.checked = (value.toLowerCase() === 'yes' || value.toLowerCase() === 'true');
+                            
+                            // Update quantity field visibility
+                            handleQuantityFieldVisibility(checkbox);
+                            
+                            console.log(`URL parameter set ${param} to ${checkbox.checked ? 'checked' : 'unchecked'}`);
+                        } else {
+                            console.warn(`Checkbox not found for parameter ${param} (value: ${checkboxValue})`);
+                        }
+                    }
+                }
+            }
+            
             // Log all parsed parameters
-            if (panelSize || topDownCapacity || bottomUpCapacity || referrer) {
+            const hasElectrificationParams = Object.values(electrificationParams).some(v => v !== null);
+            if (panelSize || topDownCapacity || bottomUpCapacity || referrer || hasElectrificationParams) {
                 console.log('URL parameters parsed:', {
                     panelSize: panelSize ? parseInt(panelSize) : null,
                     topDownCapacity: topDownCapacity ? parseInt(topDownCapacity) : null,
                     bottomUpCapacity: bottomUpCapacity ? parseInt(bottomUpCapacity) : null,
-                    referrer: referrer || null
+                    referrer: referrer || null,
+                    ...electrificationParams
                 });
                 
                 // Update capacity summary after a brief delay to ensure stepManager is initialized
@@ -292,6 +337,19 @@
                         stepManager.updateCapacitySummary();
                     }
                 }, 100);
+                
+                // Trigger step completion check if electrification params were set
+                if (hasElectrificationParams) {
+                    setTimeout(() => {
+                        if (typeof stepManager !== 'undefined' && stepManager && typeof stepManager.checkStepCompletion === 'function') {
+                            stepManager.checkStepCompletion();
+                        }
+                        // Save form data to localStorage if URL params were set
+                        if (typeof saveFormDataToLocalStorage === 'function') {
+                            saveFormDataToLocalStorage();
+                        }
+                    }, 150);
+                }
             }
         } catch (error) {
             console.warn('Warning: Could not parse URL parameters:', error.message);

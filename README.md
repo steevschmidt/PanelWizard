@@ -161,6 +161,30 @@ PanelWizard supports URL parameters for third-party integration, allowing partne
 - **Description**: Sets the available capacity using the bottom-up approach (NEC 220.83)
 - **Example**: `?bottomUpCapacity=35`
 
+### Electrification Goal Parameters
+These parameters control the initial checkbox state in Section 2 (Electrification Goals). All accept `yes`/`no` or `true`/`false` values.
+
+- **`gasHtr`**: Heating Systems checkbox
+  - **Example**: `?gasHtr=yes` or `?gasHtr=no`
+  
+- **`gasWH`**: Water Heaters checkbox
+  - **Example**: `?gasWH=yes` or `?gasWH=no`
+  
+- **`gasCook`**: Cooking Appliances checkbox
+  - **Example**: `?gasCook=yes` or `?gasCook=no`
+  
+- **`gasDryer`**: Clothes Dryers checkbox
+  - **Example**: `?gasDryer=yes` or `?gasDryer=no`
+  
+- **`gasOther`**: Other Gas Appliances checkbox
+  - **Example**: `?gasOther=yes` or `?gasOther=no`
+  
+- **`addEV`**: Add EV Charger checkbox
+  - **Example**: `?addEV=yes` or `?addEV=no`
+  
+- **`removeMeter`**: Remove Gas Meter checkbox
+  - **Example**: `?removeMeter=yes` or `?removeMeter=no`
+
 ## Usage Examples
 
 ### Basic Configuration
@@ -168,7 +192,7 @@ PanelWizard supports URL parameters for third-party integration, allowing partne
 index.html?panelSize=200
 ```
 
-### Complete Configuration
+### Complete Capacity Configuration
 ```
 index.html?panelSize=200&topDownCapacity=40&bottomUpCapacity=35
 ```
@@ -178,12 +202,23 @@ index.html?panelSize=200&topDownCapacity=40&bottomUpCapacity=35
 index.html?panelSize=150&topDownCapacity=30
 ```
 
+### Electrification Goals Configuration
+```
+index.html?panelSize=200&gasHtr=yes&gasWH=yes&addEV=yes
+```
+
+### Full Configuration Example
+```
+index.html?panelSize=200&topDownCapacity=40&bottomUpCapacity=35&gasHtr=yes&gasWH=yes&gasCook=no&gasDryer=yes&gasOther=no&addEV=yes&removeMeter=yes
+```
+
 ## Integration Notes
 
 - All parameters are optional and can be used in any combination
-- Invalid values (non-integers, out of range) are ignored with console warnings
+- Invalid values (non-integers, out of range, unrecognized) are ignored with console warnings
 - The application functions normally even if parameters are missing or invalid
 - Parameters are processed when the page loads, before user interaction
+- Electrification goal parameters accept `yes`, `no`, `true`, or `false` (case-insensitive)
 - This feature is designed for programmatic integration, not end-user sharing
 
 ## Use Cases
