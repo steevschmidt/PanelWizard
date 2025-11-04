@@ -2362,6 +2362,9 @@
                 // Apply any existing appliance selections after populating the table
                 this.applyExistingApplianceSelections();
                 
+                // Update total cost range display
+                this.updateTotalCostRangeDisplay();
+                
                 console.log('CSV appliances table populated successfully');
                 
             } catch (error) {
@@ -2539,6 +2542,58 @@
             this.recalculateAndUpdateDisplay();
         }
 
+        // Calculate total cost range from all products in the table
+        calculateTotalCostRange() {
+            let totalCostMin = 0;
+            let totalCostMax = 0;
+            const rows = document.querySelectorAll('#csvAppliancesTableBody tr');
+            
+            rows.forEach(row => {
+                const productSelector = row.querySelector('.product-selector');
+                if (productSelector && productSelector.value) {
+                    const category = productSelector.getAttribute('data-category');
+                    const selectedProductId = productSelector.value;
+                    const product = window.applianceDatabase?.getProductById(selectedProductId, category);
+                    
+                    if (product) {
+                        totalCostMin += product.cost_min || 0;
+                        totalCostMax += product.cost_max || 0;
+                    }
+                } else {
+                    // Fallback: try to parse cost from the cost cell (column index 4)
+                    const costCell = row.cells[4];
+                    if (costCell) {
+                        const costText = costCell.textContent.trim();
+                        // Parse format like "$1,234 - $5,678"
+                        const costMatch = costText.match(/\$([\d,]+)\s*-\s*\$([\d,]+)/);
+                        if (costMatch) {
+                            const min = parseInt(costMatch[1].replace(/,/g, ''));
+                            const max = parseInt(costMatch[2].replace(/,/g, ''));
+                            if (!isNaN(min) && !isNaN(max)) {
+                                totalCostMin += min;
+                                totalCostMax += max;
+                            }
+                        }
+                    }
+                }
+            });
+            
+            return { min: totalCostMin, max: totalCostMax };
+        }
+
+        // Update total cost range display
+        updateTotalCostRangeDisplay() {
+            const { min, max } = this.calculateTotalCostRange();
+            const totalCostRangeSpan = document.getElementById('totalCostRange');
+            if (totalCostRangeSpan) {
+                if (min === 0 && max === 0) {
+                    totalCostRangeSpan.textContent = '-';
+                } else {
+                    totalCostRangeSpan.textContent = `$${min.toLocaleString()} - $${max.toLocaleString()}`;
+                }
+            }
+        }
+
         // Recalculate totals and update display
         recalculateAndUpdateDisplay() {
             // Get current selections
@@ -2568,6 +2623,9 @@
             if (totalPanelLoadSpan) {
                 totalPanelLoadSpan.textContent = totalPanelLoad;
             }
+            
+            // Update total cost range display
+            this.updateTotalCostRangeDisplay();
             
             // Update remaining capacity calculations
             this.updateRemainingCapacity(totalPanelLoad);
