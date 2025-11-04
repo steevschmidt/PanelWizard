@@ -270,6 +270,38 @@
                 }
             }
             
+            // Parse htgCap parameter (integer, in BTUs)
+            const htgCap = urlParams.get('htgCap');
+            if (htgCap) {
+                const htgCapInt = parseInt(htgCap);
+                if (!isNaN(htgCapInt) && htgCapInt >= 6000 && htgCapInt <= 120000) {
+                    // Check the heating checkbox first to ensure the input field is visible
+                    const heatingCheckbox = document.querySelector('input[name="electrification"][value="heating"]');
+                    if (heatingCheckbox && !heatingCheckbox.checked) {
+                        heatingCheckbox.checked = true;
+                        // Update quantity field visibility
+                        if (typeof handleQuantityFieldVisibility === 'function') {
+                            handleQuantityFieldVisibility(heatingCheckbox);
+                        }
+                    }
+                    
+                    // Find the first heating capacity input (heating system 1)
+                    // Use a small delay to ensure the field is visible after checkbox is checked
+                    setTimeout(() => {
+                        const heatingInput = document.querySelector('input[name="heating_1_capacity"]');
+                        if (heatingInput) {
+                            heatingInput.value = htgCapInt;
+                            addPrefilledIndicator(heatingInput);
+                            console.log('URL parameter set htgCap to:', htgCapInt);
+                        } else {
+                            console.warn('Heating capacity input not found - heating system may not be initialized yet');
+                        }
+                    }, 50);
+                } else {
+                    console.warn('Invalid htgCap parameter:', htgCap, '- must be integer between 6000-120000');
+                }
+            }
+            
             // Parse referrer parameter (string, identifies the source/referrer)
             const referrer = urlParams.get('referrer');
             if (referrer) {
@@ -322,11 +354,12 @@
             
             // Log all parsed parameters
             const hasElectrificationParams = Object.values(electrificationParams).some(v => v !== null);
-            if (panelSize || topDownCapacity || bottomUpCapacity || referrer || hasElectrificationParams) {
+            if (panelSize || topDownCapacity || bottomUpCapacity || htgCap || referrer || hasElectrificationParams) {
                 console.log('URL parameters parsed:', {
                     panelSize: panelSize ? parseInt(panelSize) : null,
                     topDownCapacity: topDownCapacity ? parseInt(topDownCapacity) : null,
                     bottomUpCapacity: bottomUpCapacity ? parseInt(bottomUpCapacity) : null,
+                    htgCap: htgCap ? parseInt(htgCap) : null,
                     referrer: referrer || null,
                     ...electrificationParams
                 });
@@ -338,8 +371,8 @@
                     }
                 }, 100);
                 
-                // Trigger step completion check if electrification params were set
-                if (hasElectrificationParams) {
+                // Trigger step completion check if electrification params were set or htgCap was set
+                if (hasElectrificationParams || htgCap) {
                     setTimeout(() => {
                         if (typeof stepManager !== 'undefined' && stepManager && typeof stepManager.checkStepCompletion === 'function') {
                             stepManager.checkStepCompletion();

@@ -161,6 +161,13 @@ PanelWizard supports URL parameters for third-party integration, allowing partne
 - **Description**: Sets the available capacity using the bottom-up approach (NEC 220.83)
 - **Example**: `?bottomUpCapacity=35`
 
+### `htgCap`
+- **Type**: Integer (BTUs)
+- **Range**: 6000-120000
+- **Description**: Sets the heating capacity input value in BTUs per hour (Btu/h) for the first heating system
+- **Example**: `?htgCap=11500`
+- **Note**: This parameter will automatically check the "Heating Systems" checkbox if it's not already checked
+
 ### Electrification Goal Parameters
 These parameters control the initial checkbox state in Section 2 (Electrification Goals). All accept `yes`/`no` or `true`/`false` values.
 
@@ -207,9 +214,14 @@ index.html?panelSize=150&topDownCapacity=30
 index.html?panelSize=200&gasHtr=yes&gasWH=yes&addEV=yes
 ```
 
+### Heating Capacity Configuration
+```
+index.html?panelSize=200&htgCap=11500
+```
+
 ### Full Configuration Example
 ```
-index.html?panelSize=200&topDownCapacity=40&bottomUpCapacity=35&gasHtr=yes&gasWH=yes&gasCook=no&gasDryer=yes&gasOther=no&addEV=yes&removeMeter=yes
+index.html?panelSize=200&topDownCapacity=40&bottomUpCapacity=35&gasHtr=yes&htgCap=11500&gasWH=yes&gasCook=no&gasDryer=yes&gasOther=no&addEV=yes&removeMeter=yes
 ```
 
 ## Integration Notes
