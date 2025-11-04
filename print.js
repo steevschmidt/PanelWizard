@@ -241,7 +241,10 @@ class PanelWizardPrinter {
     }
 
     getProjectName() {
-        return window.currentProject?.projectName || 'PanelWizard Project';
+        // Try multiple possible locations for the project name
+        return window.currentProject?.name || 
+               window.currentProject?.steps?.projectInfo?.name || 
+               'PanelWizard Project';
     }
 
     getProjectInfo() {
@@ -276,10 +279,10 @@ class PanelWizardPrinter {
         }
         
         // Format the panel size with proper units
-        const panelSizeDisplay = panelSize ? `${panelSize} amps` : 'Not specified';
+        const panelSizeDisplay = panelSize ? `${panelSize} amps` : '[Not specified]';
         
-        const topDownCapacity = document.getElementById('topDownCapacity')?.value || 'Not specified';
-        const bottomUpCapacity = document.getElementById('bottomUpCapacity')?.value || 'Not specified';
+        const topDownCapacity = document.getElementById('topDownCapacity')?.value || '[Not specified]';
+        const bottomUpCapacity = document.getElementById('bottomUpCapacity')?.value || '[Not specified]';
         
         return `
             <p><strong>Panel Size:</strong> ${panelSizeDisplay}</p>
