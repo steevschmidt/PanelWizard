@@ -1,13 +1,32 @@
 ﻿id,name,type,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,installation_notes,manufacturer,model_number,induction,load_calc_cf
-ca_001,Induction Range 40A,Range,40,240,dedicated,40,1200,1800,Requires 40A dedicated circuit,GE,PHB720,TRUE,0.4
-ca_002,Induction Range 30A,Cooktop,30,240,dedicated,30,800,1200,Requires 30A dedicated circuit,Bosch,HIIP055U,TRUE,0.4
-ca_003,Convection Wall Oven 20A,Oven,20,240,dedicated,20,600,900,Requires 20A dedicated circuit,KitchenAid,KOCE500E,FALSE,0.4
-ca_004,Induction Range 35A,Range,35,240,dedicated,35,900,1400,Requires 35A dedicated circuit,Frigidaire,FGIH3047V,TRUE,0.4
-ca_005,Induction Cooktop 25A,Cooktop,25,240,dedicated,25,600,900,Requires 25A dedicated circuit,Whirlpool,WFC3C48,TRUE,0.4
-ca_006,Convection Wall Oven 22A,Oven,22,240,dedicated,22,700,1100,Requires 25A dedicated circuit,GE,JT3000SFSS,FALSE,0.4
-ca_009,Convection Wall Oven 18A,Oven,18,240,dedicated,18,500,800,Requires 20A dedicated circuit,Maytag,MCO115H,FALSE,0.4
-ca_011,Two Burner Induction Hob,Portable,15,120,shared,7.5,200,300,Uses normal outlet,Duxtop,9620LS,TRUE,0.4
-ca_012,One Burner Induction Hob,Portable,15,120,shared,7.6,1400,1500,Uses normal outlet,Breville,CMC850BSS,TRUE,0.4
-ca_013,Air Fryer Toaster Oven,Portable,15,120,shared,7.6,300,600,Uses normal outlet,Breville,BOV900BSS,FALSE,0.4
-ca_014,Induction Range with Battery,Range,15,120,dedicated,7.5,3000,8000,Uses normal outlet,Copper,Charlie,TRUE,0.4
-ca_015,Induction Cooktop with Battery,Cooktop,15,120,dedicated,7.5,3000,8000,Uses normal outlet,ImpulseLabs,30 inch,TRUE,0.4
+ca_001,120v Induction Range with Battery,Range,12,120,shared,6,3000,7200,Uses normal outlet,Copper,Charlie,TRUE,0.4
+ca_002,120v Induction Range with Battery,Range,12,120,shared,6,1000,4800,Uses normal outlet,Electra,Electra,TRUE,0.4
+ca_003,120v Induction Cooktop with Battery,Cooktop,12.5,120,shared,6.25,3000,7200,Uses normal outlet,Impulse,Cooktop,TRUE,0.4
+ca_004,120v Two Burner Induction Hob,Portable,15,120,shared,7.5,200,300,Uses normal outlet,Duxtop,9620LS,TRUE,0.4
+ca_005,120v Induction Range,Range,15,120,shared,7.5,3000,8000,Uses normal outlet,Summit,Summit,TRUE,0.4
+ca_006,120v Induction Cooktop,Cooktop,15,120,dedicated,7.5,100,200,Dedicated 120v circuit,True Induction,TI-1B,TRUE,0.4
+ca_007,120v Induction Cooktop,Cooktop,15,120,dedicated,7.5,200,300,Dedicated 120v circuit,True Induction,MD-2B,TRUE,0.4
+ca_008,120v Induction Cooktop,Cooktop,15,120,dedicated,7.5,100,200,Dedicated 120v circuit,Drinkpod,DP-CHEFTOP-2,TRUE,0.4
+ca_009,120v Air Fryer Toaster Oven,Portable,15,120,shared,7.6,300,600,Uses normal outlet,Breville,BOV900BSS,FALSE,0.4
+ca_010,120v One Burner Induction Hob,Portable,15,120,shared,7.6,1400,1500,Uses normal outlet,Breville,CMC850BSS,TRUE,0.4
+ca_011,240v Induction Cooktop with Battery,Cooktop,8.3,240,dedicated,8.3,3000,7200,Normal 240v circuit,Impulse,Cooktop,TRUE,0.4
+ca_012,120v Induction Cooktop,Cooktop,27.5,120,dedicated,13.75,500,700,Requires two 120V outlets that are on separate circuits to operate fully.,True Induction,TI-3B,TRUE,0.4
+ca_013,240v Convection Wall Oven,Oven,18,240,dedicated,18,500,800,Requires 20A dedicated circuit,Maytag,MCO115H,FALSE,0.4
+ca_014,240v Convection Wall Oven,Oven,20,240,dedicated,20,600,900,Requires 20A dedicated circuit,KitchenAid,KOCE500E,FALSE,0.4
+ca_015,240v Convection Wall Oven,Oven,22,240,dedicated,22,700,1100,Requires 25A dedicated circuit,GE,JT3000SFSS,FALSE,0.4
+ca_016,240v Induction Cooktop,Cooktop,24,240,dedicated,24,800,1100,240v circuit required,Fridgidaire,FCCI3027AB,TRUE,0.4
+ca_017,240v Induction Cooktop,Cooktop,25,240,dedicated,25,600,900,Requires 25A dedicated circuit,Whirlpool,WFC3C48,TRUE,0.4
+ca_018,240v Induction Cooktop,Cooktop,26,240,dedicated,26,1600,2200,240v circuit required,BOSCH,NIT5460UC,TRUE,0.4
+ca_019,240v Induction Cooktop,Cooktop,30,240,dedicated,30,800,1200,Requires 30A dedicated circuit,Bosch,HIIP055U,TRUE,0.4
+ca_020,240v Induction Cooktop,Cooktop,32,240,dedicated,32,2000,2700,240v circuit required,GE,PHP7030DTBB,TRUE,0.4
+ca_021,240v Induction Cooktop,Cooktop,32.5,240,dedicated,32.5,1500,2000,240v circuit required,Kitchen Aid,KCIG550JBL,TRUE,0.4
+ca_022,240v Induction Range,Range,35,240,dedicated,35,900,1400,Requires 35A dedicated circuit,Frigidaire,FGIH3047V,TRUE,0.4
+ca_023,240v Induction Cooktop,Cooktop,36,240,dedicated,36,2100,2800,240v circuit required,Samsung,NZ30K7880US,TRUE,0.4
+ca_024,240v Induction Cooktop,Cooktop,46.25,240,dedicated,46.25,2000,2600,240v circuit required,GE Profile,PHP9036DTBB,TRUE,0.4
+ca_025,240v Induction Range,Range,40,240,dedicated,40,1500,2000,240v circuit required,Fridigaire   ,FCFI3083AS,TRUE,0.4
+ca_026,240v Induction Range,Range,40,240,dedicated,40,1500,2000,240v circuit required,Samsung,NE63B8211SS,TRUE,0.4
+ca_027,240v Induction Range,Range,40,240,dedicated,40,2100,2800,240v circuit required,Fridigaire Gallery,GCFI3060BF,TRUE,0.4
+ca_028,240v Induction Range,Range,40,240,dedicated,40,1700,2300,240v circuit required,Summit,WEM665W,TRUE,0.4
+ca_029,240v Induction Range,Range,40,240,dedicated,40,2100,2800,240v circuit required,LG,LSIL6334FE,TRUE,0.4
+ca_030,240v Induction Range,Range,40,240,dedicated,40,2000,2700,240v circuit required,Samsung,NE63B8611SS,TRUE,0.4
+ca_031,240v Induction Range,Range,40,240,dedicated,40,1400,1900,240v circuit required,GE,JS645SLSS,TRUE,0.4
