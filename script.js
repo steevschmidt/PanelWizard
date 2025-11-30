@@ -2211,7 +2211,6 @@
                             row.innerHTML = `
                                 <td>${displayName}</td>
                                 <td></td>
-                                <td>${applianceAmps} amps</td>
                                 <td>${selectedProduct.load_calc_cf || 'N/A'}</td>
                                 <td>$${(selectedProduct.cost_min || 0).toLocaleString()} - $${(selectedProduct.cost_max || 0).toLocaleString()}</td>
                                 <td><button class="details-btn" onclick="showProductDetails('${selectedProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
@@ -2250,7 +2249,6 @@
                                 row.innerHTML = `
                                     <td>${displayName}</td>
                                     <td></td>
-                                    <td>${applianceAmps} amps</td>
                                     <td>${lowestAmpProduct.load_calc_cf || 'N/A'}</td>
                                     <td>$${(lowestAmpProduct.cost_min || 0).toLocaleString()} - $${(lowestAmpProduct.cost_max || 0).toLocaleString()}</td>
                                     <td><button class="details-btn" onclick="showProductDetails('${lowestAmpProduct.id || ''}', '${category}', '${appliance.type}')">📋 Details</button></td>
@@ -2389,7 +2387,7 @@
             if (csvTableBody) {
                 csvTableBody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary); font-style: italic;">
                             No electrification goals selected. Please go back to Step 2 to select your electrification goals.
                         </td>
                     </tr>
@@ -2405,7 +2403,7 @@
             if (csvTableBody) {
                 csvTableBody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-secondary); font-style: italic;">
+                        <td colspan="5" style="text-align: center; color: var(--text-secondary); font-style: italic;">
                             No panel capacity information available. Please complete Step 4 to calculate your available capacity.
                         </td>
                     </tr>
@@ -2508,20 +2506,14 @@
                     if (selection) {
                         const product = window.applianceDatabase.getProductById(selection.productId, category);
                         if (product) {
-                            // Update the amps column
-                            const ampsCell = row.cells[2];
-                            if (ampsCell) {
-                                ampsCell.textContent = `${product.panel_amps_240v || 0} amps`;
-                            }
-                            
                             // Update the coincidence factor column
-                            const cfCell = row.cells[3];
+                            const cfCell = row.cells[2];
                             if (cfCell) {
                                 cfCell.textContent = product.load_calc_cf || 'N/A';
                             }
                             
                             // Update the cost column
-                            const costCell = row.cells[4];
+                            const costCell = row.cells[3];
                             if (costCell) {
                                 costCell.textContent = `$${(product.cost_min || 0).toLocaleString()} - $${(product.cost_max || 0).toLocaleString()}`;
                             }
@@ -2559,9 +2551,9 @@
                         totalCostMin += product.cost_min || 0;
                         totalCostMax += product.cost_max || 0;
                     }
-                } else {
-                    // Fallback: try to parse cost from the cost cell (column index 4)
-                    const costCell = row.cells[4];
+                    } else {
+                        // Fallback: try to parse cost from the cost cell (column index 3)
+                        const costCell = row.cells[3];
                     if (costCell) {
                         const costText = costCell.textContent.trim();
                         // Parse format like "$1,234 - $5,678"
@@ -2822,20 +2814,14 @@
             const product = window.applianceDatabase.getProductById(selection.productId, category);
             
             if (product) {
-                // Update the amps column
-                const ampsCell = row.cells[2];
-                if (ampsCell) {
-                    ampsCell.textContent = `${product.panel_amps_240v || 0} amps`;
-                }
-                
                 // Update the coincidence factor column
-                const cfCell = row.cells[3];
+                const cfCell = row.cells[2];
                 if (cfCell) {
                     cfCell.textContent = product.load_calc_cf || 'N/A';
                 }
                 
                 // Update the cost column
-                const costCell = row.cells[4];
+                const costCell = row.cells[3];
                 if (costCell) {
                     costCell.textContent = `$${(product.cost_min || 0).toLocaleString()} - $${(product.cost_max || 0).toLocaleString()}`;
                 }
