@@ -270,6 +270,18 @@
                 }
             }
             
+            // Update step 4.1 and 4.2 collapse states after URL parameters are processed
+            setTimeout(() => {
+                if (typeof stepManager !== 'undefined' && stepManager) {
+                    if (typeof stepManager.updateStep41CollapseState === 'function') {
+                        stepManager.updateStep41CollapseState();
+                    }
+                    if (typeof stepManager.updateStep42CollapseState === 'function') {
+                        stepManager.updateStep42CollapseState();
+                    }
+                }
+            }, 100);
+            
             // Parse htgCap parameter (integer, in BTUs)
             const htgCap = urlParams.get('htgCap');
             if (htgCap) {
@@ -1260,6 +1272,16 @@
         
         // Update capacity summary if panel size and capacity data are loaded
         stepManager.updateCapacitySummary();
+        
+        // Update step 4.1 and 4.2 collapse states after loading project data
+        if (stepManager) {
+            if (typeof stepManager.updateStep41CollapseState === 'function') {
+                stepManager.updateStep41CollapseState();
+            }
+            if (typeof stepManager.updateStep42CollapseState === 'function') {
+                stepManager.updateStep42CollapseState();
+            }
+        }
         
         // Load appliance selections if they exist
         if (project.steps.applianceSelections) {
@@ -3599,6 +3621,10 @@
             
             // Initialize capacity input states
             this.updateCapacityInputStates();
+            
+            // Initialize step 4.1 and 4.2 collapse states
+            this.updateStep41CollapseState();
+            this.updateStep42CollapseState();
 
             // Panel size input listener
             const panelAmps = document.querySelector('#panelAmps');
@@ -3621,6 +3647,9 @@
                     this.validateCapacityInput(topDownCapacity, 'topDownCapacityError');
                     this.checkStepCompletion();
                     this.updateCapacitySummary();
+                    // Update collapse states of sections 4.1 and 4.2
+                    this.updateStep41CollapseState();
+                    this.updateStep42CollapseState();
                     // Also update the calculation results display in step 6
                     if (window.applianceDatabase && window.applianceDatabase.updateCalculationResultsDisplay) {
                         window.applianceDatabase.updateCalculationResultsDisplay();
@@ -3632,11 +3661,44 @@
                     this.validateCapacityInput(bottomUpCapacity, 'bottomUpCapacityError');
                     this.checkStepCompletion();
                     this.updateCapacitySummary();
+                    // Update collapse states of sections 4.1 and 4.2
+                    this.updateStep41CollapseState();
+                    this.updateStep42CollapseState();
                     // Also update the calculation results display in step 6
                     if (window.applianceDatabase && window.applianceDatabase.updateCalculationResultsDisplay) {
                         window.applianceDatabase.updateCalculationResultsDisplay();
                     }
                 });
+            }
+
+            // Step 4.1 collapsible toggle button listener
+            const step41Toggle = document.getElementById('step4-1-toggle');
+            if (step41Toggle) {
+                const self = this;
+                step41Toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (self && typeof self.toggleStep41 === 'function') {
+                        self.toggleStep41();
+                    } else if (typeof StepManager !== 'undefined' && typeof StepManager.toggleStep41 === 'function') {
+                        StepManager.toggleStep41();
+                    }
+                }, false);
+            }
+
+            // Step 4.2 collapsible toggle button listener
+            const step42Toggle = document.getElementById('step4-2-toggle');
+            if (step42Toggle) {
+                const self = this;
+                step42Toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (self && typeof self.toggleStep42 === 'function') {
+                        self.toggleStep42();
+                    } else if (typeof StepManager !== 'undefined' && typeof StepManager.toggleStep42 === 'function') {
+                        StepManager.toggleStep42();
+                    }
+                }, false);
             }
 
 
@@ -3780,6 +3842,152 @@
             if (!hasPanelSize) {
                 this.clearCapacityErrors();
             }
+        },
+
+        updateStep42CollapseState() {
+            const step42Section = document.getElementById('step4-2');
+            const topDownCapacity = document.querySelector('#topDownCapacity');
+            const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+            const toggleButton = document.getElementById('step4-2-toggle');
+            const collapsibleContent = document.getElementById('step4-2-content');
+            const toggleText = toggleButton ? toggleButton.querySelector('.collapsible-toggle-text') : null;
+            
+            if (!step42Section || !toggleButton || !collapsibleContent) return;
+            
+            // Check if topDownCapacity has a value and bottomUpCapacity does not
+            const hasTopDown = topDownCapacity && topDownCapacity.value && topDownCapacity.value.trim() !== '';
+            const hasBottomUp = bottomUpCapacity && bottomUpCapacity.value && bottomUpCapacity.value.trim() !== '';
+            
+            // Collapse if topDownCapacity is provided AND bottomUpCapacity is NOT provided
+            if (hasTopDown && !hasBottomUp) {
+                step42Section.classList.add('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'false');
+                collapsibleContent.style.display = 'none';
+                collapsibleContent.style.visibility = 'hidden';
+                if (toggleText) {
+                    toggleText.textContent = 'Show Bottom-Up Approach';
+                }
+            } else {
+                step42Section.classList.remove('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'true');
+                collapsibleContent.style.display = 'block';
+                collapsibleContent.style.visibility = 'visible';
+                if (toggleText) {
+                    toggleText.textContent = 'Hide Bottom-Up Approach';
+                }
+            }
+            
+            // Force a reflow to ensure Firefox updates the display
+            void step42Section.offsetHeight;
+        },
+
+        toggleStep42() {
+            const step42Section = document.getElementById('step4-2');
+            const toggleButton = document.getElementById('step4-2-toggle');
+            const collapsibleContent = document.getElementById('step4-2-content');
+            
+            if (!step42Section || !toggleButton || !collapsibleContent) {
+                return;
+            }
+            
+            const toggleText = toggleButton.querySelector('.collapsible-toggle-text');
+            
+            // Toggle the collapsed state
+            const isCollapsed = step42Section.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                step42Section.classList.remove('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'true');
+                collapsibleContent.style.display = 'block';
+                collapsibleContent.style.visibility = 'visible';
+                if (toggleText) {
+                    toggleText.textContent = 'Hide Bottom-Up Approach';
+                }
+            } else {
+                step42Section.classList.add('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'false');
+                collapsibleContent.style.display = 'none';
+                collapsibleContent.style.visibility = 'hidden';
+                if (toggleText) {
+                    toggleText.textContent = 'Show Bottom-Up Approach';
+                }
+            }
+            
+            // Force a reflow to ensure Firefox updates the display
+            void step42Section.offsetHeight;
+        },
+
+        updateStep41CollapseState() {
+            const step41Section = document.getElementById('step4-1');
+            const topDownCapacity = document.querySelector('#topDownCapacity');
+            const bottomUpCapacity = document.querySelector('#bottomUpCapacity');
+            const toggleButton = document.getElementById('step4-1-toggle');
+            const collapsibleContent = document.getElementById('step4-1-content');
+            const toggleText = toggleButton ? toggleButton.querySelector('.collapsible-toggle-text') : null;
+            
+            if (!step41Section || !toggleButton || !collapsibleContent) return;
+            
+            // Check if bottomUpCapacity has a value and topDownCapacity does not
+            const hasTopDown = topDownCapacity && topDownCapacity.value && topDownCapacity.value.trim() !== '';
+            const hasBottomUp = bottomUpCapacity && bottomUpCapacity.value && bottomUpCapacity.value.trim() !== '';
+            
+            // Collapse if bottomUpCapacity is provided AND topDownCapacity is NOT provided
+            if (hasBottomUp && !hasTopDown) {
+                step41Section.classList.add('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'false');
+                collapsibleContent.style.display = 'none';
+                collapsibleContent.style.visibility = 'hidden';
+                if (toggleText) {
+                    toggleText.textContent = 'Show Top-Down Approach';
+                }
+            } else {
+                step41Section.classList.remove('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'true');
+                collapsibleContent.style.display = 'block';
+                collapsibleContent.style.visibility = 'visible';
+                if (toggleText) {
+                    toggleText.textContent = 'Hide Top-Down Approach';
+                }
+            }
+            
+            // Force a reflow to ensure Firefox updates the display
+            void step41Section.offsetHeight;
+        },
+
+        toggleStep41() {
+            const step41Section = document.getElementById('step4-1');
+            const toggleButton = document.getElementById('step4-1-toggle');
+            const collapsibleContent = document.getElementById('step4-1-content');
+            
+            if (!step41Section || !toggleButton || !collapsibleContent) {
+                return;
+            }
+            
+            const toggleText = toggleButton.querySelector('.collapsible-toggle-text');
+            
+            // Toggle the collapsed state
+            const isCollapsed = step41Section.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                step41Section.classList.remove('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'true');
+                collapsibleContent.style.display = 'block';
+                collapsibleContent.style.visibility = 'visible';
+                if (toggleText) {
+                    toggleText.textContent = 'Hide Top-Down Approach';
+                }
+            } else {
+                step41Section.classList.add('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'false');
+                collapsibleContent.style.display = 'none';
+                collapsibleContent.style.visibility = 'hidden';
+                if (toggleText) {
+                    toggleText.textContent = 'Show Top-Down Approach';
+                }
+            }
+            
+            // Force a reflow to ensure Firefox updates the display
+            void step41Section.offsetHeight;
         },
 
         clearCapacityErrors() {
@@ -4039,6 +4247,8 @@
 
     // Create global stepManager variable after StepManager is defined
     const stepManager = StepManager;
+    // Make stepManager available globally for inline handlers
+    window.stepManager = stepManager;
 
     // Initialize StepManager after it's defined
     try {

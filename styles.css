@@ -309,6 +309,81 @@ button {
 .hidden { display: none !important; }
 .text-center { text-align: center; }
 
+/* ==========================================================================
+   Collapsible Section Styles
+   ========================================================================== */
+
+.collapsible-section {
+    position: relative;
+}
+
+.collapsible-content {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    max-height: 10000px;
+    overflow: hidden;
+    transition: opacity 0.3s ease, max-height 0.3s ease, visibility 0.3s ease;
+}
+
+.collapsible-section.collapsed .collapsible-content {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.collapsible-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--background-secondary, #f5f5f5);
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: var(--border-radius-md, 8px);
+    color: var(--text-primary, #121212);
+    text-decoration: none;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all var(--transition-speed, 0.3s);
+    user-select: none;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+}
+
+.collapsible-toggle:hover {
+    background-color: var(--border-color, #ddd);
+    border-color: var(--text-secondary, #666);
+}
+
+.collapsible-toggle:focus {
+    outline: 2px solid var(--secondary-color, #2196F3);
+    outline-offset: 2px;
+}
+
+.collapsible-toggle-icon {
+    display: inline-block;
+    transition: transform var(--transition-speed, 0.3s);
+    font-size: 0.8em;
+}
+
+.collapsible-section:not(.collapsed) .collapsible-toggle-icon {
+    transform: rotate(180deg);
+}
+
+[data-theme="dark"] .collapsible-toggle {
+    background-color: var(--background-secondary, #1e1e1e);
+    border-color: var(--border-color, #333);
+    color: var(--text-primary, #ffffff);
+}
+
+[data-theme="dark"] .collapsible-toggle:hover {
+    background-color: var(--border-color, #333);
+}
+
 .mt-1 { margin-top: var(--spacing-sm); }
 .mt-2 { margin-top: var(--spacing-md); }
 .mt-3 { margin-top: var(--spacing-lg); }
