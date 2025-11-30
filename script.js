@@ -3144,7 +3144,6 @@
             'efficiency_seer': 'Efficiency (SEER)',
             'efficiency_hspf': 'Efficiency (HSPF)',
             'efficiency_uef': 'Efficiency (UEF)',
-            'efficiency_cef': 'Efficiency (CEF)',
             'installation_notes': 'Installation Notes',
             'installation_type': 'Installation Type',
             'smart_features': 'Smart Features',
@@ -3161,7 +3160,7 @@
             'name', 'manufacturer', 'model_number', 'type', 'capacity_btu', 'capacity_gal', 
             'capacity_cu_ft', 'charging_speed_kw', 'electrical_load_amps', 'voltage', 
             'panel_amps_240v', 'cost_min', 'cost_max', 'efficiency_seer', 'efficiency_hspf', 
-            'efficiency_uef', 'efficiency_cef', 'heat_pump', 'induction', 'load_calc_cf'
+            'efficiency_uef', 'heat_pump', 'induction', 'load_calc_cf'
         ];
         
         const sortedColumns = [

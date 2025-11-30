@@ -44,7 +44,6 @@ This directory contains CSV files for different appliance categories used in Pan
 
 #### Clothes Dryers
 - `capacity_cu_ft` - Drum capacity in cubic feet
-- `efficiency_cef` - Combined Energy Factor
 - `heat_pump` - Whether it's a heat pump dryer (true/false)
 
 #### EV Chargers
