@@ -1954,6 +1954,16 @@
                     e.preventDefault();
                     e.stopPropagation();
                     
+                    // Track wizard completion with Google Analytics
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'wizard_completed', {
+                            'event_category': 'Wizard Navigation',
+                            'event_label': 'Celebrate Button Clicked',
+                            'step_id': this.id,
+                            'step_title': this.title
+                        });
+                    }
+                    
                     // Trigger confetti
                     try {
                         if (typeof confetti === 'function') {
@@ -3968,6 +3978,20 @@
                     window.currentProject.steps = {};
                 }
                 Object.assign(window.currentProject.steps, results);
+            }
+
+            // Find step number for analytics tracking
+            const stepNumber = Object.keys(this.steps).find(key => this.steps[key].id === stepId);
+            
+            // Track step completion with Google Analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'step_completed', {
+                    'event_category': 'Wizard Navigation',
+                    'event_label': step.title,
+                    'step_number': stepNumber,
+                    'step_id': step.id,
+                    'next_step': step.nextStep || 'none'
+                });
             }
 
             if (step.nextStep) {
