@@ -1,25 +1,25 @@
 ﻿id,name,capacity_cu_ft,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,installation_notes,manufacturer,model_number,heat_pump,load_calc_cf
-cd_001,120v Heat Pump Dryer (ventless),4,8.3,120,shared,4.15,1500,2000,20 amp circuit,Miele,TXD160WP,TRUE,0.4
-cd_002,240v Heat Pump Dryer (ventless),4,3.5,240,dedicated,3.5,1300,1700,Requires 15A dedicated circuit,BOSCH,WTW87NH1UC,TRUE,0.4
-cd_003,240v Heat Pump Dryer (ventless),4,30,240,dedicated,30,1200,1600,Requires 15A dedicated circuit,Samsung,DV25B6900HW,TRUE,0.4
-cd_004,240v Heat Pump Dryer (ventless),4.2,3.1,240,dedicated,3.1,1200,1600,Requires 20A dedicated circuit,LG,DLHC1455W,TRUE,0.4
-cd_005,120v Combo Washer Dryer (ventless),4.5,10,120,shared,0,2000,2600,Zero panel amps if replacing an existing washer,LG,WM3998HBA,TRUE,0.4
-cd_006,120v Combo Washer Dryer (ventless),4.8,11,120,shared,0,2600,3500,Zero panel amps if replacing an existing washer,GE Profile,PFQ97HSPVDS,TRUE,0.4
-cd_007,120v Combo Washer Dryer (ventless),2.7,11,120,shared,0,1700,2300,Zero panel amps if replacing an existing washer,Koolmore,WAD-3CF-W,TRUE,0.4
-cd_008,120v Combo Washer Dryer (ventless),4.6,11,120,shared,0,1600,2200,Zero panel amps if replacing an existing washer,GE,PFQ83HSSWWW,TRUE,0.4
-cd_009,120v Combo Washer Dryer (ventless),5,12,120,shared,0,2700,3600,Zero panel amps if replacing an existing washer,LG,WM6998HBA,TRUE,0.4
-cd_010,120v Combo Washer Dryer (ventless),2.4,13,120,dedicated,0,1600,2200,Zero panel amps if replacing an existing washer,LG,WM3555HWA,TRUE,0.4
-cd_011,120v Combo Washer Dryer (ventless),2.4,13,120,dedicated,0,1700,2300,Zero panel amps if replacing an existing washer,LG,WM3555HVA,TRUE,0.4
-cd_012,120v Combo Washer Dryer (ventless),2.7,15,120,dedicated,0,1100,1500,Zero panel amps if replacing an existing washer,Magic Chef,MCSCWD27S5,TRUE,0.4
-cd_013,120v Combo Washer Dryer (ventless),2.4,20,120,dedicated,0,1300,1700,Zero panel amps if replacing an existing washer,GE  ,GFQ14ESSNWW,TRUE,0.4
-cd_014,240v Electric Dryer (ventless),4,10.5,240,dedicated,10.5,1000,1400,Requires 15A dedicated circuit,BOSCH,WTG86403UC,FALSE,0.4
-cd_015,240v Electric Dryer (ventless),4,10.5,240,dedicated,10.5,1500,2000,Requires 15A dedicated circuit,BOSCH,WTG865H4UC,FALSE,0.4
-cd_016,240v Electric Dryer (ventless),4.1,12,240,dedicated,12,1100,1400,Requires 15A dedicated circuit,GE,GFT14ESSMWW,FALSE,0.4
-cd_017,240v Electric Dryer (ventless),4,11.25,240,dedicated,11.25,1100,1400,Requires 15A dedicated circuit,Electrolux,ELFE4222AW,FALSE,0.4
-cd_018,240v Electric Dryer (vented),7.2,24,240,dedicated,24,700,900,Requires 30A dedicated circuit,GE,GTD42EASJWW,FALSE,0.4
-cd_019,240v Electric Dryer (vented),7.2,24,240,dedicated,24,600,800,Requires 30A dedicated circuit,GE,GTD33EASKWW,FALSE,0.4
-cd_020,240v Electric Dryer (vented),7.4,30,240,dedicated,30,800,1100,Requires 30A dedicated circuit,LG,DLE3400W,FALSE,0.4
-cd_021,240v Electric Dryer (vented),7.3,30,240,dedicated,30,700,900,Requires 30A dedicated circuit,LG,DLE6100W,FALSE,0.4
-cd_022,240v Electric Dryer (vented),7,30,240,dedicated,30,700,900,Requires 30A dedicated circuit,Whirlpool,WED4950HW,FALSE,0.4
-cd_023,240v Electric Dryer (vented),7,30,240,dedicated,30,800,1000,Requires 30A dedicated circuit,Whirlpool,WED5010LW,FALSE,0.4
-cd_024,240v Electric Dryer (vented),4,30,240,dedicated,30,1000,1300,Requires 30A dedicated circuit,Samsung,DV25B6900EW,FALSE,0.4
+cd_001,120v ventless Heat Pump Dryer,4,8.3,120,shared,4.15,1500,2000,20 amp circuit,Miele,TXD160WP,TRUE,0.4
+cd_002,240v ventless Heat Pump Dryer,4,3.5,240,dedicated,3.5,1300,1700,Requires 15A dedicated circuit,BOSCH,WTW87NH1UC,TRUE,0.4
+cd_003,240v ventless Heat Pump Dryer,4,30,240,dedicated,30,1200,1600,Requires 15A dedicated circuit,Samsung,DV25B6900HW,TRUE,0.4
+cd_004,240v ventless Heat Pump Dryer,4.2,3.1,240,dedicated,3.1,1200,1600,Requires 20A dedicated circuit,LG,DLHC1455W,TRUE,0.4
+cd_005,120v ventless Combo Washer Dryer,4.5,10,120,shared,0,2000,2600,Zero panel amps if replacing an existing washer,LG,WM3998HBA,TRUE,0.4
+cd_006,120v ventless Combo Washer Dryer,4.8,11,120,shared,0,2600,3500,Zero panel amps if replacing an existing washer,GE Profile,PFQ97HSPVDS,TRUE,0.4
+cd_007,120v ventless Combo Washer Dryer,2.7,11,120,shared,0,1700,2300,Zero panel amps if replacing an existing washer,Koolmore,WAD-3CF-W,TRUE,0.4
+cd_008,120v ventless Combo Washer Dryer,4.6,11,120,shared,0,1600,2200,Zero panel amps if replacing an existing washer,GE,PFQ83HSSWWW,TRUE,0.4
+cd_009,120v ventless Combo Washer Dryer,5,12,120,shared,0,2700,3600,Zero panel amps if replacing an existing washer,LG,WM6998HBA,TRUE,0.4
+cd_010,120v ventless Combo Washer Dryer,2.4,13,120,dedicated,0,1600,2200,Zero panel amps if replacing an existing washer,LG,WM3555HWA,TRUE,0.4
+cd_011,120v ventless Combo Washer Dryer,2.4,13,120,dedicated,0,1700,2300,Zero panel amps if replacing an existing washer,LG,WM3555HVA,TRUE,0.4
+cd_012,120v ventless Combo Washer Dryer,2.7,15,120,dedicated,0,1100,1500,Zero panel amps if replacing an existing washer,Magic Chef,MCSCWD27S5,TRUE,0.4
+cd_013,120v ventless Combo Washer Dryer,2.4,20,120,dedicated,0,1300,1700,Zero panel amps if replacing an existing washer,GE  ,GFQ14ESSNWW,TRUE,0.4
+cd_014,240v ventless Electric Dryer,4,10.5,240,dedicated,10.5,1000,1400,Requires 15A dedicated circuit,BOSCH,WTG86403UC,FALSE,0.4
+cd_015,240v ventless Electric Dryer,4,10.5,240,dedicated,10.5,1500,2000,Requires 15A dedicated circuit,BOSCH,WTG865H4UC,FALSE,0.4
+cd_016,240v ventless Electric Dryer,4.1,12,240,dedicated,12,1100,1400,Requires 15A dedicated circuit,GE,GFT14ESSMWW,FALSE,0.4
+cd_017,240v ventless Electric Dryer,4,11.25,240,dedicated,11.25,1100,1400,Requires 15A dedicated circuit,Electrolux,ELFE4222AW,FALSE,0.4
+cd_018,240v vented Electric Dryer,7.2,24,240,dedicated,24,700,900,Requires 30A dedicated circuit,GE,GTD42EASJWW,FALSE,0.4
+cd_019,240v vented Electric Dryer,7.2,24,240,dedicated,24,600,800,Requires 30A dedicated circuit,GE,GTD33EASKWW,FALSE,0.4
+cd_020,240v vented Electric Dryer,7.4,30,240,dedicated,30,800,1100,Requires 30A dedicated circuit,LG,DLE3400W,FALSE,0.4
+cd_021,240v vented Electric Dryer,7.3,30,240,dedicated,30,700,900,Requires 30A dedicated circuit,LG,DLE6100W,FALSE,0.4
+cd_022,240v vented Electric Dryer,7,30,240,dedicated,30,700,900,Requires 30A dedicated circuit,Whirlpool,WED4950HW,FALSE,0.4
+cd_023,240v vented Electric Dryer,7,30,240,dedicated,30,800,1000,Requires 30A dedicated circuit,Whirlpool,WED5010LW,FALSE,0.4
+cd_024,240v vented Electric Dryer,4,30,240,dedicated,30,1000,1300,Requires 30A dedicated circuit,Samsung,DV25B6900EW,FALSE,0.4

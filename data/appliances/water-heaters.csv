@@ -1,11 +1,31 @@
-﻿id,name,capacity_gal,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,efficiency_uef,installation_notes,manufacturer,model_number,tankless,load_calc_cf
-wh_001,50-Gal 240v 15a Heat Pump Water Heater,50,15,240,dedicated,9.6,1200,1800,3.7,Requires 15A dedicated circuit,Rheem,ProTerra,FALSE,0.4
-wh_002,80-Gal 240v 20a Heat Pump Water Heater,80,20,240,dedicated,12.8,1500,2200,3.5,Requires 20A dedicated circuit,AO Smith,Voltex,FALSE,0.4
-wh_003,40-Gal 240v 12a Heat Pump Water Heater,40,12,240,dedicated,7.7,1000,1500,3.8,Requires 15A dedicated circuit,Bradford White,RE2H50S,FALSE,0.4
-wh_004,240v 28a Tankless Electric Water Heater,,28,240,dedicated,28,800,1200,0.98,Requires 30A dedicated circuit,Stiebel Eltron,Tempra 36 Plus,TRUE,0.4
-wh_005,240v 32a Tankless Water Heater,,32,240,dedicated,32,900,1400,0.96,Requires 40A dedicated circuit,Rinnai,RUC98iN,TRUE,0.4
-wh_006,65-Gal 240v 18a Heat Pump Water Heater,65,18,240,dedicated,11.5,1300,1900,3.6,Requires 20A dedicated circuit,GE,GeoSpring,FALSE,0.4
-wh_009,75-Gal 240v 18a Heat Pump Water Heater,75,18,240,dedicated,11.5,1400,2000,3.6,Requires 20A dedicated circuit,Bradford White,RE2H75S,FALSE,0.4
-wh_010,240v 24a Tankless Water Heater,,24,240,dedicated,24,700,1100,0.97,Requires 25A dedicated circuit,Stiebel Eltron,Tempra 24 Plus,TRUE,0.4
-wh_011,40-Gal 120v 15a Heat Pump Water Heater,40,15,120,shared,4.8,1500,3500,3.6,Standard outlet,Rheem,XE40T10HM00U0,FALSE,0.4
-wh_012,50-Gal 120v 15a Heat Pump Water Heater,50,15,120,shared,4.8,2000,4000,3.1,Standard outlet,GE Appliances,PF50S10FYP,FALSE,0.4
+﻿id,name,capacity_gal,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,installation_notes,manufacturer,model_number,tankless,load_calc_cf
+wh_001,40-Gal 120v Rheem HPWH,40,3.75,120,shared,1.88,1900,2500,Standard outlet,Rheem,PROPH40 T0 RH120-M**,FALSE,0.4
+wh_002,50-Gal 120v Rheem HPWH,50,3.75,120,shared,1.88,1900,2500,Standard outlet,Rheem,PROPH50 T0 RH120-M**,FALSE,0.4
+wh_003,65-Gal 120v Rheem HPWH,65,3.75,120,shared,1.88,2200,2900,Standard outlet,Rheem,XE65T10HM00U0,FALSE,0.4
+wh_004,80-Gal 120v Rheem HPWH,80,3.75,120,shared,1.88,2500,3400,Standard outlet,Rheem,PROPH80 T0 RH120-M**,FALSE,0.4
+wh_005,40-Gal 120v A.O. Smith HPWH,40,7.5,120,shared,3.75,1900,2600,Standard outlet,A.O. Smith,HPV10-40H01DV,FALSE,0.4
+wh_006,40-Gal 120v GE HPWH,40,7.5,120,shared,3.75,2000,2600,Both 120 & 240 volts,GE,PF40S10FPY,FALSE,0.4
+wh_007,50-Gal 120v A.O. Smith HPWH,50,7.5,120,shared,3.75,1800,2500,Standard outlet,A.O. Smith,HPV10-50H01DV,FALSE,0.4
+wh_008,50-Gal 120v GE HPWH,50,7.5,120,shared,3.75,2200,2900,Both 120 & 240 volts,GE,PF50S10FPY,FALSE,0.4
+wh_009,65-Gal 120v A.O. Smith HPWH,65,7.5,120,shared,3.75,2300,3100,Standard outlet,A.O. Smith,HPV10-66H01DV,FALSE,0.4
+wh_010,65-Gal 120v GE HPWH,65,7.5,120,shared,3.75,2300,3100,Both 120 & 240 volts,GE,PF65S10FPY,FALSE,0.4
+wh_011,80-Gal 120v A.O. Smith HPWH,80,7.5,120,shared,3.75,2900,3900,Standard outlet,A.O. Smith,HPV10-80H01DV,FALSE,0.4
+wh_012,80-Gal 120v GE HPWH,80,7.5,120,shared,3.75,2500,3400,Both 120 & 240 volts,GE,PF80S10FPY,FALSE,0.4
+wh_013,50-Gal 120v GE Appliances HPWH,50,15,120,shared,4.8,2000,4000,Standard outlet,GE Appliances,PF50S10FYP,FALSE,0.4
+wh_014,40-Gal 120v Rheem HPWH,40,11,120,dedicated,5.5,1900,2500,Dedicated 120v outlet,Rheem,XE40T10H15U0,FALSE,0.4
+wh_015,50-Gal 120v Rheem HPWH,50,11,120,dedicated,5.5,2000,2700,Dedicated 120v outlet,Rheem,XE50T10H15U0,FALSE,0.4
+wh_016,65-Gal 120v Rheem HPWH,65,11,120,dedicated,5.5,2400,3100,Dedicated 120v outlet,Rheem,0,FALSE,0.4
+wh_017,80-Gal 120v Rheem HPWH,80,11,120,dedicated,5.5,2700,3600,Dedicated 120v outlet,Rheem,0,FALSE,0.4
+wh_018,43-Gal 240v SanCO2 HPWH,43,7.2,240,dedicated,7.2,5300,7000,Split system,SanCO2,GS5-45HPC-D,FALSE,0.4
+wh_019,40-Gal 240v Bradford White HPWH,40,12,240,dedicated,7.7,1000,1500,Requires 15A dedicated circuit,Bradford White,RE2H50S,FALSE,0.4
+wh_020,40-Gal 240v Rheem HPWH,40,9.4,240,dedicated,9.4,1500,2000,,Rheem,PROPH40 T2 RH375-15,FALSE,0.4
+wh_021,50-Gal 240v Rheem HPWH,50,9.4,240,dedicated,9.4,1600,2200,,Rheem,PROPH50 T2 RH375-15,FALSE,0.4
+wh_022,65-Gal 240v Rheem HPWH,65,9.4,240,dedicated,9.4,1700,2300,,Rheem,PROPH65 T2 RH375-15,FALSE,0.4
+wh_023,80-Gal 240v Rheem HPWH,80,9.4,240,dedicated,9.4,1800,2400,,Rheem,PROPH80 T2 RH375-15,FALSE,0.4
+wh_024,65-Gal 240v GE HPWH,65,18,240,dedicated,11.5,1300,1900,Requires 20A dedicated circuit,GE,GeoSpring,FALSE,0.4
+wh_025,75-Gal 240v Bradford White HPWH,75,18,240,dedicated,11.5,1400,2000,Requires 20A dedicated circuit,Bradford White,RE2H75S,FALSE,0.4
+wh_026,80-Gal 240v AO Smith HPWH,80,20,240,dedicated,12.8,1500,2200,Requires 20A dedicated circuit,AO Smith,Voltex,FALSE,0.4
+wh_027,119-Gal 240v Hubbell HPWH,119,16,240,dedicated,16,2700,3600,,Hubbell,S120HPT,FALSE,0.4
+wh_028,Tankless 240v Stiebel Eltron WH,,24,240,dedicated,24,700,1100,Requires 25A dedicated circuit,Stiebel Eltron,Tempra 24 Plus,TRUE,0.4
+wh_029,Tankless 240v Stiebel Eltron WH,,28,240,dedicated,28,800,1200,Requires 30A dedicated circuit,Stiebel Eltron,Tempra 36 Plus,TRUE,0.4
+wh_030,Tankless 240v Rinnai WH,,32,240,dedicated,32,900,1400,Requires 40A dedicated circuit,Rinnai,RUC98iN,TRUE,0.4

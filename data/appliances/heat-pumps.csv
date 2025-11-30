@@ -1,13 +1,26 @@
 ﻿id,name,capacity_btu,electrical_load_amps,voltage,circuit_type,panel_amps_240v,load_calc_cf,cost_min,cost_max,efficiency_seer,efficiency_hspf,installation_notes,manufacturer,model_number
-hp_001,3-Ton Heat Pump,36000,15,240,dedicated,7.3,1,8000,12000,16,9.5,Requires 20A dedicated circuit,Carrier,25HCC5
-hp_003,4-Ton Heat Pump,48000,20,240,dedicated,9.4,1,10000,15000,17,10,Requires 25A dedicated circuit,Trane,XV18
-hp_004,1.5-Ton Heat Pump,18000,10,240,dedicated,4.1,1,4500,7000,14,8.5,Requires 15A dedicated circuit,Rheem,RPLH
-hp_005,5-Ton Heat Pump,60000,25,240,dedicated,11.5,1,12000,18000,16,9,Requires 30A dedicated circuit,Goodman,GSZC16
-hp_006,2.5-Ton Heat Pump,30000,13,240,dedicated,6.2,1,7000,11000,16,9.5,Requires 20A dedicated circuit,American Standard,4A7A6
-hp_007,3.5-Ton Heat Pump,42000,18,240,dedicated,8.4,1,9000,14000,17,10,Requires 25A dedicated circuit,Bryant,187BNV
-hp_008,1-Ton Heat Pump,12000,8,240,dedicated,3,1,3500,5500,15,9,Requires 15A dedicated circuit,Carrier,25HBC
-hp_009,4.5-Ton Heat Pump,54000,22,240,dedicated,10.5,1,11000,17000,18,10.5,Requires 30A dedicated circuit,Lennox,SL18XP1
-hp_010,2-Ton Heat Pump,24000,12,240,dedicated,5.2,1,6000,9500,16,9.5,Requires 15A dedicated circuit,Trane,XV16
-hp_011,1-Ton Portable HP,12000,15,120,shared,4.8,0.4,500,800,11.9,8,Standalone with plug,Cooper & Hunter,CH-STLS-14AC
-hp_012,Window Heat Pump,8000,15,120,shared,4.8,0.4,400,700,14.4,8,Window mounted with plug,GE,AWGP08WWA
-hp_013,Packaged Heat Pump,8000,15,120,shared,4.8,0.4,3500,7000,13.9,8,Wall mounted with plug,Ephoca,AWP10N4L1
+hp_001,0.5 ton 120v Window Saddle Mount HP,6000,15,120,shared,4.6,0.4,370,700,12,8,Window mounted with plug,Mobil Comfort,MCSD-06
+hp_002,0.5 ton 120v Heat Pump,6000,13.6,120,shared,6.8,1,450,650,top 25%,top 25%,Single room only,Multiple: Carrier; Mitsubishi; Daiken; Etc,Multiple
+hp_003,0.5 ton 240v Heat Pump,6000,3.4,240,dedicated,3.4,1,450,700,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: MrCool; Mitsubishi; Daiken; Etc,Multiple
+hp_004,0.7 ton 120v Window Heat Pump,8000,15,120,shared,4.8,0.4,400,800,14.4,8,Window mounted with plug,GE,AWGP08WWA
+hp_005,0.7 ton 120v Packaged Heat Pump,8000,15,120,shared,4.8,0.4,3200,4500,13.9,8,Wall mounted with plug,Ephoca,AWP10N4L1
+hp_006,1 ton 120v Portable Heat Pump,12000,15,120,shared,4.8,0.4,500,800,11.9,8,Standalone with plug,Cooper & Hunter,CH-STLS-14AC
+hp_007,1 ton 120v Heat Pump,12000,27,120,dedicated,13.5,1,900,1200,top 25%,top 25%,,Multiple: Carrier; Mitsubishi; Daiken; Etc,Multiple
+hp_008,1 ton 240v Heat Pump,12000,8,240,dedicated,3,1,900,1500,15,9,Requires 15A dedicated circuit,Carrier,25HBC
+hp_009,1 ton 240v Heat Pump,12000,6.8,240,dedicated,6.8,1,900,1200,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: MrCool; Mitsubishi; Daiken; Etc,Multiple
+hp_010,1.5 ton 240v Heat Pump,18000,10,240,dedicated,4.1,1,1200,2000,14,8.5,Requires 15A dedicated circuit,Rheem,RPLH
+hp_011,1.5 ton 240v Heat Pump,18000,10.2,240,dedicated,10.2,1,1350,1800,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: Carrier; Mitsubishi; Daiken; Etc,Multiple
+hp_012,2 ton 240v Heat Pump,24000,12,240,dedicated,5.2,1,1800,2500,16,9.5,Requires 15A dedicated circuit,Trane,XV16
+hp_013,2 ton 240v Heat Pump,24000,13.5,240,dedicated,13.5,1,1800,2400,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: MrCool; Mitsubishi; Daiken; Etc,Multiple
+hp_014,2.5 ton 240v Heat Pump,30000,13,240,dedicated,6.2,1,2400,3000,16,9.5,Requires 20A dedicated circuit,American Standard,4A7A6
+hp_015,2.5 ton 240v Heat Pump,30000,16.9,240,dedicated,16.9,1,2250,3000,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: Carrier; Mitsubishi; Daiken; Etc,Multiple
+hp_016,3 ton 240v Heat Pump,36000,15,240,dedicated,7.3,1,2800,3500,16,9.5,Requires 20A dedicated circuit,Carrier,25HCC5
+hp_017,3 ton 240v Heat Pump,36000,20.3,240,dedicated,20.3,1,2700,3600,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: MrCool; Mitsubishi; Daiken; Etc,Multiple
+hp_018,3.5 ton 240v Heat Pump,42000,18,240,dedicated,8.4,1,3400,4500,17,10,Requires 25A dedicated circuit,Bryant,187BNV
+hp_019,3.5 ton 240v Heat Pump,42000,23.7,240,dedicated,23.7,1,3150,4200,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: Carrier; Mitsubishi; Daiken; Etc,Multiple
+hp_020,4 ton 240v Heat Pump,48000,20,240,dedicated,9.4,1,4000,5000,17,10,Requires 25A dedicated circuit,Trane,XV18
+hp_021,4 ton 240v Heat Pump,48000,27.1,240,dedicated,27.1,1,3600,4800,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: MrCool; Mitsubishi; Daiken; Etc,Multiple
+hp_022,4.5 ton 240v Heat Pump,54000,22,240,dedicated,10.5,1,4500,6000,18,10.5,Requires 30A dedicated circuit,Lennox,SL18XP1
+hp_023,4.5 ton 240v Heat Pump,54000,30.5,240,dedicated,30.5,1,4050,5400,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: Carrier; Mitsubishi; Daiken; Etc,Multiple
+hp_024,5 ton 240v Heat Pump,60000,25,240,dedicated,11.5,1,5000,8000,16,9,Requires 30A dedicated circuit,Goodman,GSZC16
+hp_025,5 ton 240v Heat Pump,60000,33.8,240,dedicated,33.8,1,4500,6000,top 25%,top 25%,DIY with MrCool; all others require professional help,Multiple: MrCool; Mitsubishi; Daiken; Etc,Multiple

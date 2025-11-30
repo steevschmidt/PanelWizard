@@ -1,6 +1,14 @@
 ﻿id,name,type,electrical_load_amps,voltage,circuit_type,panel_amps_240v,cost_min,cost_max,installation_notes,manufacturer,model_number,special_notes,load_calc_cf
-oa_001,Heat Pump Pool Heater,Pool Heater,25,240,dedicated,25,3000,5000,Requires 30A dedicated circuit,Rheem,HeatPro,Seasonal usage,0.4
-oa_002,Electric Fireplace Insert,Fireplace,15,120,dedicated,7.5,800,1500,Requires 15A dedicated circuit,Dimplex,Opti-Myst,Decorative heating,0.4
-oa_003,Electric BBQ Grill,Outdoor Cooking,20,240,dedicated,20,400,800,Requires 25A dedicated circuit,Weber,Q1400,Outdoor installation,0.4
-oa_004,Electric Kiln,Pottery Kiln,30,240,dedicated,30,800,1500,Requires 40A dedicated circuit,Skutt,KM-818,Studio equipment,0.4
-oa_005,Electric Patio Heater,Outdoor Heater,15,240,dedicated,15,500,1000,Standard outlet,King Electric,RKX2430-RMTX-BLK,Outdoor installation,0.4
+oa_001,120v Electric Fireplace Insert,Fireplace,15,120,dedicated,7.5,800,1500,Requires 15A dedicated circuit,Dimplex,Opti-Myst,Decorative heating,0.4
+oa_002,240v Electric BBQ Grill,Outdoor Cooking,20,240,dedicated,20,400,800,Requires 25A dedicated circuit,Weber,Q1400,Outdoor installation,0.4
+oa_003,240v Electric Kiln,Pottery Kiln,30,240,dedicated,30,800,1500,Requires 40A dedicated circuit,Skutt,KM-818,Studio equipment,0.4
+oa_004,240v Electric Patio Heater,Outdoor Heater,15,240,dedicated,15,500,1000,Standard outlet,King Electric,RKX2430-RMTX-BLK,Outdoor installation,0.4
+oa_005,120v Heat Pump Pool Heater 15kBtu/hr,Pool Heater,7,120,shared,3.5,700,1000,Uses normal outlet,Xtreme Power US,75219,Seasonal usage,0.4
+oa_006,120v Heat Pump Pool Heater 15kBtu/hr,Pool Heater,15,120,dedicated,7.5,700,1000,Requires 15 amp dedicated circuit,Xtreme Power US,75218,Seasonal usage,0.4
+oa_007,120v Heat Pump Pool Heater 35 kBtu/hr,Pool Heater,20,120,dedicated,10,1800,2400,Requires 20 amp dedicated circuit,FibroPool,FH135,Seasonal usage,0.4
+oa_008,240v Heat Pump Pool Heater 53 kBtu/hr,Pool Heater,10.8,240,dedicated,10.8,2000,2700,240v circuit required,Xtreme Power US,75210,Seasonal usage,0.4
+oa_009,240v Heat Pump Pool Heater 65 kBtu/hr,Pool Heater,13.2,240,dedicated,13.2,2800,3700,240v circuit required,Xtreme Power US,75211,Seasonal usage,0.4
+oa_010,240v Heat Pump Pool Heater 65 kBtu/hr,Pool Heater,20,240,dedicated,20,1900,2500,240v circuit required,Xtreme Power US,75217,Seasonal usage,0.4
+oa_011,240v Heat Pump Pool Heater 120 kBtu/hr,Pool Heater,30,240,dedicated,30,4200,5600,240v circuit required,Hayward,HP21205T,Seasonal usage,0.4
+oa_012,240v Heat Pump Pool Heater 126 kBtu/hr,Pool Heater,43.3,240,dedicated,43.3,5600,7400,240v circuit required,AquaCal,SQ166R,Seasonal usage,0.4
+oa_013,240v Heat Pump Pool Heater 140 kBtu/hr,Pool Heater,41.7,240,dedicated,41.7,4000,8000,Requires 60A dedicated circuit,Rheem,M8450ti-E,Seasonal usage,0.4
