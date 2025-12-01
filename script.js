@@ -104,6 +104,12 @@
             case 'hea':
                 // HEA referrer: mark step 5.2 (PG&E HomeIntel Service) as completed
                 markStep52Completed();
+                // Update step 5 collapse states (5.1 and 5.3 should collapse)
+                setTimeout(() => {
+                    if (typeof stepManager !== 'undefined' && stepManager && typeof stepManager.updateStep5CollapseState === 'function') {
+                        stepManager.updateStep5CollapseState();
+                    }
+                }, 100);
                 break;
             default:
                 console.log('Unknown referrer:', referrer);
@@ -3625,6 +3631,9 @@
             // Initialize step 4.1 and 4.2 collapse states
             this.updateStep41CollapseState();
             this.updateStep42CollapseState();
+            
+            // Initialize step 5 collapse states
+            this.updateStep5CollapseState();
 
             // Panel size input listener
             const panelAmps = document.querySelector('#panelAmps');
@@ -3697,6 +3706,49 @@
                         self.toggleStep42();
                     } else if (typeof StepManager !== 'undefined' && typeof StepManager.toggleStep42 === 'function') {
                         StepManager.toggleStep42();
+                    }
+                }, false);
+            }
+
+            // Step 5 collapsible toggle button listeners
+            const step51Toggle = document.getElementById('step5-1-toggle');
+            if (step51Toggle) {
+                const self = this;
+                step51Toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (self && typeof self.toggleStep51 === 'function') {
+                        self.toggleStep51();
+                    } else if (typeof StepManager !== 'undefined' && typeof StepManager.toggleStep51 === 'function') {
+                        StepManager.toggleStep51();
+                    }
+                }, false);
+            }
+
+            const step52Toggle = document.getElementById('step5-2-toggle');
+            if (step52Toggle) {
+                const self = this;
+                step52Toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (self && typeof self.toggleStep52 === 'function') {
+                        self.toggleStep52();
+                    } else if (typeof StepManager !== 'undefined' && typeof StepManager.toggleStep52 === 'function') {
+                        StepManager.toggleStep52();
+                    }
+                }, false);
+            }
+
+            const step53Toggle = document.getElementById('step5-3-toggle');
+            if (step53Toggle) {
+                const self = this;
+                step53Toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (self && typeof self.toggleStep53 === 'function') {
+                        self.toggleStep53();
+                    } else if (typeof StepManager !== 'undefined' && typeof StepManager.toggleStep53 === 'function') {
+                        StepManager.toggleStep53();
                     }
                 }, false);
             }
@@ -3988,6 +4040,113 @@
             
             // Force a reflow to ensure Firefox updates the display
             void step41Section.offsetHeight;
+        },
+
+        updateStep5CollapseState() {
+            // Check if referrer parameter is 'hea'
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrer = urlParams.get('referrer');
+            const isHeaReferrer = referrer && referrer.toLowerCase() === 'hea';
+            
+            // Update sections 5.1, 5.2, and 5.3
+            const sections = [
+                { id: 'step5-1', toggleId: 'step5-1-toggle', contentId: 'step5-1-content', 
+                  showText: 'Show Home Energy Academy Electrification Calculator', 
+                  hideText: 'Hide Home Energy Academy Electrification Calculator', 
+                  shouldCollapse: isHeaReferrer },
+                { id: 'step5-2', toggleId: 'step5-2-toggle', contentId: 'step5-2-content', 
+                  showText: 'Show PG&E HomeIntel Service', 
+                  hideText: 'Hide PG&E HomeIntel Service', 
+                  shouldCollapse: false }, // 5.2 should not collapse for HEA referrer
+                { id: 'step5-3', toggleId: 'step5-3-toggle', contentId: 'step5-3-content', 
+                  showText: 'Show Spreadsheet Method', 
+                  hideText: 'Hide Spreadsheet Method', 
+                  shouldCollapse: isHeaReferrer }
+            ];
+            
+            sections.forEach(section => {
+                const sectionEl = document.getElementById(section.id);
+                const toggleButton = document.getElementById(section.toggleId);
+                const collapsibleContent = document.getElementById(section.contentId);
+                const toggleText = toggleButton ? toggleButton.querySelector('.collapsible-toggle-text') : null;
+                
+                if (!sectionEl || !toggleButton || !collapsibleContent) return;
+                
+                if (section.shouldCollapse) {
+                    sectionEl.classList.add('collapsed');
+                    toggleButton.setAttribute('aria-expanded', 'false');
+                    collapsibleContent.style.display = 'none';
+                    collapsibleContent.style.visibility = 'hidden';
+                    if (toggleText) {
+                        toggleText.textContent = section.showText;
+                    }
+                } else {
+                    sectionEl.classList.remove('collapsed');
+                    toggleButton.setAttribute('aria-expanded', 'true');
+                    collapsibleContent.style.display = 'block';
+                    collapsibleContent.style.visibility = 'visible';
+                    if (toggleText) {
+                        toggleText.textContent = section.hideText;
+                    }
+                }
+                
+                // Force a reflow to ensure Firefox updates the display
+                void sectionEl.offsetHeight;
+            });
+        },
+
+        toggleStep51() {
+            this.toggleStep5Section('step5-1', 'step5-1-toggle', 'step5-1-content', 
+                'Show Home Energy Academy Electrification Calculator', 
+                'Hide Home Energy Academy Electrification Calculator');
+        },
+
+        toggleStep52() {
+            this.toggleStep5Section('step5-2', 'step5-2-toggle', 'step5-2-content', 
+                'Show PG&E HomeIntel Service', 
+                'Hide PG&E HomeIntel Service');
+        },
+
+        toggleStep53() {
+            this.toggleStep5Section('step5-3', 'step5-3-toggle', 'step5-3-content', 
+                'Show Spreadsheet Method', 
+                'Hide Spreadsheet Method');
+        },
+
+        toggleStep5Section(sectionId, toggleId, contentId, showText, hideText) {
+            const sectionEl = document.getElementById(sectionId);
+            const toggleButton = document.getElementById(toggleId);
+            const collapsibleContent = document.getElementById(contentId);
+            
+            if (!sectionEl || !toggleButton || !collapsibleContent) {
+                return;
+            }
+            
+            const toggleText = toggleButton.querySelector('.collapsible-toggle-text');
+            
+            // Toggle the collapsed state
+            const isCollapsed = sectionEl.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                sectionEl.classList.remove('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'true');
+                collapsibleContent.style.display = 'block';
+                collapsibleContent.style.visibility = 'visible';
+                if (toggleText) {
+                    toggleText.textContent = hideText;
+                }
+            } else {
+                sectionEl.classList.add('collapsed');
+                toggleButton.setAttribute('aria-expanded', 'false');
+                collapsibleContent.style.display = 'none';
+                collapsibleContent.style.visibility = 'hidden';
+                if (toggleText) {
+                    toggleText.textContent = showText;
+                }
+            }
+            
+            // Force a reflow to ensure Firefox updates the display
+            void sectionEl.offsetHeight;
         },
 
         clearCapacityErrors() {
