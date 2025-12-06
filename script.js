@@ -450,22 +450,65 @@
         console.warn('Warning: Theme toggle icon element not found');
     }
     
-    // Check for saved theme preference, otherwise use dark theme
-    let savedTheme = 'dark'; // Default theme
-    try {
-        savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        if (themeToggleIcon) {
-            themeToggleIcon.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+    // Function to detect system color scheme preference
+    function getSystemTheme() {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
         }
+        return 'light';
+    }
+    
+    // Function to apply theme
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (themeToggleIcon) {
+            themeToggleIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+    }
+    
+    // Initialize theme: use saved preference if exists, otherwise follow system preference
+    let savedTheme;
+    try {
+        const savedThemePreference = localStorage.getItem('theme');
+        if (savedThemePreference) {
+            // User has explicitly set a preference, use it
+            savedTheme = savedThemePreference;
+        } else {
+            // No saved preference, detect and use system preference
+            savedTheme = getSystemTheme();
+        }
+        applyTheme(savedTheme);
     } catch (error) {
         console.warn('Warning: Could not initialize theme:', error.message);
-        // Set default theme
-        document.documentElement.setAttribute('data-theme', 'dark');
+        // Fallback to system preference or dark if detection fails
+        try {
+            savedTheme = getSystemTheme();
+            applyTheme(savedTheme);
+        } catch (fallbackError) {
+            // Last resort: use dark theme
+            applyTheme('dark');
+        }
     }
 
     console.log('Theme system initialized');
     console.log('Current theme:', savedTheme);
+    
+    // Listen for system theme changes (only apply if user hasn't set a preference)
+    if (window.matchMedia) {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addEventListener('change', (e) => {
+            try {
+                // Only update if user hasn't explicitly set a preference
+                if (!localStorage.getItem('theme')) {
+                    const newSystemTheme = e.matches ? 'dark' : 'light';
+                    applyTheme(newSystemTheme);
+                    console.log('System theme changed to:', newSystemTheme);
+                }
+            } catch (error) {
+                console.warn('Warning: Could not update theme from system preference:', error.message);
+            }
+        });
+    }
 
     // Theme toggle functionality
     if (themeToggle) {
