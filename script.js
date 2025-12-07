@@ -920,12 +920,16 @@
             newSystem.className = 'heating-system-item';
             newSystem.setAttribute('data-heating-id', newId);
             
+            // Use 6000 BTU/h as default for additional heating systems (2nd, 3rd, etc.)
+            // The first system (ID 1) already exists in HTML with 30000 BTU/h default
+            const defaultCapacity = newId > 1 ? 6000 : 30000;
+            
             newSystem.innerHTML = `
                 <button type="button" class="remove-heating-btn" onclick="removeHeatingSystem(this)">×</button>
                 <div class="heating-input-group">
                     <label><strong>Heating System ${newId}:</strong> Replace an existing gas heating unit with:</label>
                     <div class="input-row">
-                        <input type="number" min="6000" max="120000" value="30000" name="heating_${newId}_capacity" step="6000" placeholder="30000" class="heating-capacity-input">
+                        <input type="number" min="6000" max="120000" value="${defaultCapacity}" name="heating_${newId}_capacity" step="6000" placeholder="${defaultCapacity}" class="heating-capacity-input">
                         <span class="unit-label">BTU/h capacity</span>
                         <span class="tooltip-container"><span class="tooltip">BTUs per hour (Btu/h) is a measure of heating capacity of natural gas heaters and usually appears on the unit. Step increment for this field is 6,000 BTU/h (½ ton units).</span>ⓘ</span>
                     </div>
