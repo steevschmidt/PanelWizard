@@ -102,9 +102,9 @@
     function handleReferrer(referrer) {
         switch(referrer.toLowerCase()) {
             case 'hea':
-                // HEA referrer: mark step 5.2 (PG&E HomeIntel Service) as completed
-                markStep52Completed();
-                // Update step 5 collapse states (5.1 and 5.3 should collapse)
+                // HEA referrer: mark step 5.1 (PG&E HomeIntel Service) as completed
+                markStep51Completed();
+                // Update step 5 collapse states (5.2 and 5.3 should collapse)
                 setTimeout(() => {
                     if (typeof stepManager !== 'undefined' && stepManager && typeof stepManager.updateStep5CollapseState === 'function') {
                         stepManager.updateStep5CollapseState();
@@ -116,19 +116,19 @@
         }
     }
     
-    // Function to mark step 5.2 (PG&E HomeIntel Service) as completed
-    function markStep52Completed() {
+    // Function to mark step 5.1 (PG&E HomeIntel Service) as completed
+    function markStep51Completed() {
         // Wait for DOM to be ready
         setTimeout(() => {
-            const step52Section = document.getElementById('step5-2');
-            if (step52Section) {
+            const step51Section = document.getElementById('step5-1');
+            if (step51Section) {
                 // Add a completed badge/indicator
                 const badge = document.createElement('div');
                 badge.classList.add('completed-badge');
                 badge.innerHTML = '✓ Already completed for HomeIntel customers.';
                 
                 // Insert badge at the beginning of the section
-                step52Section.insertBefore(badge, step52Section.firstChild);
+                step51Section.insertBefore(badge, step51Section.firstChild);
                 
                 // Auto-check the skip checkbox after a delay to allow user to see the badge
                 const skipCheckbox = document.querySelector('#gasAnalysis input[name="skipStep5"]');
@@ -140,7 +140,7 @@
                     }, 500);
                 }
                 
-                console.log('Step 5.2 marked as completed for HEA referrer');
+                console.log('Step 5.1 marked as completed for HEA referrer');
             }
         }, 100);
     }
@@ -4103,13 +4103,13 @@
             // Update sections 5.1, 5.2, and 5.3
             const sections = [
                 { id: 'step5-1', toggleId: 'step5-1-toggle', contentId: 'step5-1-content', 
+                  showText: 'Show PG&E HomeIntel Service', 
+                  hideText: 'Hide PG&E HomeIntel Service', 
+                  shouldCollapse: false }, // 5.1 should not collapse for HEA referrer
+                { id: 'step5-2', toggleId: 'step5-2-toggle', contentId: 'step5-2-content', 
                   showText: 'Show Home Energy Academy Electrification Calculator', 
                   hideText: 'Hide Home Energy Academy Electrification Calculator', 
                   shouldCollapse: isHeaReferrer },
-                { id: 'step5-2', toggleId: 'step5-2-toggle', contentId: 'step5-2-content', 
-                  showText: 'Show PG&E HomeIntel Service', 
-                  hideText: 'Hide PG&E HomeIntel Service', 
-                  shouldCollapse: false }, // 5.2 should not collapse for HEA referrer
                 { id: 'step5-3', toggleId: 'step5-3-toggle', contentId: 'step5-3-content', 
                   showText: 'Show Spreadsheet Method', 
                   hideText: 'Hide Spreadsheet Method', 
@@ -4149,14 +4149,14 @@
 
         toggleStep51() {
             this.toggleStep5Section('step5-1', 'step5-1-toggle', 'step5-1-content', 
-                'Show Home Energy Academy Electrification Calculator', 
-                'Hide Home Energy Academy Electrification Calculator');
+                'Show PG&E HomeIntel Service', 
+                'Hide PG&E HomeIntel Service');
         },
 
         toggleStep52() {
             this.toggleStep5Section('step5-2', 'step5-2-toggle', 'step5-2-content', 
-                'Show PG&E HomeIntel Service', 
-                'Hide PG&E HomeIntel Service');
+                'Show Home Energy Academy Electrification Calculator', 
+                'Hide Home Energy Academy Electrification Calculator');
         },
 
         toggleStep53() {
