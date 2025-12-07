@@ -125,7 +125,7 @@
                 // Add a completed badge/indicator
                 const badge = document.createElement('div');
                 badge.classList.add('completed-badge');
-                badge.innerHTML = '✓ Already completed within the HomeIntel analysis.';
+                badge.innerHTML = '✓ Already completed for HomeIntel customers.';
                 
                 // Insert badge at the beginning of the section
                 step52Section.insertBefore(badge, step52Section.firstChild);
