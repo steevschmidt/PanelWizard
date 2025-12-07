@@ -210,10 +210,15 @@
             return; // Already has indicator
         }
         
+        // Check if referrer is "hea" to customize the badge text
+        const urlParams = new URLSearchParams(window.location.search);
+        const referrer = urlParams.get('referrer');
+        const badgeText = (referrer && referrer.toLowerCase() === 'hea') ? 'Pre-filled by HomeIntel' : 'Pre-filled';
+        
         // Create the badge element
         const badge = document.createElement('span');
         badge.classList.add('prefilled-badge');
-        badge.textContent = 'Pre-filled';
+        badge.textContent = badgeText;
         badge.title = 'This value was already calculated by another tool and transferred here using a URL parameter';
         
         // Insert the badge after the input
