@@ -2071,6 +2071,11 @@
                     if (buttonContainer) {
                         buttonContainer.parentNode.insertBefore(celebrationMessage, buttonContainer);
                     }
+                    
+                    // Show feedback modal after a short delay
+                    setTimeout(() => {
+                        showFeedbackModal();
+                    }, 500);
                 });
             } else {
                 button.textContent = 'Next';
@@ -4773,6 +4778,269 @@
         console.log('  VS Code Live Server extension');
         console.log('==========================================');
     };
-    
+
+    // ==========================================================================
+    // Feedback Modal Functions
+    // ==========================================================================
+
+    // Configuration: Set your Google Apps Script web app URL here
+    // See feedback-setup-instructions.md for setup instructions
+    const FEEDBACK_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbyI-Lej56Y7Y1qLvbDF2MbeRTFmpHaubuifIesKNMexk6F5EkpWR0INevb1XZ1dOE8Keg/exec'; // TODO: Replace with your Google Apps Script web app URL
+
+    // Function to show the feedback modal
+    function showFeedbackModal() {
+        // Remove any existing feedback modal
+        const existingModal = document.querySelector('.feedback-modal-overlay');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Create modal overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'feedback-modal-overlay';
+
+        // Create modal content
+        const modal = document.createElement('div');
+        modal.className = 'feedback-modal';
+
+        // Create modal header
+        const header = document.createElement('div');
+        header.className = 'feedback-modal-header';
+        header.innerHTML = '<h3>Share Your Feedback</h3>';
+
+        // Create close button
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'feedback-modal-close';
+        closeBtn.innerHTML = '✕';
+        closeBtn.setAttribute('aria-label', 'Close feedback modal');
+        closeBtn.onclick = () => overlay.remove();
+
+        header.appendChild(closeBtn);
+        modal.appendChild(header);
+
+        // Create modal body
+        const body = document.createElement('div');
+        body.className = 'feedback-modal-body';
+
+        // Create star rating section
+        const ratingSection = document.createElement('div');
+        ratingSection.className = 'feedback-rating-section';
+        const ratingLabel = document.createElement('label');
+        ratingLabel.textContent = 'How would you rate your experience?';
+        ratingLabel.className = 'feedback-label';
+        ratingSection.appendChild(ratingLabel);
+
+        const starsContainer = document.createElement('div');
+        starsContainer.className = 'feedback-stars-container';
+        let selectedRating = 0;
+        let hoveredRating = 0;
+
+        // Create 5 stars
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('span');
+            star.className = 'feedback-star';
+            star.setAttribute('data-rating', i);
+            star.textContent = '★';
+            star.setAttribute('aria-label', `${i} star${i > 1 ? 's' : ''}`);
+
+            star.addEventListener('click', () => {
+                selectedRating = i;
+                updateStarsDisplay();
+            });
+
+            star.addEventListener('mouseenter', () => {
+                hoveredRating = i;
+                updateStarsDisplay();
+            });
+
+            starsContainer.addEventListener('mouseleave', () => {
+                hoveredRating = 0;
+                updateStarsDisplay();
+            });
+
+            starsContainer.appendChild(star);
+        }
+
+        function updateStarsDisplay() {
+            const stars = starsContainer.querySelectorAll('.feedback-star');
+            const ratingToShow = hoveredRating || selectedRating;
+            stars.forEach((star, index) => {
+                const rating = index + 1;
+                if (rating <= ratingToShow) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        ratingSection.appendChild(starsContainer);
+        body.appendChild(ratingSection);
+
+        // Create text feedback section
+        const textSection = document.createElement('div');
+        textSection.className = 'feedback-text-section';
+        const textLabel = document.createElement('label');
+        textLabel.textContent = 'Optional: Tell us more about your experience';
+        textLabel.className = 'feedback-label';
+        textLabel.setAttribute('for', 'feedback-text');
+        textSection.appendChild(textLabel);
+
+        const textarea = document.createElement('textarea');
+        textarea.id = 'feedback-text';
+        textarea.className = 'feedback-textarea';
+        textarea.placeholder = 'What did you like? What could be improved?';
+        textarea.rows = 4;
+        textSection.appendChild(textarea);
+        body.appendChild(textSection);
+
+        // Create error/success message container
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'feedback-message';
+        messageContainer.style.display = 'none';
+        body.appendChild(messageContainer);
+
+        // Create button container
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'feedback-button-container';
+
+        const submitBtn = document.createElement('button');
+        submitBtn.className = 'feedback-submit-btn primary-button';
+        submitBtn.textContent = 'Submit Feedback';
+        submitBtn.type = 'button';
+
+        const skipBtn = document.createElement('button');
+        skipBtn.className = 'feedback-skip-btn secondary-button';
+        skipBtn.textContent = 'Skip';
+        skipBtn.type = 'button';
+        skipBtn.onclick = () => overlay.remove();
+
+        submitBtn.addEventListener('click', async () => {
+            if (selectedRating === 0) {
+                showFeedbackMessage(messageContainer, 'Please select a rating', 'error');
+                return;
+            }
+
+            // Disable submit button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                await submitFeedback(selectedRating, textarea.value.trim());
+                showFeedbackMessage(messageContainer, 'Thank you for your feedback!', 'success');
+                // Close modal after 1.5 seconds
+                setTimeout(() => {
+                    overlay.remove();
+                }, 1500);
+            } catch (error) {
+                console.error('Error submitting feedback:', error);
+                showFeedbackMessage(messageContainer, 'Error submitting feedback. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Feedback';
+            }
+        });
+
+        buttonContainer.appendChild(submitBtn);
+        buttonContainer.appendChild(skipBtn);
+        body.appendChild(buttonContainer);
+
+        modal.appendChild(body);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        // Focus on first star for accessibility
+        const firstStar = starsContainer.querySelector('.feedback-star');
+        if (firstStar) {
+            firstStar.focus();
+        }
+
+        // Close on Escape key
+        const closeOnEscape = (e) => {
+            if (e.key === 'Escape') {
+                overlay.remove();
+                document.removeEventListener('keydown', closeOnEscape);
+            }
+        };
+        document.addEventListener('keydown', closeOnEscape);
+
+        // Close on overlay click (but not on modal click)
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.remove();
+                document.removeEventListener('keydown', closeOnEscape);
+            }
+        });
+    }
+
+    // Function to show feedback message
+    function showFeedbackMessage(container, message, type) {
+        container.textContent = message;
+        container.className = `feedback-message feedback-message-${type}`;
+        container.style.display = 'block';
+    }
+
+    // Function to submit feedback to Google Sheets via Google Apps Script
+    async function submitFeedback(rating, feedbackText) {
+        if (!FEEDBACK_ENDPOINT_URL) {
+            console.warn('Feedback endpoint URL not configured. Feedback submission skipped.');
+            // In development/testing, we'll still resolve successfully
+            return Promise.resolve();
+        }
+
+        const data = {
+            rating: rating,
+            feedback: feedbackText || '',
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            url: window.location.href
+        };
+
+        try {
+            // Use URL-encoded form data to avoid CORS preflight issues with Google Apps Script
+            const formData = new URLSearchParams();
+            formData.append('rating', rating.toString());
+            formData.append('feedback', feedbackText || '');
+            formData.append('timestamp', new Date().toISOString());
+            formData.append('userAgent', navigator.userAgent);
+            formData.append('url', window.location.href);
+
+            const response = await fetch(FEEDBACK_ENDPOINT_URL, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Feedback submission failed:', response.status, errorText);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Try to parse response to check for errors
+            try {
+                const result = await response.json();
+                if (result.success === false) {
+                    console.error('Feedback submission returned error:', result.error);
+                    throw new Error(result.error || 'Submission failed');
+                }
+                console.log('Feedback submitted successfully:', result);
+            } catch (parseError) {
+                // Response might not be JSON, but that's okay if status was 200
+                console.log('Feedback submission response received (non-JSON)');
+            }
+
+            // Track feedback submission in Google Analytics if available
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'feedback_submitted', {
+                    'event_category': 'User Feedback',
+                    'event_label': `Rating: ${rating}`,
+                    'value': rating
+                });
+            }
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+            throw error;
+        }
+    }
+
     console.log('PanelWizard initialization complete');
 })(); 
