@@ -19,6 +19,7 @@
     <meta property="og:url" content="https://wizard.hea.com">
     <title>PanelWizard - Home Electrification Planning Tool</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -33,14 +34,22 @@
         
         <main>
             <section id="projectInfo" class="step-content">
-                <h2>1. Welcome to the PanelWizard</h2>
+                <h2><i class="fas fa-home" aria-hidden="true"></i> 1. Welcome to the PanelWizard</h2>
                 <div class="content-box">
                     <h3>Your Home Electrification Planning Tool</h3>
-                    <p>PanelWizard is a tool that helps homeowners/users plan to fully electrify their home without an electrical panel upgrade. Electric panel upgrades are expensive and time-consuming; upsizing a home's electrical service 
-                        (details <a href="https://www.canarymedia.com/articles/guides-and-how-tos/so-you-want-to-electrify-your-home-do-you-need-a-panel-upgrade-first" target="_blank">here</a>) can cost anywhere from $3,000 to $30,000 and take between 3 and 18 months 
-                        (report <a href="https://www.redwoodenergy.net/research/service-upgrades-for-electrification-retrofits-study-final-report-2" target="_blank">here</a>).</p>
-                    <p>This tool is designed to help homeowners assess whether they have sufficient electrical panel capacity to fully electrify their homes 
-                        by providing a customized list of modern efficient low power electric appliance options.</p>
+                    <div class="collapsible-section collapsed" id="step1-intro">
+                        <button type="button" class="collapsible-toggle" id="step1-intro-toggle" aria-expanded="false" aria-controls="step1-intro-content">
+                            <span class="collapsible-toggle-icon">▼</span>
+                            <span class="collapsible-toggle-text">Show more about PanelWizard</span>
+                        </button>
+                        <div id="step1-intro-content" class="collapsible-content">
+                            <p>PanelWizard is a tool that helps homeowners/users plan to fully electrify their home without an electrical panel upgrade. Electric panel upgrades are expensive and time-consuming; upsizing a home's electrical service 
+                                (details <a href="https://www.canarymedia.com/articles/guides-and-how-tos/so-you-want-to-electrify-your-home-do-you-need-a-panel-upgrade-first" target="_blank">here</a>) can cost anywhere from $3,000 to $30,000 and take between 3 and 18 months 
+                                (report <a href="https://www.redwoodenergy.net/research/service-upgrades-for-electrification-retrofits-study-final-report-2" target="_blank">here</a>).</p>
+                            <p>This tool is designed to help homeowners assess whether they have sufficient electrical panel capacity to fully electrify their homes 
+                                by providing a customized list of modern efficient low power electric appliance options.</p>
+                        </div>
+                    </div>
                     <div class="project-form">
                         <h3>Project Management</h3>
                         <p>Start a new project or open an existing one from a file.</p>
@@ -80,12 +89,20 @@
             </section>
 
             <section id="electrificationGoals" class="step-content">
-                <h2>2. Electrification Goals</h2>
+                <h2><i class="fas fa-list-check" aria-hidden="true"></i> 2. Electrification Goals</h2>
                 <div class="content-box">
                     <h3>Which of these are needed to fully electrify your home?</h3>
                     <p>Let's identify which appliances are needed to fully electrify your home. </p>
-                    <p>To future proof your home, we recommend building a plan that includes ALL of your possible electrification needs upfront, then you can decide and stage them at your convenience. 
-                        There's no need to do them all at once, but since electric capacity is limited it's best to plan for all of them upfront.</p>
+                    <div class="collapsible-section collapsed" id="step2-intro">
+                        <button type="button" class="collapsible-toggle" id="step2-intro-toggle" aria-expanded="false" aria-controls="step2-intro-content">
+                            <span class="collapsible-toggle-icon">▼</span>
+                            <span class="collapsible-toggle-text">Show future-proofing recommendation</span>
+                        </button>
+                        <div id="step2-intro-content" class="collapsible-content">
+                            <p>To future proof your home, we recommend building a plan that includes ALL of your possible electrification needs upfront, then you can decide and stage them at your convenience. 
+                                There's no need to do them all at once, but since electric capacity is limited it's best to plan for all of them upfront.</p>
+                        </div>
+                    </div>
                     
                     <form id="electrificationForm" class="checklist-form" autocomplete="off">
                         <div class="checkbox-group">
@@ -94,7 +111,7 @@
                             <div class="checkbox-subgroup">
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="electrification" value="heating" autocomplete="off">
-                                    <span>Heating Systems <span class="tooltip-container"><span class="tooltip">This could be a natural gas furnace, boiler or wall heater. Or even a gas fireplace if it is used for heating. 
+                                    <span><i class="fas fa-fire" aria-hidden="true"></i> Heating Systems <span class="tooltip-container"><span class="tooltip">This could be a natural gas furnace, boiler or wall heater. Or even a gas fireplace if it is used for heating. 
                                         We'll need to match the capacity of the existing gas heating unit(s) with one or more new electric heat pumps. This capacity is measured in BTUs per hour (Btu/h). 
                                         Btu/h is a measure of heating capacity of natural gas heaters and usually appears on the unit.</span>ⓘ</span></span>
                                 </label>
@@ -127,7 +144,7 @@
                                 
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="electrification" value="waterheater" autocomplete="off">
-                                    <span>Water Heaters <span class="tooltip-container"><span class="tooltip">Check your water heater to see if it's connected to a natural gas line.</span>ⓘ</span></span>
+                                    <span><i class="fas fa-droplet" aria-hidden="true"></i> Water Heaters <span class="tooltip-container"><span class="tooltip">Check your water heater to see if it's connected to a natural gas line.</span>ⓘ</span></span>
                                 </label>
                                 <div class="quantity-field" data-for="waterheater">
                                     <label>Replace <input type="number" min="1" max="5" value="1" name="waterheater_quantity"> natural gas water heater(s)</label>
@@ -135,7 +152,7 @@
                                 
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="electrification" value="cooking" autocomplete="off">
-                                    <span>Cooking Appliances <span class="tooltip-container"><span class="tooltip">This would include a natural gas stove, oven, or range. Note: gas cooking appliances have flames.</span>ⓘ</span></span>
+                                    <span><i class="fas fa-utensils" aria-hidden="true"></i> Cooking Appliances <span class="tooltip-container"><span class="tooltip">This would include a natural gas stove, oven, or range. Note: gas cooking appliances have flames.</span>ⓘ</span></span>
                                 </label>
                                 <div class="quantity-field" data-for="cooking">
                                     <label>Replace <input type="number" min="1" max="5" value="1" name="cooking_quantity"> natural gas cooking appliance(s)</label>
@@ -143,7 +160,7 @@
                                 
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="electrification" value="dryer" autocomplete="off">
-                                    <span>Clothes Dryers <span class="tooltip-container"><span class="tooltip">Check the back of your clothes dryer to see if it's connected to a natural gas line, or if it has a gas dryer label on it that lists BTUs per hour (Btu/h).</span>ⓘ</span></span>
+                                    <span><i class="fas fa-wind" aria-hidden="true"></i> Clothes Dryers <span class="tooltip-container"><span class="tooltip">Check the back of your clothes dryer to see if it's connected to a natural gas line, or if it has a gas dryer label on it that lists BTUs per hour (Btu/h).</span>ⓘ</span></span>
                                 </label>
                                 <div class="quantity-field" data-for="dryer">
                                     <label>Replace <input type="number" min="1" max="5" value="1" name="dryer_quantity"> natural gas clothes dryer(s)</label>
@@ -151,7 +168,7 @@
                                 
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="electrification" value="other" autocomplete="off">
-                                    <span>Other Gas Appliances <span class="tooltip-container"><span class="tooltip">Other natural gas appliances might include pool heaters, outdoor BBQs or space heaters, gas fireplaces, and even kilns.</span>ⓘ</span></span>
+                                    <span><i class="fas fa-ellipsis" aria-hidden="true"></i> Other Gas Appliances <span class="tooltip-container"><span class="tooltip">Other natural gas appliances might include pool heaters, outdoor BBQs or space heaters, gas fireplaces, and even kilns.</span>ⓘ</span></span>
                                 </label>
                                 <div class="quantity-field" data-for="other">
                                     <label>Replace <input type="number" min="1" max="5" value="1" name="other_quantity"> other natural gas appliance(s)</label>
@@ -162,14 +179,14 @@
                             <div class="checkbox-subgroup">
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="electrification" value="ev" autocomplete="off">
-                                    <span>Add EV Charger <span class="tooltip-container"><span class="tooltip">Most homes will eventually have at least one electric vehicle charger, so it's best to leave some panel capacity for it.</span>ⓘ</span></span>
+                                    <span><i class="fas fa-charging-station" aria-hidden="true"></i> Add EV Charger <span class="tooltip-container"><span class="tooltip">Most homes will eventually have at least one electric vehicle charger, so it's best to leave some panel capacity for it.</span>ⓘ</span></span>
                                 </label>
                                 <div class="quantity-field" data-for="ev">
                                     <label>Add <input type="number" min="1" max="5" value="1" name="ev_quantity"> EV charger(s)</label>
                                 </div>
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="electrification" value="gasmeter" autocomplete="off">
-                                    <span>Remove Gas Meter to get more space <span class="tooltip-container"><span class="tooltip">If your electrical panel is near your gas meter, removing the gas meter may create space for a larger electrical panel or additional electrical equipment.</span>ⓘ</span></span>
+                                    <span><i class="fas fa-trash-can" aria-hidden="true"></i> Remove Gas Meter to get more space <span class="tooltip-container"><span class="tooltip">If your electrical panel is near your gas meter, removing the gas meter may create space for a larger electrical panel or additional electrical equipment.</span>ⓘ</span></span>
                                 </label>
                             </div>
                         </div>
@@ -178,7 +195,7 @@
             </section>
 
             <section id="currentEquipment" class="step-content">
-                <h2>3. Current Electrical Equipment</h2>
+                <h2><i class="fas fa-plug" aria-hidden="true"></i> 3. Current Electrical Equipment</h2>
                 <div class="content-box">
                     <h3>Your Current Electrical Panel Size</h3>
                     <p>Please enter your current electrical panel size in amps. This information is required to help us calculate your panel's capacity for electrification.</p>
@@ -197,23 +214,39 @@
                         >
                         <p class="form-help">Enter a value between 10 and 1000 amps</p>
                         <p class="form-help">Note! Most residential electrical panels are 240 volts. If you have a 120 volt panel, do not use this tool.</p>
-                        <p class="form-help">Not sure about your panel size? <br>
-                            To find out, look for the <a href="https://static.hea.com/images/Service_Amps_on_Meter.png" target="_blank">CL number on your meter</a>, see instructions <a href="https://www.quitcarbon.com/help/how-to-find-your-main-electrical-service" target="_blank">here</a>, or watch this <a href="https://www.thespruce.com/electrical-service-size-of-my-home-1152752" target="_blank">video</a>.
-                            Or try using the <a href="https://www.kopperfield.com/panel-schedule" target="_blank">Kopperfield panel schedule tool</a> - it can help determine your panel size from a photo!</p><br>
+                        <div class="collapsible-section collapsed" id="step3-help">
+                            <button type="button" class="collapsible-toggle" id="step3-help-toggle" aria-expanded="false" aria-controls="step3-help-content">
+                                <span class="collapsible-toggle-icon">▼</span>
+                                <span class="collapsible-toggle-text">Show help finding your panel size</span>
+                            </button>
+                            <div id="step3-help-content" class="collapsible-content">
+                                <p class="form-help">Not sure about your panel size? <br>
+                                    To find out, look for the <a href="https://static.hea.com/images/Service_Amps_on_Meter.png" target="_blank">CL number on your meter</a>, see instructions <a href="https://www.quitcarbon.com/help/how-to-find-your-main-electrical-service" target="_blank">here</a>, or watch this <a href="https://www.thespruce.com/electrical-service-size-of-my-home-1152752" target="_blank">video</a>.
+                                    Or try using the <a href="https://www.kopperfield.com/panel-schedule" target="_blank">Kopperfield panel schedule tool</a> - it can help determine your panel size from a photo!</p>
+                            </div>
+                        </div><br>
                     </form>
                 </div>
             </section>
 
             <section id="loadAnalysis" class="step-content">
-                <h2>4. Current Load Analysis</h2>
+                <h2><i class="fas fa-calculator" aria-hidden="true"></i> 4. Current Load Analysis</h2>
                 <p>Now we need to analyze how much remaining panel capacity you have for electrification. This step is required to proceed.</p>
-                <p>The National Electrical Code (NEC) provides <strong>two different ways</strong> to calculate your available panel capacity. 
-                    <strong>You can use either or both methods</strong>:</p>
-                <ol>
-                    <li><strong>Top-down approach:</strong> Use your actual electricity usage data to determine your available panel capacity. <br>This method follows the <a href="https://up.codes/s/determining-existing-loads" target="_blank">NEC 220.87</a> code section.</li>
-                    <li><strong>Bottom-up approach:</strong> Calculate your available panel capacity by adding up your current electrical loads. <br>This method follows the <a href="https://up.codes/s/existing-dwelling-unit" target="_blank">NEC 220.83(B)</a> code section.</li>
-                </ol>
-                <br><p>The first approach is easy if you have a smart meter, but it's not always available. The second approach always works, but it's more time-consuming.</p>
+                <div class="collapsible-section collapsed" id="step4-intro">
+                    <button type="button" class="collapsible-toggle" id="step4-intro-toggle" aria-expanded="false" aria-controls="step4-intro-content">
+                        <span class="collapsible-toggle-icon">▼</span>
+                        <span class="collapsible-toggle-text">Show explanation of calculation methods</span>
+                    </button>
+                    <div id="step4-intro-content" class="collapsible-content">
+                        <p>The National Electrical Code (NEC) provides <strong>two different ways</strong> to calculate your available panel capacity. 
+                            <strong>You can use either or both methods</strong>:</p>
+                        <ol>
+                            <li><strong>Top-down approach:</strong> Use your actual electricity usage data to determine your available panel capacity. <br>This method follows the <a href="https://up.codes/s/determining-existing-loads" target="_blank">NEC 220.87</a> code section.</li>
+                            <li><strong>Bottom-up approach:</strong> Calculate your available panel capacity by adding up your current electrical loads. <br>This method follows the <a href="https://up.codes/s/existing-dwelling-unit" target="_blank">NEC 220.83(B)</a> code section.</li>
+                        </ol>
+                        <br><p>The first approach is easy if you have a smart meter, but it's not always available. The second approach always works, but it's more time-consuming.</p>
+                    </div>
+                </div>
                 <section id="step4-1" class="content-box collapsible-section">
                     <h3>4.1 Top-Down Approach</h3>
                     <button type="button" class="collapsible-toggle" id="step4-1-toggle" aria-expanded="true" aria-controls="step4-1-content">
@@ -284,15 +317,23 @@
             </section>
 
             <section id="gasAnalysis" class="step-content">
-                <h2>5. Natural Gas Analysis -- Optional</h2>
-                <p>If you have your home's natural gas usage data for the past year it's possible to do some additional analysis, including: 
-                    <ul>
-                        <li>Estimating the <b>impact on your bill</b> of switching from natural gas to electric appliances</li>
-                        <li>Estimating the <b>size of a new heat pump</b> for heating your home</li>
-                    </ul>
-                </p>
-                <p>Please note these calculations will result in only rough estimates, and you should always consult with a professional to get a more accurate analysis.</p>
-                <p>We can do this several different ways, and you can use whichever method works best for you:</p>
+                <h2><i class="fas fa-fire-flame-simple" aria-hidden="true"></i> 5. Natural Gas Analysis -- Optional</h2>
+                <div class="collapsible-section collapsed" id="step5-intro">
+                    <button type="button" class="collapsible-toggle" id="step5-intro-toggle" aria-expanded="false" aria-controls="step5-intro-content">
+                        <span class="collapsible-toggle-icon">▼</span>
+                        <span class="collapsible-toggle-text">Show more about natural gas analysis</span>
+                    </button>
+                    <div id="step5-intro-content" class="collapsible-content">
+                        <p>If you have your home's natural gas usage data for the past year it's possible to do some additional analysis, including: 
+                            <ul>
+                                <li>Estimating the <b>impact on your bill</b> of switching from natural gas to electric appliances</li>
+                                <li>Estimating the <b>size of a new heat pump</b> for heating your home</li>
+                            </ul>
+                        </p>
+                        <p>Please note these calculations will result in only rough estimates, and you should always consult with a professional to get a more accurate analysis.</p>
+                        <p>We can do this several different ways, and you can use whichever method works best for you:</p>
+                    </div>
+                </div>
 
                 <section id="step5-1" class="content-box collapsible-section">
                     <h3>5.1 PG&E HomeIntel Service</h3>
@@ -354,7 +395,7 @@
             </section>
 
             <section id="planNewAppliances" class="step-content">
-                <h2>6. Select New Electric Appliances</h2>
+                <h2><i class="fas fa-shopping-cart" aria-hidden="true"></i> 6. Select New Electric Appliances</h2>
                 <div class="content-box">
                     
                     <h3>Table of Appliance Options</h3>
@@ -431,9 +472,17 @@
                             </div>
                         </div>
                     </div>
-                    <p>Note 1: CF (Coincidence Factor) is used in the NEC methods to account for the fact that not all appliances are used at the same time.</p>
-                    <p>Note 2: Cost ranges are estimates, and cover only the equipment costs. Installation costs (which vary widely) and incentives are not included.</p>
-                    <p>Click the "📋 Details" button for any appliance to see comprehensive product information, including all available data from our database.</p>
+                    <div class="collapsible-section collapsed" id="step6-notes">
+                        <button type="button" class="collapsible-toggle" id="step6-notes-toggle" aria-expanded="false" aria-controls="step6-notes-content">
+                            <span class="collapsible-toggle-icon">▼</span>
+                            <span class="collapsible-toggle-text">Show notes and details</span>
+                        </button>
+                        <div id="step6-notes-content" class="collapsible-content">
+                            <p>Note 1: CF (Coincidence Factor) is used in the NEC methods to account for the fact that not all appliances are used at the same time.</p>
+                            <p>Note 2: Cost ranges are estimates, and cover only the equipment costs. Installation costs (which vary widely) and incentives are not included.</p>
+                            <p>Click the "📋 Details" button for any appliance to see comprehensive product information, including all available data from our database.</p>
+                        </div>
+                    </div>
                 </div>
                 <form class="checklist-form" autocomplete="off">
                     <div class="checkbox-group">
@@ -446,82 +495,138 @@
             </section>
 
             <section id="actionPlan" class="step-content">
-                <h2>7. Next Steps</h2>
+                <h2><i class="fas fa-arrow-right" aria-hidden="true"></i> 7. Next Steps</h2>
                 <div class="content-box">
                     <h3>Implementation Strategy</h3>
                     <p>Your roadmap to electrification:</p>
                     <ul>
                         <li>Timeline planning: which of these projects do you want to do first?
-                            <ul>
-                                <li>If you're using the top-down load calculation (NEC 220.87, from step 4.1), 
-                                    it may help to break up your project into phases and check your new peak load after each phase. 
-                                    For example, you might upgrade your heating system first, then your water heater, then your cooking appliance. 
-                                    Between each project you can take 30 days to recalculate your remaining panel capacity</li>
-                                <li>If you're using the bottom-up load calculation (NEC 220.83, from step 4.2), you can do it all at once</li>
-                            </ul>
+                            <div class="collapsible-section collapsed" style="display: inline-block; width: 100%; margin-top: 0.5rem;">
+                                <button type="button" class="collapsible-toggle" style="font-size: 0.9em; padding: 0.25rem 0.5rem;" aria-expanded="false">
+                                    <span class="collapsible-toggle-icon">▼</span>
+                                    <span class="collapsible-toggle-text">Show details</span>
+                                </button>
+                                <div class="collapsible-content" style="margin-top: 0.5rem;">
+                                    <ul>
+                                        <li>If you're using the top-down load calculation (NEC 220.87, from step 4.1), 
+                                            it may help to break up your project into phases and check your new peak load after each phase. 
+                                            For example, you might upgrade your heating system first, then your water heater, then your cooking appliance. 
+                                            Between each project you can take 30 days to recalculate your remaining panel capacity</li>
+                                        <li>If you're using the bottom-up load calculation (NEC 220.83, from step 4.2), you can do it all at once</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
                         <li>Budget considerations: what is your budget for this project?
-                            <ul>
-                                <li>More efficient appliances might cost a bit more upfront, but they will save you money in the long run</li>
-                                <li>Installation costs can vary greatly depending on the complexity of the project and the contractor you hire</li>
-                            </ul>
+                            <div class="collapsible-section collapsed" style="display: inline-block; width: 100%; margin-top: 0.5rem;">
+                                <button type="button" class="collapsible-toggle" style="font-size: 0.9em; padding: 0.25rem 0.5rem;" aria-expanded="false">
+                                    <span class="collapsible-toggle-icon">▼</span>
+                                    <span class="collapsible-toggle-text">Show details</span>
+                                </button>
+                                <div class="collapsible-content" style="margin-top: 0.5rem;">
+                                    <ul>
+                                        <li>More efficient appliances might cost a bit more upfront, but they will save you money in the long run</li>
+                                        <li>Installation costs can vary greatly depending on the complexity of the project and the contractor you hire</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
                         <li>Incentives and rebates: what incentives and rebates are available for your project?
-                            <ul>
-                                <li>There are many rebates and incentives available for electrification projects</li>
-                                <li>Check for Federal, State, Local and utility rebates</li>
-                                <li>Find incentives by zip code at <a href="https://www.switchison.org/ca" target="_blank">SwitchIsOn.org</a></li>
-                            </ul>
+                            <div class="collapsible-section collapsed" style="display: inline-block; width: 100%; margin-top: 0.5rem;">
+                                <button type="button" class="collapsible-toggle" style="font-size: 0.9em; padding: 0.25rem 0.5rem;" aria-expanded="false">
+                                    <span class="collapsible-toggle-icon">▼</span>
+                                    <span class="collapsible-toggle-text">Show details</span>
+                                </button>
+                                <div class="collapsible-content" style="margin-top: 0.5rem;">
+                                    <ul>
+                                        <li>There are many rebates and incentives available for electrification projects</li>
+                                        <li>Check for Federal, State, Local and utility rebates</li>
+                                        <li>Find incentives by zip code at <a href="https://www.switchison.org/ca" target="_blank">SwitchIsOn.org</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
                         <li>Contractor selection: who will you hire to do the work?
-                            <ul>
-                                <li>Check for contractors who specialize in electrification</li>
-                                <li>Check for contractors who have experience with your type of project</li>
-                                <li>Find a list of experienced contractors at <a href="https://www.switchison.org/contractor-finder" target="_blank">SwitchIsOn.org</a></li>
-                            </ul>
+                            <div class="collapsible-section collapsed" style="display: inline-block; width: 100%; margin-top: 0.5rem;">
+                                <button type="button" class="collapsible-toggle" style="font-size: 0.9em; padding: 0.25rem 0.5rem;" aria-expanded="false">
+                                    <span class="collapsible-toggle-icon">▼</span>
+                                    <span class="collapsible-toggle-text">Show details</span>
+                                </button>
+                                <div class="collapsible-content" style="margin-top: 0.5rem;">
+                                    <ul>
+                                        <li>Check for contractors who specialize in electrification</li>
+                                        <li>Check for contractors who have experience with your type of project</li>
+                                        <li>Find a list of experienced contractors at <a href="https://www.switchison.org/contractor-finder" target="_blank">SwitchIsOn.org</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
                         <li>Finalize appliance selection: what appliances will you be buying & installing?
-                            <ul>
-                                <li>Check availability of appliances in your area</li>
-                                <li>Confirm the size you need for your project; this is particularly important for heat pumps and water heaters -- get expert help!</li>
-                                <li>Confirm the cost of appliances and installation details</li>
-                                <li>Check with your contractor for appliance maintenance</li>
-                            </ul>
+                            <div class="collapsible-section collapsed" style="display: inline-block; width: 100%; margin-top: 0.5rem;">
+                                <button type="button" class="collapsible-toggle" style="font-size: 0.9em; padding: 0.25rem 0.5rem;" aria-expanded="false">
+                                    <span class="collapsible-toggle-icon">▼</span>
+                                    <span class="collapsible-toggle-text">Show details</span>
+                                </button>
+                                <div class="collapsible-content" style="margin-top: 0.5rem;">
+                                    <ul>
+                                        <li>Check availability of appliances in your area</li>
+                                        <li>Confirm the size you need for your project; this is particularly important for heat pumps and water heaters -- get expert help!</li>
+                                        <li>Confirm the cost of appliances and installation details</li>
+                                        <li>Check with your contractor for appliance maintenance</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
                         <li>Permit requirements: what permits are required for your project?
-                            <ul>
-                                <li>Check with your local government for permit requirements</li>
-                                <li>Check with your utility for permit requirements</li>
-                                <li>Check with your contractor for permit requirements</li>
-                            </ul>
+                            <div class="collapsible-section collapsed" style="display: inline-block; width: 100%; margin-top: 0.5rem;">
+                                <button type="button" class="collapsible-toggle" style="font-size: 0.9em; padding: 0.25rem 0.5rem;" aria-expanded="false">
+                                    <span class="collapsible-toggle-icon">▼</span>
+                                    <span class="collapsible-toggle-text">Show details</span>
+                                </button>
+                                <div class="collapsible-content" style="margin-top: 0.5rem;">
+                                    <ul>
+                                        <li>Check with your local government for permit requirements</li>
+                                        <li>Check with your utility for permit requirements</li>
+                                        <li>Check with your contractor for permit requirements</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
                         <li>Additional equipment information: You or your contractor may want to investigate the following issues:
-                            <ul>
-                                <li>Is your existing electric panel dangerous? 
-                                    <span class="tooltip-container"><span class="tooltip">Some panel types are dangerous and need to be replaced, like Federal Pacific, Zinsco, Stablock & Pushmatic. Note: a panel replacement is much easier than upsizing a panel.</span>ⓘ</span>
-                                </li>
-                                <li>How many available breaker slots do you have?
-                                    <span class="tooltip-container"><span class="tooltip">These open slots can be used to add more appliances to your panel.</span>ⓘ</span>
-                                </li>
-                                <li>Are tandem breakers already being used?
-                                    <span class="tooltip-container"><span class="tooltip">Tandem (or twin, slim or duplex) breakers are two breakers occupying a single breaker slot. This is a common way to save space on a panel.</span>ⓘ</span>
-                                </li>
-                                <li>Can some of the existing breakers be combined?
-                                    <span class="tooltip-container"><span class="tooltip">It is often possible to combine lighting circuits since modern LED lights are very low power.</span>ⓘ</span>
-                                </li>
-                                <li>Is there physical space available to add a subpanel?
-                                    <span class="tooltip-container"><span class="tooltip">A subpanel is a smaller electrical panel that is connected to your main panel. It can be used to add more electrical capacity to your home.</span>ⓘ</span>
-                                </li>
-                                <li>Do you have any unused 240 volt outlets (like for an unused electric dryer or cooktop)?
-                                    <span class="tooltip-container"><span class="tooltip">These unused 240 volt outlets can possibly be used by the new appliances you're adding.</span>ⓘ</span>
-                                </li>
-                                <li>Do you have any existing 240 volt outlets that can be shared using a smart circuit splitter?
-                                    <span class="tooltip-container"><span class="tooltip">A smart circuit splitter can be used to share a 240 volt outlet between two appliances. This is a common way to avoid upsizing your panel.</span>ⓘ</span>
-                                </li>
-                                <li>Is your gas meter very near your electrical panel?
-                                    <span class="tooltip-container"><span class="tooltip">If your gas meter is near your electrical panel, you may not be allowed to upsize your panel in that same location to accommodate the new load.</span>ⓘ</span>
-                                </li>
-                            </ul>
+                            <div class="collapsible-section collapsed" style="display: inline-block; width: 100%; margin-top: 0.5rem;">
+                                <button type="button" class="collapsible-toggle" style="font-size: 0.9em; padding: 0.25rem 0.5rem;" aria-expanded="false">
+                                    <span class="collapsible-toggle-icon">▼</span>
+                                    <span class="collapsible-toggle-text">Show details</span>
+                                </button>
+                                <div class="collapsible-content" style="margin-top: 0.5rem;">
+                                    <ul>
+                                        <li>Is your existing electric panel dangerous? 
+                                            <span class="tooltip-container"><span class="tooltip">Some panel types are dangerous and need to be replaced, like Federal Pacific, Zinsco, Stablock & Pushmatic. Note: a panel replacement is much easier than upsizing a panel.</span>ⓘ</span>
+                                        </li>
+                                        <li>How many available breaker slots do you have?
+                                            <span class="tooltip-container"><span class="tooltip">These open slots can be used to add more appliances to your panel.</span>ⓘ</span>
+                                        </li>
+                                        <li>Are tandem breakers already being used?
+                                            <span class="tooltip-container"><span class="tooltip">Tandem (or twin, slim or duplex) breakers are two breakers occupying a single breaker slot. This is a common way to save space on a panel.</span>ⓘ</span>
+                                        </li>
+                                        <li>Can some of the existing breakers be combined?
+                                            <span class="tooltip-container"><span class="tooltip">It is often possible to combine lighting circuits since modern LED lights are very low power.</span>ⓘ</span>
+                                        </li>
+                                        <li>Is there physical space available to add a subpanel?
+                                            <span class="tooltip-container"><span class="tooltip">A subpanel is a smaller electrical panel that is connected to your main panel. It can be used to add more electrical capacity to your home.</span>ⓘ</span>
+                                        </li>
+                                        <li>Do you have any unused 240 volt outlets (like for an unused electric dryer or cooktop)?
+                                            <span class="tooltip-container"><span class="tooltip">These unused 240 volt outlets can possibly be used by the new appliances you're adding.</span>ⓘ</span>
+                                        </li>
+                                        <li>Do you have any existing 240 volt outlets that can be shared using a smart circuit splitter?
+                                            <span class="tooltip-container"><span class="tooltip">A smart circuit splitter can be used to share a 240 volt outlet between two appliances. This is a common way to avoid upsizing your panel.</span>ⓘ</span>
+                                        </li>
+                                        <li>Is your gas meter very near your electrical panel?
+                                            <span class="tooltip-container"><span class="tooltip">If your gas meter is near your electrical panel, you may not be allowed to upsize your panel in that same location to accommodate the new load.</span>ⓘ</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>

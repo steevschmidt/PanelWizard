@@ -3810,7 +3810,107 @@
                 }, false);
             }
 
+            // Step 1 intro collapsible toggle button listener
+            const step1IntroToggle = document.getElementById('step1-intro-toggle');
+            if (step1IntroToggle) {
+                step1IntroToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    StepManager.toggleStep1Intro();
+                });
+            }
 
+            // Step 2 intro collapsible toggle button listener
+            const step2IntroToggle = document.getElementById('step2-intro-toggle');
+            if (step2IntroToggle) {
+                step2IntroToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    StepManager.toggleStep2Intro();
+                });
+            }
+
+            // Step 3 help collapsible toggle button listener
+            const step3HelpToggle = document.getElementById('step3-help-toggle');
+            if (step3HelpToggle) {
+                step3HelpToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    StepManager.toggleStep3Help();
+                });
+            }
+
+            // Step 4 intro collapsible toggle button listener
+            const step4IntroToggle = document.getElementById('step4-intro-toggle');
+            if (step4IntroToggle) {
+                step4IntroToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    StepManager.toggleStep4Intro();
+                });
+            }
+
+            // Step 5 intro collapsible toggle button listener
+            const step5IntroToggle = document.getElementById('step5-intro-toggle');
+            if (step5IntroToggle) {
+                step5IntroToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    StepManager.toggleStep5Intro();
+                });
+            }
+
+            // Step 6 notes collapsible toggle button listener
+            const step6NotesToggle = document.getElementById('step6-notes-toggle');
+            if (step6NotesToggle) {
+                step6NotesToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    StepManager.toggleStep6Notes();
+                });
+            }
+
+            // Step 7 collapsible toggles (use event delegation for nested toggles)
+            const actionPlan = document.getElementById('actionPlan');
+            if (actionPlan) {
+                const self = this;
+                actionPlan.addEventListener('click', function(e) {
+                    const toggle = e.target.closest('.collapsible-toggle');
+                    if (toggle && toggle.closest('#actionPlan')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const section = toggle.closest('.collapsible-section');
+                        if (section) {
+                            const isCollapsed = section.classList.contains('collapsed');
+                            const content = section.querySelector('.collapsible-content');
+                            const toggleText = toggle.querySelector('.collapsible-toggle-text');
+                            
+                            if (isCollapsed) {
+                                section.classList.remove('collapsed');
+                                toggle.setAttribute('aria-expanded', 'true');
+                                if (content) {
+                                    content.style.display = 'block';
+                                    content.style.visibility = 'visible';
+                                }
+                                if (toggleText) {
+                                    toggleText.textContent = 'Hide details';
+                                }
+                            } else {
+                                section.classList.add('collapsed');
+                                toggle.setAttribute('aria-expanded', 'false');
+                                if (content) {
+                                    content.style.display = 'none';
+                                    content.style.visibility = 'hidden';
+                                }
+                                if (toggleText) {
+                                    toggleText.textContent = 'Show details';
+                                }
+                            }
+                            void section.offsetHeight; // Force reflow
+                        }
+                    }
+                }, false);
+            }
 
             // Navigation listeners
             document.querySelectorAll('.nav-list a').forEach(link => {
@@ -4170,6 +4270,42 @@
                 'Hide Spreadsheet Method');
         },
 
+        toggleStep1Intro() {
+            this.toggleStep5Section('step1-intro', 'step1-intro-toggle', 'step1-intro-content', 
+                'Show more about PanelWizard', 
+                'Hide');
+        },
+
+        toggleStep2Intro() {
+            this.toggleStep5Section('step2-intro', 'step2-intro-toggle', 'step2-intro-content', 
+                'Show future-proofing recommendation', 
+                'Hide');
+        },
+
+        toggleStep3Help() {
+            this.toggleStep5Section('step3-help', 'step3-help-toggle', 'step3-help-content', 
+                'Show help finding your panel size', 
+                'Hide');
+        },
+
+        toggleStep4Intro() {
+            this.toggleStep5Section('step4-intro', 'step4-intro-toggle', 'step4-intro-content', 
+                'Show explanation of calculation methods', 
+                'Hide');
+        },
+
+        toggleStep5Intro() {
+            this.toggleStep5Section('step5-intro', 'step5-intro-toggle', 'step5-intro-content', 
+                'Show more about natural gas analysis', 
+                'Hide');
+        },
+
+        toggleStep6Notes() {
+            this.toggleStep5Section('step6-notes', 'step6-notes-toggle', 'step6-notes-content', 
+                'Show notes and details', 
+                'Hide');
+        },
+
         toggleStep5Section(sectionId, toggleId, contentId, showText, hideText) {
             const sectionEl = document.getElementById(sectionId);
             const toggleButton = document.getElementById(toggleId);
@@ -4187,16 +4323,18 @@
             if (isCollapsed) {
                 sectionEl.classList.remove('collapsed');
                 toggleButton.setAttribute('aria-expanded', 'true');
-                collapsibleContent.style.display = 'block';
-                collapsibleContent.style.visibility = 'visible';
+                // Clear any inline styles to let CSS handle display
+                collapsibleContent.style.removeProperty('display');
+                collapsibleContent.style.removeProperty('visibility');
+                collapsibleContent.style.removeProperty('opacity');
+                collapsibleContent.style.removeProperty('max-height');
                 if (toggleText) {
                     toggleText.textContent = hideText;
                 }
             } else {
                 sectionEl.classList.add('collapsed');
                 toggleButton.setAttribute('aria-expanded', 'false');
-                collapsibleContent.style.display = 'none';
-                collapsibleContent.style.visibility = 'hidden';
+                // CSS with !important will handle hiding
                 if (toggleText) {
                     toggleText.textContent = showText;
                 }

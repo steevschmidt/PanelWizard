@@ -161,6 +161,28 @@ h2 { font-size: 2rem; }
 h3 { font-size: 1.5rem; }
 h4 { font-size: 1.2rem; }
 
+/* Icon styling */
+h2 i.fas,
+h3 i.fas,
+h4 i.fas {
+    margin-right: 0.5rem;
+    color: var(--link-color, #ff7f00);
+    vertical-align: middle;
+}
+
+.checkbox-label i.fas {
+    margin-right: 0.5rem;
+    color: var(--link-color, #ff7f00);
+    font-size: 1em;
+}
+
+[data-theme="dark"] h2 i.fas,
+[data-theme="dark"] h3 i.fas,
+[data-theme="dark"] h4 i.fas,
+[data-theme="dark"] .checkbox-label i.fas {
+    color: var(--link-color, #ff7f00);
+}
+
 p {
     margin-bottom: var(--spacing-md);
 }
@@ -372,6 +394,10 @@ button {
 
 .collapsible-section:not(.collapsed) .collapsible-toggle-icon {
     transform: rotate(180deg);
+}
+
+.collapsible-section.collapsed .collapsible-toggle-icon {
+    transform: rotate(0deg);
 }
 
 [data-theme="dark"] .collapsible-toggle {
